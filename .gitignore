@@ -1,0 +1,11 @@
+.sass-cache
+.livereload
+*en conflit*
+*.sublime-*
+
+.htpasswd
+config/database.php
+
+vendor
+composer.lock
+composer.phar
