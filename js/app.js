@@ -1,10 +1,3 @@
-_.mixin({
-	underscored : function(string) {
-		if (!_.isString(string)) return false;
-		return string.toLowerCase().replace(' ', '_');
-	}
-});
-
 leiminauts.App = Backbone.Router.extend({
 	routes: {
 		"": "list",
@@ -46,8 +39,6 @@ leiminauts.App = Backbone.Router.extend({
 	}
 });
 
-
-
 leiminauts.init = function(data, tabletop) {
 	leiminauts.app = new leiminauts.App({
 		el: '#container',
@@ -56,7 +47,7 @@ leiminauts.init = function(data, tabletop) {
 	Backbone.history.start({pushState: false, root: "/nautsbuilder/"});
 };
 
-leiminauts.spreadsheet = Tabletop.init({
+Tabletop.init({
 	key: "0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE",
 	wait: false,
 	debug: true,

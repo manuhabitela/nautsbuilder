@@ -1,4 +1,3 @@
-window.leiminauts = window.leiminauts || {};
 leiminauts.Character = Backbone.Model.extend({
 	initialize: function(attrs, opts) {
 		this.setId();
