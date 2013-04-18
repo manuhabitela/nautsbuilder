@@ -18,7 +18,6 @@ leiminauts.CharactersView = Backbone.View.extend({
 	},
 
 	selectCharacter: function(e) {
-		console.log('select');
 		this.trigger('selected', $(e.currentTarget).attr('data-id'));
 	}
 });

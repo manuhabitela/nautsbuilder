@@ -9,16 +9,23 @@ leiminauts.CharacterView = Backbone.View.extend({
 	initialize: function() {
 		this.template = _.template( $('#char-tpl').html() );
 
-		//this.stats = new leiminauts.StatsView();
-		//this.build = new leiminauts.BuildView();
-		//this.order = new leiminauts.OrderView();
+		this.stats = new leiminauts.StatsView({ character: this });
+		this.build = new leiminauts.BuildView({ character: this });
+		this.order = new leiminauts.OrderView({ character: this });
 
-		this.model.on('all', this.render, this);
 		this.render();
 	},
 
 	render: function() {
 		this.$el.html(this.template( this.model.toJSON() ));
+		this.assign(this.stats, '.stats');
+		this.assign(this.build, '.build');
+		this.assign(this.order, '.order');
 		return this;
+	},
+
+	//http://ianstormtaylor.com/rendering-views-in-backbonejs-isnt-always-simple/
+	assign: function(view, selector) {
+		view.setElement(this.$(selector)).render();
 	}
 });
