@@ -24,19 +24,67 @@
 
 		<script type="text/template" id="chars-tpl">
 			<% _.each(characters, function(character) { %>
-				<li class="char">
+				<li class="char" data-id="<%= character.id %>">
 					<img class="char-icon"src="<%= character.icon %>" alt="">
 					<span class="char-name"><%= character.name %></span>
 				</li>
 			<% }); %>
 		</script>
 
+		<script type="text/template" id="char-tpl">
+			<div class="stats"></div>
+			<div class="build"></div>
+			<div class="order"></div>
+		</script>
+
+		<script type="text/template" id="stats-tpl">
+			<p><%= name %></p>
+			<p><%= description %></p>
+		</script>
+
+		<script type="text/template" id="build-tpl">
+
+		</script>
+
+		<script type="text/template" id="order-tpl">
+
+		</script>
+
+		<script type="text/template" id="build-skill-tpl">
+			<div class="skill-info">
+				<div class="skill-icon"><img src="<%= icon %>" alt=""></div>
+				<div class="skill-popup">
+					<p><strong><%= name %></strong></p>
+					<p><%= description %></p>
+					<p class="cost"><%= cost %></p>
+				</div>
+			</div>
+			<div class="skill-upgrades">
+			</div>
+		</script>
+
+		<script type="text/template" id="build-upgrade-tpl">
+			<div class="upgrade-icon"><img src="<%= icon %>" alt=""></div>
+			<div class="upgrade-step"><%= step %></div>
+			<div class="upgrade-popup">
+				<p><strong><%= name %></strong></p>
+				<p><%= description %></p>
+				<p class="cost"><%= cost %></p>
+			</div>
+		</script>
+
 		<script src="js/lib/jquery.min.js"></script>
 		<script src="js/lib/underscore.js"></script>
 		<script src="js/lib/backbone.js"></script>
 		<script src="js/lib/tabletop.js"></script>
-		<script src="js/lib/backbone.tabletopSync.js"></script>
-		<script src="js/character.js"></script>
+		<script src="js/data/character.js"></script>
+		<script src="js/data/skill.js"></script>
+		<script src="js/data/upgrade.js"></script>
+		<script src="js/views/characters.js"></script>
+		<script src="js/views/character.js"></script>
+		<script src="js/views/build.js"></script>
+		<script src="js/views/order.js"></script>
+		<script src="js/views/stats.js"></script>
 		<script src="js/app.js"></script>
 		<!--<script>
 			var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
