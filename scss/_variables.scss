@@ -1,0 +1,13 @@
+//variables du projet
+
+//couleurs
+$base-color: #222;
+
+//fonts
+$serif: unquote("Georgia, 'DejaVu Serif', Norasi, serif");
+$sans-serif: unquote("'Open Sans', Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif");
+$monospace: unquote("Consolas, Monaco, 'Liberation Mono', 'Courier New', Courier, monospace");
+$base-font-family: $sans-serif;
+$base-font-size-px: 16px;
+$base-font-size: em($base-font-size-px);
+$base-line-height: em(21px);

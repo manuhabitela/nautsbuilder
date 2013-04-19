@@ -38,7 +38,7 @@ img { border: 0; }
 
 svg:not(:root) { overflow: hidden; }
 
-fieldset { border: 1px solid silver; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
+fieldset { border: 1px solid #c0c0c0; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
 
 legend { border: 0; padding: 0; }
 
@@ -64,7 +64,7 @@ textarea { overflow: auto; vertical-align: top; }
 
 table { border-collapse: collapse; border-spacing: 0; }
 
-body, button, select, input, textarea, label { color: #222222; font-family: Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif; line-height: 1.3125em; }
+body, button, select, input, textarea, label { color: #222222; font-family: 'Open Sans', Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif; line-height: 1.3125em; }
 
 .ir { border: 0; overflow: hidden; *text-indent: -9999px; }
 .ir:before { content: ""; display: block; width: 0; height: 100%; }
@@ -95,47 +95,12 @@ body, button, select, input, textarea, label { color: #222222; font-family: Helv
 @media only screen and (max-width: 640px) { .only-large { display: none !important; visibility: hidden; } }
 @media only screen and (min-width: 641px) and (max-width: 979px) { .only-large { display: none !important; visibility: hidden; } }
 
+#mouse-tooltip { position: absolute; top: 0; left: 0; pointer-events: none; max-width: 300px; border-radius: 5px; border: 2px solid #000; background: #4c4c4c; color: #fff; font-family: sans-serif; font-size: small; padding: 8px 12px; }
 
-.skill > div,
-.skill-upgrades,
-.upgrade {
-	display: inline-block;
-}
+.mouse-tooltip-hidden { display: none !important; }
 
-.upgrade {
-	width: 75px;
-	height: 75px;
-	overflow: hidden;
-}
+.skill > div, .skill-upgrades, .upgrade { display: inline-block; }
 
-.upgrade img {
-	max-width: 100%;
-	opacity: 0.5;
-}
-
-.upgrade {
-	position: relative;
-}
-
-#mouse-tooltip {
-	position: absolute;
-	top: 0;
-	left: 0;
-	pointer-events: none;
-	max-width: 300px;
-	border-radius: 5px;
-	border: 2px solid #000;
-	background: #4c4c4c;
-	color: #fff;
-	font-family: sans-serif;
-	font-size: small;
-	padding: 8px 12px;
-
-	color: #222;
-	background: #f1f1f1;
-	border: 1px solid #aaa;
-}
-
-.mouse-tooltip-hidden {
-	display: none !important;
-}
+.upgrade { width: 150px; height: 150px; overflow: hidden; }
+.upgrade img { max-width: 100%; opacity: 0.5; }
+.upgrade.active img { opacity: 1; }

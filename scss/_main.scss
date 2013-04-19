@@ -1,0 +1,20 @@
+.skill > div,
+.skill-upgrades,
+.upgrade {
+	display: inline-block;
+}
+
+.upgrade {
+	width: 150px;
+	height: 150px;
+	overflow: hidden;
+
+	img {
+		max-width: 100%;
+		opacity: 0.5;
+	}
+
+	&.active img {
+		opacity: 1;
+	}
+}
