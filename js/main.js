@@ -1,3 +1,5 @@
+MouseTooltip.init();
+
 Tabletop.init({
 	key: "0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE",
 	wait: false,

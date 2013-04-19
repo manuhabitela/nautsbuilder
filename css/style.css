@@ -122,5 +122,20 @@ body, button, select, input, textarea, label { color: #222222; font-family: Helv
 	top: 0;
 	left: 0;
 	pointer-events: none;
-	background: #999;
+	max-width: 300px;
+	border-radius: 5px;
+	border: 2px solid #000;
+	background: #4c4c4c;
+	color: #fff;
+	font-family: sans-serif;
+	font-size: small;
+	padding: 8px 12px;
+
+	color: #222;
+	background: #f1f1f1;
+	border: 1px solid #aaa;
+}
+
+.mouse-tooltip-hidden {
+	display: none !important;
 }

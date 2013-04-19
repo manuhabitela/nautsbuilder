@@ -19,9 +19,9 @@ leiminauts.UpgradeView = Backbone.View.extend({
 
 	handleTooltip: function(e) {
 		if (e.type == "mouseover") {
-			leiminauts.utils.Tooltip.show(this.$('.upgrade-popup').html());
+			MouseTooltip.show(this.$('.upgrade-popup').html());
 		} else {
-			leiminauts.utils.Tooltip.hide();
+			MouseTooltip.hide();
 		}
 	}
 });

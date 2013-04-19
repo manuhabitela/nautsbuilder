@@ -11,92 +11,61 @@ Backbone.View.prototype.assign = function(view, selector) {
 	view.setElement(this.$(selector)).render();
 };
 
-window.leiminauts = window.leiminauts || {};
-leiminauts.utils = {};
+//https://github.com/Leimi/mousetooltip.js
 (function(){
-	leiminauts.utils.Tooltip = {
-		$body: $('body'),
-		init: function() {
-			if (!self.$body.find('#mouse-tooltip').length)
-				self.$body.append('<div id="mouse-tooltip"></div>');
-			self.$tooltip = self.$body.find('#mouse-tooltip').first();
+	window.MouseTooltip = {
+		init: function(opts) {
+			opts = opts || {};
+			opts["3d"] = opts["3d"] !== undefined ? opts["3d"] : false;
+			opts["offset"] = opts["offset"] !== undefined ? opts["offset"] : { x: 10, y: 10 };
+			self.opts = opts;
+			$('#mouse-tooltip').remove();
+			self.$tooltip = $('body').append('<div id="mouse-tooltip"></div>').find('#mouse-tooltip').first();
+			self.hide();
 		},
 		show: function(html) {
 			self.$tooltip.html(html);
-			self.$tooltip.removeClass('hidden');
-			self.$body.on('mousemove.tooltip', self.stickToMouse);
+			self.$tooltip.removeClass('mouse-tooltip-hidden');
+			$(document).on('mousemove.tooltip', self._stickToMouse);
 		},
 		hide: function() {
-			self.$tooltip.addClass('hidden');
-			self.$body.off('mousemove.tooltip');
+			self.$tooltip.addClass('mouse-tooltip-hidden');
+			$(document).off('mousemove.tooltip');
 		},
-		stickToMouse: function(e, xOffset, yOffset) {
-			xOffset = xOffset || 10;
-			yOffset = yOffset || 10;
-			var win = $(window);
-			var winWidth = win.width();
-			var winHeight = win.width();
-			var scrollTop = win.scrollTop();
-			var scrollLeft = win.scrollLeft();
-			var ttWidth = self.$tooltip.outerWidth();
-			var ttHeight = self.$tooltip.outerHeight();
-			var mouseX = e.pageX - scrollLeft;
-			var mouseY = e.pageY - scrollTop;
-			var ttLeft = mouseX;
-			var ttTop = mouseY;
-			if ((mouseX + ttWidth) > winWidth) {
+		_stickToMouse: function(e) {
+			xOffset = self.opts.offset.x;
+			yOffset = self.opts.offset.y;
+			var win = $(window),
+				ttWidth = self.$tooltip.outerWidth(),
+				ttHeight = self.$tooltip.outerHeight(),
+				mouseX = e.pageX,
+				mouseY = e.pageY,
+				ttLeft = mouseX,
+				ttTop = mouseY;
+			if ((mouseX + ttWidth + xOffset) > win.width()) {
 				ttLeft = mouseX - ttWidth;
 				xOffset = xOffset * -1;
 			}
-			if (mouseY < ttHeight) {
-				ttTop = mouseY + ttHeight;
+			if ((mouseY + ttHeight + yOffset) > win.height()) {
+				ttTop = mouseY - ttHeight;
 				yOffset = yOffset * -1;
 			}
-			console.log(mouseY, ttHeight, winHeight);
-			self.$tooltip.css({ left: ttLeft + xOffset + "px", top: ttTop + yOffset + "px" });
+			ttLeft = ttLeft + xOffset + "px";
+			ttTop = ttTop + yOffset + "px";
+			var pos = {};
+			if (window.Modernizr !== undefined && (Modernizr.csstransforms3d || Modernizr.csstransforms)) {
+				pos[Modernizr.prefixed('transform')] = "translateX(" + ttLeft + ") translateY(" + ttTop + ")";
+				pos['transform'] = "translateX(" + ttLeft + ") translateY(" + ttTop + ")";
+				if (Modernizr.csstransforms3d && self.opts["3d"]) {
+					pos[Modernizr.prefixed('transform')] += " translateZ(0)";
+					pos['transform'] += " translateZ(0)";
+				}
+			} else
+				pos = { left: ttLeft, top: ttTop };
+			self.$tooltip.css(pos);
 		}
 	};
-	var self = leiminauts.utils.Tooltip;
-	self.init();
+	var self = window.MouseTooltip;
 })();
 
-// var left = helper.parent[0].offsetLeft;
-// 		var top = helper.parent[0].offsetTop;
-// 		if (event) {
-// 			// position the helper 15 pixel to bottom right, starting from mouse position
-// 			left = event.pageX + settings(current).left;
-// 			top = event.pageY + settings(current).top;
-// 			var right='auto';
-// 			if (settings(current).positionLeft) {
-// 				right = $(window).width() - left;
-// 				left = 'auto';
-// 			}
-// 			helper.parent.css({
-// 				left: left,
-// 				right: right,
-// 				top: top
-// 			});
-// 		}
-		
-// 		var v = viewport(),
-// 			h = helper.parent[0];
-// 		// check horizontal position
-// 		if (v.x + v.cx < h.offsetLeft + h.offsetWidth) {
-// 			left -= h.offsetWidth + 20 + settings(current).left;
-// 			helper.parent.css({left: left + 'px'}).addClass("viewport-right");
-// 		}
-// 		// check vertical position
-// 		if (v.y + v.cy < h.offsetTop + h.offsetHeight) {
-// 			top -= h.offsetHeight + 20 + settings(current).top;
-// 			helper.parent.css({top: top + 'px'}).addClass("viewport-bottom");
-// 		}
-// 	}
-	
-// 	function viewport() {
-// 		return {
-// 			x: $(window).scrollLeft(),
-// 			y: $(window).scrollTop(),
-// 			cx: $(window).width(),
-// 			cy: $(window).height()
-// 		};
-// 	}
+window.leiminauts = window.leiminauts || {};
