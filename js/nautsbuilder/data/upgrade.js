@@ -1,7 +1,8 @@
 leiminauts.Upgrade = Backbone.Model.extend({
 	defaults: {
 		current_step: 0,
-		max_step: 0
+		max_step: 0,
+		active: false
 	},
 
 	initialize: function(attrs, opts) {
@@ -13,6 +14,11 @@ leiminauts.Upgrade = Backbone.Model.extend({
 			return (/^step[0-9]$/).test(key) && attr !== "";
 		});
 		this.set('max_step', steps.length);
+	},
+
+	setStep: function(number) {
+		this.set('current_step', number);
+		this.set('active', number > 0);
 	}
 });
 
