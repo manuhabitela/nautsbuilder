@@ -6,14 +6,14 @@ leiminauts.App = Backbone.Router.extend({
 
 	initialize: function(options) {
 		if (options.spreadsheet) {
-			this.datab = new leiminauts.CharactersData(null, { spreadsheet: options.spreadsheet });
+			this.data = new leiminauts.CharactersData(null, { spreadsheet: options.spreadsheet });
 		}
 		this.$el = $(options.el);
 	},
 
 	list: function() {
 		var charsView = new leiminauts.CharactersView({
-			collection: this.datab
+			collection: this.data
 		});
 		charsView.on('selected', function(naut) {
 			this.navigate(naut, { trigger: true });
@@ -23,7 +23,7 @@ leiminauts.App = Backbone.Router.extend({
 
 	buildMaker: function(naut, build, order) {
 		var charView = new leiminauts.CharacterView({
-			model: this.datab.findWhere({ id: _.underscored(naut) }),
+			model: this.data.findWhere({ id: _.underscored(naut) }),
 			build: build || null,
 			order: order || null
 		});
@@ -37,19 +37,4 @@ leiminauts.App = Backbone.Router.extend({
 		this.currentView = view;
 		return view;
 	}
-});
-
-leiminauts.init = function(data, tabletop) {
-	leiminauts.app = new leiminauts.App({
-		el: '#container',
-		spreadsheet: tabletop
-	});
-	Backbone.history.start({pushState: false, root: "/nautsbuilder/"});
-};
-
-Tabletop.init({
-	key: "0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE",
-	wait: false,
-	debug: true,
-	callback: leiminauts.init
 });
