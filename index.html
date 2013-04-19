@@ -9,7 +9,7 @@
 		<title>Awesomenauts builder: skills calculator, skills simulator - Make and share you awesomenauts builds!</title>
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
-		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+		<!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'> -->
 		<link rel="stylesheet" href="css/style.css">
 		<script src="js/lib/modernizr.custom.js"></script>
 	</head>
@@ -65,7 +65,7 @@
 
 		<script type="text/template" id="build-upgrade-tpl">
 			<div class="upgrade-icon"><img src="<%= icon %>" alt=""></div>
-			<div class="upgrade-step"><%= 1 %></div>
+			<div class="upgrade-step"><%= current_step %>/<%= max_step %></div>
 			<div class="upgrade-popup hidden">
 				<p><strong><%= name %></strong></p>
 				<p><%= description %></p>
