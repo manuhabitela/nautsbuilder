@@ -14,11 +14,3 @@ leiminauts.Skill = Backbone.Model.extend({
 leiminauts.Skills = Backbone.Collection.extend({
 	model: leiminauts.Skill
 });
-
-leiminauts.SkillsView = Backbone.View.extend({
-
-});
-
-leiminauts.SkillView = Backbone.View.extend({
-
-});

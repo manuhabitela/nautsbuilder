@@ -11,6 +11,12 @@ leiminauts.Character = Backbone.Model.extend({
 	}
 });
 
+/**
+ * this is our full "database"
+ * we have a characters list > each character has skills > each skills has upgrades
+ *
+ * you must pass the tabletop object which contains the google spreadsheet with all the data in the options at initialization
+ */
 leiminauts.CharactersData = Backbone.Collection.extend({
 	model: leiminauts.Character,
 
@@ -33,7 +39,6 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 				character.skills = new leiminauts.Skills(charSkills);
 				this.add(character);
 			}, this);
-			console.log(this.at(0).get('name'));
 		}
 	}
 });

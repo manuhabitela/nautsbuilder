@@ -22,10 +22,5 @@ leiminauts.CharacterView = Backbone.View.extend({
 		this.assign(this.build, '.build');
 		this.assign(this.order, '.order');
 		return this;
-	},
-
-	//http://ianstormtaylor.com/rendering-views-in-backbonejs-isnt-always-simple/
-	assign: function(view, selector) {
-		view.setElement(this.$(selector)).render();
 	}
 });

@@ -65,8 +65,8 @@
 
 		<script type="text/template" id="build-upgrade-tpl">
 			<div class="upgrade-icon"><img src="<%= icon %>" alt=""></div>
-			<div class="upgrade-step"><%= step %></div>
-			<div class="upgrade-popup">
+			<div class="upgrade-step"><%= 1 %></div>
+			<div class="upgrade-popup hidden">
 				<p><strong><%= name %></strong></p>
 				<p><%= description %></p>
 				<p class="cost"><%= cost %></p>
@@ -86,6 +86,8 @@
 		<script src="js/views/character-build.js"></script>
 		<script src="js/views/character-order.js"></script>
 		<script src="js/views/character-stats.js"></script>
+		<script src="js/views/skill.js"></script>
+		<script src="js/views/upgrade.js"></script>
 		<script src="js/app.js"></script>
 		<!--<script>
 			var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
