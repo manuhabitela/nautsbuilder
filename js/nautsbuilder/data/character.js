@@ -24,12 +24,19 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 		//treating spreadsheet data:
 		//each character has skills
 		//each skills has upgrades
-		if (opts.spreadsheet) {
+		if (opts.spreadsheet !== undefined) {
 			this.spreadsheet = opts.spreadsheet;
 
-			var characters = this.spreadsheet.sheets('Characters').all();
-			var skills = this.spreadsheet.sheets('Skills').all();
-			var upgrades = this.spreadsheet.sheets('Upgrades').all();
+			var characters, skills, upgrades;
+			if (this.spreadsheet) {
+				characters = this.spreadsheet.sheets('Characters').all();
+				skills = this.spreadsheet.sheets('Skills').all();
+				upgrades = this.spreadsheet.sheets('Upgrades').all();
+			} else {
+				characters = nautsbuilderoffline.characters;
+				skills = nautsbuilderoffline.skills;
+				upgrades = nautsbuilderoffline.upgrades;
+			}
 			_.each(characters, function(character) {
 				_.each(skills, function(skill) {
 					var skillUpgrades = _(upgrades).where({ skill: skill.name });

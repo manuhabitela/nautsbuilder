@@ -5,7 +5,7 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	initialize: function(options) {
-		if (options.spreadsheet) {
+		if (options.spreadsheet !== undefined) {
 			this.data = new leiminauts.CharactersData(null, { spreadsheet: options.spreadsheet });
 		}
 		this.$el = $(options.el);
