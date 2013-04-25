@@ -65,11 +65,18 @@
 
 		<script type="text/template" id="build-upgrade-tpl">
 			<div class="upgrade-icon"><img src="<%= icon %>" alt=""></div>
-			<div class="upgrade-step"><%= current_step %>/<%= max_step %></div>
+			<div class="upgrade-step"><%= current_step.get('level') || 0 %>/<%= max_step %></div>
 			<div class="upgrade-popup hidden">
 				<p><strong><%= name %></strong></p>
 				<p><%= description %></p>
 				<p class="cost"><%= cost %></p>
+				<p><strong>Effects:</strong>
+				<% steps.each(function(step) { if (step.get('level') > 0) { %>
+				<br>
+				<% if (_(current_step).isEqual(step)) { %><strong><% } %>
+					Step <%= step.get('level') %>: <%= step.get('description') %>
+				<% if (_(current_step).isEqual(step)) { %></strong><% } %>
+				<% } }) %>
 			</div>
 		</script>
 
@@ -83,6 +90,7 @@
 		<script src="js/nautsbuilder/data/character.js"></script>
 		<script src="js/nautsbuilder/data/skill.js"></script>
 		<script src="js/nautsbuilder/data/upgrade.js"></script>
+		<script src="js/nautsbuilder/data/step.js"></script>
 		<script src="js/nautsbuilder/views/characters.js"></script>
 		<script src="js/nautsbuilder/views/character.js"></script>
 		<script src="js/nautsbuilder/views/character-build.js"></script>
