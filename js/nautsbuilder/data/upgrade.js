@@ -2,7 +2,8 @@ leiminauts.Upgrade = Backbone.Model.extend({
 	defaults: {
 		current_step: 0,
 		max_step: 0,
-		active: false
+		active: false,
+		locked: false
 	},
 
 	initialize: function(attrs, opts) {
