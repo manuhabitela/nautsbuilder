@@ -6,7 +6,7 @@ leiminauts.UpgradeView = Backbone.View.extend({
 	events: {
 		'mouseover': 'handleTooltip',
 		'mouseout': 'handleTooltip',
-		'click': 'updateStep'
+		'click': 'onClick'
 	},
 
 	initialize: function() {
@@ -23,12 +23,17 @@ leiminauts.UpgradeView = Backbone.View.extend({
 		return this;
 	},
 
+	onClick: function(e) {
+		this.updateStep();
+		//update the tooltip immediatly so the user don't have to move its mouse to see the current step's description
+		this.handleTooltip(e);
+	},
+
 	handleTooltip: function(e) {
-		if (e.type == "mouseover") {
+		if (e.type != "mouseout")
 			MouseTooltip.show(this.$('.upgrade-popup').html());
-		} else {
+		else
 			MouseTooltip.hide();
-		}
 	},
 
 	updateStep: function() {
