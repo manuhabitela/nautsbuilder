@@ -4,7 +4,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		this.on('change:name', this.setId, this);
 
 		this.upgrades = this.get('upgrades');
-		this.upgrades.on('change:active', this.onUpgradesChange, this);
+		this.upgrades.on('change', this.onUpgradesChange, this);
 	},
 
 	setId: function(name) {
@@ -13,7 +13,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		this.set('id', _.underscored(name));
 	},
 
-	onUpgradesChange: function() {
+	onUpgradesChange: function(e) {
 		var activeUpgrades = this.upgrades.filter(function(upgrade) {
 			return upgrade.get('active') === true;
 		});

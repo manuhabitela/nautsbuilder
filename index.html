@@ -58,9 +58,17 @@
 					<p><%= description %></p>
 					<p class="cost"><%= cost %></p>
 				</div>
+				<div class="skill-upgrades-desc">
+				</div>
 			</div>
 			<div class="skill-upgrades">
 			</div>
+		</script>
+
+		<script type="text/template" id="build-skill-info-tpl">
+		<% upgrades.each(function(upgrade) { if (upgrade.get('current_step').get('level') > 0) { %>
+			<p><%= upgrade.get('current_step').get('description') %></p>
+		<% } }) %>
 		</script>
 
 		<script type="text/template" id="build-upgrade-tpl">
