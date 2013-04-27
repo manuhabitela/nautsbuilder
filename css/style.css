@@ -104,9 +104,18 @@ body, button, select, input, textarea, label { color: whitesmoke; font-family: '
 
 #mouse-tooltip { position: absolute; top: 0; left: 0; pointer-events: none; }
 
+.chars-list { list-style-type: none; text-align: center; }
+.chars-list .char { display: inline-block; cursor: pointer; padding: 0; background-color: rgba(38, 166, 217, 0.2); margin: 3px 0; border: 5px solid transparent; }
+.chars-list .char:hover { border-color: #FFF292; border-radius: 5px; }
+.chars-list .char-icon { vertical-align: middle; }
+.chars-list .char-name { padding: 10px; }
+
 .build { text-align: center; }
 
-.skill { display: inline-block; text-align: left; margin: 3px 0; border-radius: 50px 0px 0px 50px; padding: 5px; background-color: #349CC1; }
+.skill { display: inline-block; text-align: left; margin: 3px 0; border-radius: 50px 0px 0px 50px; padding: 5px; background-color: rgba(38, 166, 217, 0.8); position: relative; }
+
+.skill-upgrades-desc { font-size: 14px; line-height: 1.2em; width: 150px; }
+.skill-upgrades-desc p { margin: 0; }
 
 .skill > div, .upgrade { display: inline-block; vertical-align: top; }
 

@@ -6,6 +6,29 @@
 	pointer-events: none;
 }
 
+.chars-list {
+	list-style-type: none;
+	text-align: center;
+	.char {
+		display: inline-block;
+		cursor: pointer;
+		padding: 0;
+		background-color: hsla(197, 70%, 50%, 0.2);
+		margin: 3px 0;
+		border: 5px solid transparent;
+		&:hover {
+			border-color: #FFF292;
+			border-radius: 5px;
+		}
+	}
+	.char-icon {
+		vertical-align: middle;
+	}
+	.char-name {
+		padding: 10px;
+	}
+}
+
 .build {
 	text-align: center;
 }
@@ -16,7 +39,17 @@
 	margin: 3px 0;
 	border-radius: 50px 0px 0px 50px;
 	padding: 5px;
-	background-color: #349CC1;
+	background-color: hsla(197, 70%, 50%, 0.8);
+	position: relative;
+}
+
+.skill-upgrades-desc {
+	font-size: 14px;
+	line-height: 1.2em;
+	width: 150px;
+	p {
+		margin: 0;
+	}
 }
 
 .skill > div,

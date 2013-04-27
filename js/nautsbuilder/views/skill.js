@@ -1,7 +1,7 @@
 leiminauts.SkillView = Backbone.View.extend({
 	tagName: 'div',
 
-	className: 'skill',
+	className: 'skill-wrapper',
 
 	events: {
 		'mouseover .skill-icon': 'handleTooltip',
