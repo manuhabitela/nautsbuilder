@@ -1,23 +1,27 @@
 //classes "helpers" qui ne concernent rien en particulier mais qui vont nous aider tout au long du projet
 
 .ir {
-	@include image-replacement; 
+	@include image-replacement;
 }
 
 .hidden {
-	@include hidden; 
+	@include hidden;
 }
 
 .visuallyhidden {
-	@include visually-hidden; 
+	@include visually-hidden;
 }
 
 .invisible {
-	@include invisible; 
+	@include invisible;
 }
 
 .clearfix {
-	@include micro-clearfix; 
+	@include micro-clearfix;
+}
+
+.mouse-tooltip-hidden {
+	@extend .hidden;
 }
 
 .no-small {
@@ -65,21 +69,3 @@
 	}
 }
 
-#mouse-tooltip {
-	position: absolute;
-	top: 0;
-	left: 0;
-	pointer-events: none;
-	max-width: 300px;
-	border-radius: 5px;
-	border: 2px solid #000;
-	background: #4c4c4c;
-	color: #fff;
-	font-family: sans-serif;
-	font-size: small;
-	padding: 8px 12px;
-}
-
-.mouse-tooltip-hidden {
-	display: none !important;
-}

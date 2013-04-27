@@ -1,3 +1,10 @@
+.skill-icon, .upgrade-icon { width: 90px; }
+.skill-icon img, .upgrade-icon img { max-width: 100%; width: auto; vertical-align: middle; }
+
+#mouse-tooltip { max-width: 300px; border-radius: 5px; border: 2px solid #000; background: #4c4c4c; color: #fff; font-family: sans-serif; font-size: small; padding: 8px 12px; z-index: 999; }
+#mouse-tooltip p:first-child { margin-top: 0; }
+#mouse-tooltip p:last-child { margin-bottom: 0; }
+
 * { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
 
 audio, canvas, video { display: inline-block; }
@@ -8,7 +15,7 @@ audio:not([controls]) { display: none; height: 0; }
 
 html { font-family: sans-serif; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; height: 100%; }
 
-body { margin: 0; height: 100%; }
+body { margin: 0; padding: 10px; height: 100%; background-color: #001D2F; background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(800px 800px, #02526d, #001322); background-image: -moz-radial-gradient(800px 800px, #02526d, #001322); background-image: -o-radial-gradient(800px 800px, #02526d, #001322); background-image: radial-gradient(800px 800px, #02526d, #001322); background-image: -webkit-gradient(radial, 90% 90%, 0, 90% 90%, 100, color-stop(0%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(90% 90%, #02526d, #001322); background-image: -moz-radial-gradient(90% 90%, #02526d, #001322); background-image: -o-radial-gradient(90% 90%, #02526d, #001322); background-image: radial-gradient(90% 90%, #02526d, #001322); }
 
 a:focus { outline: thin dotted; }
 
@@ -64,12 +71,12 @@ textarea { overflow: auto; vertical-align: top; }
 
 table { border-collapse: collapse; border-spacing: 0; }
 
-body, button, select, input, textarea, label { color: #222222; font-family: 'Open Sans', Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif; line-height: 1.3125em; }
+body, button, select, input, textarea, label { color: whitesmoke; font-family: 'Open Sans', Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif; line-height: 1.3125em; }
 
 .ir { border: 0; overflow: hidden; *text-indent: -9999px; }
 .ir:before { content: ""; display: block; width: 0; height: 100%; }
 
-.hidden { display: none !important; visibility: hidden; }
+.hidden, .mouse-tooltip-hidden { display: none !important; visibility: hidden; }
 
 .visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
 .visuallyhidden.focusable:active, .visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
@@ -95,12 +102,14 @@ body, button, select, input, textarea, label { color: #222222; font-family: 'Ope
 @media only screen and (max-width: 640px) { .only-large { display: none !important; visibility: hidden; } }
 @media only screen and (min-width: 641px) and (max-width: 979px) { .only-large { display: none !important; visibility: hidden; } }
 
-#mouse-tooltip { position: absolute; top: 0; left: 0; pointer-events: none; max-width: 300px; border-radius: 5px; border: 2px solid #000; background: #4c4c4c; color: #fff; font-family: sans-serif; font-size: small; padding: 8px 12px; }
+#mouse-tooltip { position: absolute; top: 0; left: 0; pointer-events: none; }
 
-.mouse-tooltip-hidden { display: none !important; }
+.build { text-align: center; }
 
-.skill > div, .skill-upgrades, .upgrade { display: inline-block; }
+.skill { display: inline-block; text-align: left; margin: 3px 0; border-radius: 50px 0px 0px 50px; padding: 5px; background-color: #349CC1; }
 
-.upgrade { width: 150px; height: 150px; overflow: hidden; }
-.upgrade img { max-width: 100%; opacity: 0.5; }
-.upgrade.active img { opacity: 1; }
+.skill > div, .upgrade { display: inline-block; vertical-align: top; }
+
+.upgrade { position: relative; z-index: 10; margin: 0 2px; }
+.upgrade:after { position: absolute; z-index: 20; display: block; top: 1px; bottom: 1px; left: 1px; right: 1px; content: ' '; background: black; opacity: 0.75; }
+.upgrade.active:after { display: none; }

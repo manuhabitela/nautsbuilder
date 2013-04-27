@@ -1,0 +1,26 @@
+%icon {
+	width: 90px;
+	img {
+		max-width: 100%;
+		width: auto;
+		vertical-align: middle;
+	}
+}
+
+%tooltip {
+	max-width: 300px;
+	border-radius: 5px;
+	border: 2px solid #000;
+	background: #4c4c4c;
+	color: #fff;
+	font-family: sans-serif;
+	font-size: small;
+	padding: 8px 12px;
+	z-index: 999;
+	p:first-child {
+		margin-top: 0;
+	}
+	p:last-child {
+		margin-bottom: 0;
+	}
+}

@@ -1,20 +1,52 @@
+#mouse-tooltip {
+	@extend %tooltip;
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+}
+
+.build {
+	text-align: center;
+}
+
+.skill {
+	display: inline-block;
+	text-align: left;
+	margin: 3px 0;
+	border-radius: 50px 0px 0px 50px;
+	padding: 5px;
+	background-color: #349CC1;
+}
+
 .skill > div,
-.skill-upgrades,
 .upgrade {
 	display: inline-block;
+	vertical-align: top;
+}
+
+.skill-icon,
+.upgrade-icon {
+	@extend %icon;
 }
 
 .upgrade {
-	width: 150px;
-	height: 150px;
-	overflow: hidden;
-
-	img {
-		max-width: 100%;
-		opacity: 0.5;
+	position: relative;
+	z-index: 10;
+	margin: 0 2px;
+	&:after {
+		position: absolute;
+		z-index: 20;
+		display: block;
+		top: 1px;
+		bottom: 1px;
+		left: 1px;
+		right: 1px;
+		content: ' ';
+		background: black;
+		opacity: 0.75;
 	}
-
-	&.active img {
-		opacity: 1;
+	&.active:after {
+		display: none;
 	}
 }
