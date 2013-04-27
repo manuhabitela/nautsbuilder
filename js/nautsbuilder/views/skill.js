@@ -4,6 +4,8 @@ leiminauts.SkillView = Backbone.View.extend({
 	className: 'skill',
 
 	events: {
+		'mouseover .skill-icon': 'handleTooltip',
+		'mouseout .skill-icon': 'handleTooltip'
 	},
 
 	initialize: function() {
@@ -33,5 +35,12 @@ leiminauts.SkillView = Backbone.View.extend({
 				this.model.toJSON()
 			)
 		);
+	},
+
+	handleTooltip: function(e) {
+		if (e.type != "mouseout")
+			MouseTooltip.show(this.$('.skill-popup').html());
+		else
+			MouseTooltip.hide();
 	}
 });
