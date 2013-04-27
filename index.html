@@ -66,9 +66,9 @@
 		</script>
 
 		<script type="text/template" id="build-skill-info-tpl">
-		<% upgrades.each(function(upgrade) { if (upgrade.get('current_step').get('level') > 0) { %>
-			<p><%= upgrade.get('current_step').get('description') %></p>
-		<% } }) %>
+		<% _(effects).each(function(effect) { %>
+			<p><%= effect.key %>: <%= effect.value %></p>
+		<% }) %>
 		</script>
 
 		<script type="text/template" id="build-upgrade-tpl">
