@@ -23,7 +23,7 @@ leiminauts.App = Backbone.Router.extend({
 
 	buildMaker: function(naut, build, order) {
 		var charView = new leiminauts.CharacterView({
-			model: this.data.findWhere({ id: _.underscored(naut) }),
+			model: this.data.findWhere({ name: _.capitalized(naut) }),
 			build: build || null,
 			order: order || null
 		});

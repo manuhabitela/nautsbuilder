@@ -24,7 +24,7 @@
 
 		<script type="text/template" id="chars-tpl">
 			<% _.each(characters, function(character) { %>
-				<li class="char" data-id="<%= character.id %>">
+				<li class="char" data-id="<%= _.underscored(character.name) %>">
 					<img class="char-icon"src="<%= character.icon %>" alt="">
 					<span class="char-name"><%= character.name %></span>
 				</li>

@@ -12,6 +12,7 @@ leiminauts.UpgradeView = Backbone.View.extend({
 	initialize: function() {
 		this.template = _.template( $('#build-upgrade-tpl').html() );
 
+
 		this.model.on('change', this.render, this);
 	},
 

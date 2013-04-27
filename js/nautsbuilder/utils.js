@@ -1,9 +1,16 @@
 _.mixin({
 	//pass "A String like this" and get "a_string_like_this"
-	underscored : function(string) {
+	underscored: function(string) {
 		if (!_.isString(string)) return false;
 		return string.toLowerCase().replace(' ', '_');
 	},
+
+	//pass "a_string_like_this" and get "A String like this"
+	capitalized: function(string) {
+		if (!_.isString(string)) return false;
+		return string.replace('_', ' ').replace(/(?:^|\s)\S/g, function(c){ return c.toUpperCase(); });
+	},
+
 	//http://stackoverflow.com/questions/3000649/trim-spaces-from-start-and-end-of-string
 	//https://github.com/epeli/underscore.string/blob/master/lib/underscore.string.js#L346
 	trim: function(string, characters) {

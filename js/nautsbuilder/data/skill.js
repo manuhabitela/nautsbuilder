@@ -1,17 +1,10 @@
 leiminauts.Skill = Backbone.Model.extend({
 	initialize: function(attrs, opts) {
-		this.setId();
-		this.on('change:name', this.setId, this);
-
 		this.set('effects', []);
 		this.upgrades = this.get('upgrades');
 		this.upgrades.on('change', this.onUpgradesChange, this);
 	},
 
-	setId: function(name) {
-		name = name || this.get('name');
-		if (!name) return false;
-		this.set('id', _.underscored(name));
 	},
 
 	onUpgradesChange: function(e) {
