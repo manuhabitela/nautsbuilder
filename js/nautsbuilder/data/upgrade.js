@@ -17,6 +17,8 @@ leiminauts.Upgrade = Backbone.Model.extend({
 		this.set('steps', stepsCollection);
 		this.set('max_step', stepsCollection.size()-1);
 
+		this.set('description', _(this.get('description').replace(/\n/g, "<br>")).italics());
+
 		this.setStep(0);
 	},
 

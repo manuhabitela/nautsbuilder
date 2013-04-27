@@ -22,6 +22,12 @@ _.mixin({
 		} else {
 			return string.trim();
 		}
+	},
+
+	//kinda markdown style: pass *this* and get <em>this</em>
+	italics: function(string) {
+		if (!string) return '';
+		return string.replace(/\n/g, "<br>").replace(/\*(.*)\*/, '<em>$1</em>')
 	}
 });
 
