@@ -39,7 +39,25 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 			}
 			_.each(characters, function(character) {
 				_.each(skills, function(skill) {
-					var skillUpgrades = _(upgrades).where({ skill: skill.name });
+					var skillUpgrades = [];
+					//the jump skill has common upgrades, but also some custom ones sometimes
+					if (skill.type == "jump") {
+						skillUpgrades = _(upgrades).where({ skill: "Jump" });
+						//some chars have turbo pills, others have light; we remove the one unused
+						var unwantedPills = character.lightpills !== "0" ? "Power Pills Turbo" : "Power Pills Light";
+						skillUpgrades.splice( _(upgrades).indexOf( _(upgrades).findWhere({ name: unwantedPills }) ), 1 );
+
+						//some chars have unique jump upgrades that replace common ones
+						var customJumpUpgrades = _(upgrades).where({ skill: skill.name });
+						_(skillUpgrades).each(function(upgrade, i) {
+							_(customJumpUpgrades).each(function(jupgrade) {
+								if (jupgrade.replaces == upgrade.name)
+									skillUpgrades[i] = _(jupgrade).clone();
+							});
+						});
+					} else {
+						skillUpgrades = _(upgrades).where({ skill: skill.name });
+					}
 					skill.upgrades = new leiminauts.Upgrades(skillUpgrades);
 				});
 				var charSkills = _(skills).where({ character: character.name });
