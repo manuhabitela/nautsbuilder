@@ -5,7 +5,8 @@ leiminauts.SkillView = Backbone.View.extend({
 
 	events: {
 		'mouseover .skill-icon': 'handleTooltip',
-		'mouseout .skill-icon': 'handleTooltip'
+		'mouseout .skill-icon': 'handleTooltip',
+		'click .skill-icon': 'toggleState'
 	},
 
 	initialize: function() {
@@ -17,6 +18,14 @@ leiminauts.SkillView = Backbone.View.extend({
 		this.template = _.template( $('#build-skill-tpl').html() );
 
 		this.model.get('upgrades').on('change', this.renderUpgradesInfo, this);
+
+		this.model.on('change', this.render, this);
+	},
+
+	toggleState: function() {
+		if (!this.model.get('toggable'))
+			return false;
+		this.model.set('active', !this.model.get('active'));
 	},
 
 	render: function() {
@@ -25,6 +34,8 @@ leiminauts.SkillView = Backbone.View.extend({
 			upgrade.delegateEvents();
 			this.$('.skill-upgrades').append(upgrade.render().el);
 		}, this);
+
+		this.renderUpgradesInfo();
 		return this;
 	},
 

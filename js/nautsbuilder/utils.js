@@ -37,3 +37,24 @@ Backbone.View.prototype.assign = function(view, selector) {
 };
 
 window.leiminauts = window.leiminauts || {};
+
+leiminauts.utils = {
+	//takes a string like "damage: +2; crit chance: +15%" and returns an array like [{damage: "+2"}, {"crit chance": "+15%"}]
+	treatEffects: function(effectsString) {
+		var effects = [];
+		var attributes = effectsString.toLowerCase().split(';');
+		_(attributes).each(function(attr, i) {
+			attribute = _(attr).trim().split(':');
+			// [0] is the attribute (ex: "damage"), [1] is the value (ex: "+9")
+			// we gently assume there is only one ":" in the string, otherwise EVERYTHING IS BORKENNNNNN
+			attribute[0] = _(attribute[0]).trim();
+			attribute[1] = _(attribute[1]).trim();
+			if (!attribute[0] && !attribute[1]) {
+				attributes.splice(i, 1);
+			} else {
+				effects.push({key: attribute[0], value: attribute[1]});
+			}
+		}, this);
+		return effects;
+	}
+}
