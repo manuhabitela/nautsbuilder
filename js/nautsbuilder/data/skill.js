@@ -54,6 +54,13 @@ leiminauts.Skill = Backbone.Model.extend({
 				upgrade.set('locked', activeUpgrades.length >= 3 && !_(activeUpgrades).contains(upgrade));
 		}, this);
 
+		var cost = parseInt(this.get('cost'), 10);
+		//update total skill cost
+		_(activeUpgrades).each(function(upgrade) {
+			cost += upgrade.get('current_step').get('level')*upgrade.get('cost');
+		});
+		this.set('totalCost', cost);
+
 		//combine similar steps: some characters have upgrades that enhance similar things.
 		// Ie Leon has 2 upgrades that add damages to its tong (1: +3/+6/+9 and 2: +9)
 		//
