@@ -7,7 +7,7 @@ You play Awesomenauts and are tired to navigate on the wiki to try new builds? *
 
 ## How it works
 
-Mostly built with Backbone.js, the thing with this app is that it gets all its data from **a google spreadsheet* thanks to Tabletop.js.
+Mostly built with Backbone.js, the thing with this app is that it gets all its data from **a google spreadsheet** thanks to Tabletop.js.
 
 This allows to quickly and easily change characters attributes and upgrades in case of Awesomenauts patchs.
 
