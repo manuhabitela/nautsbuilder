@@ -5,6 +5,9 @@
 #mouse-tooltip p:first-child { margin-top: 0; }
 #mouse-tooltip p:last-child { margin-bottom: 0; }
 
+.upgrade, .skill-icon { position: relative; z-index: 10; }
+.upgrade:after, .skill-icon:after { position: absolute; z-index: 20; display: block; top: 1px; bottom: 1px; left: 1px; right: 1px; content: ' '; background: black; opacity: 0.75; }
+
 * { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
 
 audio, canvas, video { display: inline-block; }
@@ -119,15 +122,9 @@ body, button, select, input, textarea, label { color: whitesmoke; font-family: '
 
 .skill > div, .upgrade { display: inline-block; vertical-align: top; }
 
-.upgrade { position: relative; z-index: 10; margin: 0 2px; }
-.upgrade:after { position: absolute; z-index: 20; display: block; top: 1px; bottom: 1px; left: 1px; right: 1px; content: ' '; background: black; opacity: 0.75; }
+.upgrade { margin: 0 2px; }
 .upgrade.active:after { display: none; }
 
-.skill:not(.active) .skill-icon {
-	border-radius: 50px;
-
-}
-
-.skill .skill-icon { position: relative; z-index: 10; margin: 0 2px; }
-.skill .skill-icon:after { border-radius: 50px; position: absolute; z-index: 20; display: block; top: 1px; bottom: 1px; left: 1px; right: 1px; content: ' '; background: black; opacity: 0.75; }
+.skill-icon { margin: 0 2px; }
+.skill-icon:after { border-radius: 50px; }
 .skill.active .skill-icon:after { display: none; }

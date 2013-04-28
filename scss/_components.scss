@@ -24,3 +24,20 @@
 		margin-bottom: 0;
 	}
 }
+
+%dark-box {
+	position: relative;
+	z-index: 10;
+	&:after {
+		position: absolute;
+		z-index: 20;
+		display: block;
+		top: 1px;
+		bottom: 1px;
+		left: 1px;
+		right: 1px;
+		content: ' ';
+		background: black;
+		opacity: 0.75;
+	}
+}
