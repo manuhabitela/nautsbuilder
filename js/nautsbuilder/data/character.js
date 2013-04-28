@@ -1,5 +1,5 @@
 leiminauts.Character = Backbone.Model.extend({
-	
+
 });
 
 /**

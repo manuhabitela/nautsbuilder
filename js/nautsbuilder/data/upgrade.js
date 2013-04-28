@@ -23,6 +23,7 @@ leiminauts.Upgrade = Backbone.Model.extend({
 	},
 
 	setStep: function(number) {
+		number = parseInt(number, 10);
 		var currentStep = this.get('steps').findWhere({level: number});
 		this.set('current_step', currentStep);
 		this.set('active', currentStep.get('level') > 0);

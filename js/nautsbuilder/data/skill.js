@@ -5,7 +5,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		this.set('baseEffects', leiminauts.utils.treatEffects(this.get('effects')));
 		this.set('effects', []);
 		this.upgrades.on('change', this.updateEffects, this);
-		this.on('change:active', this.updateEffects, this);	
+		this.on('change:active', this.updateEffects, this);
 
 		this.on('change:active', this.updateUpgradesState, this);
 		this.set('active', this.get('cost') !== undefined && this.get('cost') <= 0);
@@ -20,19 +20,30 @@ leiminauts.Skill = Backbone.Model.extend({
 		}, this);
 	},
 
+	getActiveUpgrades: function() {
+		var activeUpgrades = this.upgrades.filter(function(upgrade) {
+			return upgrade.get('active') === true;
+		});
+		return activeUpgrades;
+	},
+
+	getActiveSteps: function() {
+		var activeSteps = [];
+		this.upgrades.each(function(upgrade) {
+			if (upgrade.get('active') === true) {
+				activeSteps.push(upgrade.get('current_step'));
+			}
+		});
+		return activeSteps;
+	},
+
 	updateEffects: function(e) {
 		if (!this.get('active')) {
 			this.set('effects', []);
 			return false;
 		}
-		var activeSteps = [];
-		var activeUpgrades = this.upgrades.filter(function(upgrade) {
-			var isActive = upgrade.get('active') === true;
-			if (isActive) {
-				activeSteps.push(upgrade.get('current_step'));
-			}
-			return isActive;
-		});
+		var activeUpgrades = this.getActiveUpgrades();
+		var activeSteps = this.getActiveSteps();
 		this.upgrades.each(function(upgrade) {
 			if (this.get('active'))
 				upgrade.set('locked', activeUpgrades.length >= 3 && !_(activeUpgrades).contains(upgrade));
