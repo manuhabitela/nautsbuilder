@@ -1,7 +1,7 @@
 MouseTooltip.init();
 
 Tabletop.init({
-	key: "0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE",
+	key: "0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE",
 	wait: false,
 	debug: true,
 	callback: function(data, tabletop) {

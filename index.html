@@ -34,11 +34,21 @@
 
 		<script type="text/template" id="char-tpl">
 			<div class="build"></div>
+			<div class="char-info"></div>
 			<div class="order"></div>
 		</script>
 
 		<script type="text/template" id="build-tpl">
+		</script>
 
+		<script type="text/template" id="info-tpl">
+			<img class="char-icon" src="<%= icon %>" alt="">
+			<div class="char-popup hidden">
+				<p><strong><%= name %></strong></p>
+				<p><%= description %></p>
+			</div>
+			<p class="char-total-cost"><span class="cost">Total cost</span>: <span class="info"><%= totalCost %></span></p>
+			<p class="char-level"><span>Required level</span>: <span class="info"><%= level %></span></p>
 		</script>
 
 		<script type="text/template" id="order-tpl">
@@ -53,13 +63,13 @@
 				<div class="skill-popup hidden">
 					<p><strong><%= name %></strong></p>
 					<p><%= description %></p>
-					<p class="cost"><%= cost %></p>
+					<p class="cost">Cost: <span class="info"><%= cost %></span></p>
 				</div>
 			</div>
 			<div class="skill-upgrades">
 			</div>
 		</div>
-		<% if (!_(effects).isEmpty()) { %>
+		<% if (effects.length > 0) { %>
 		<div class="skill-effects">
 		</div>
 		<% } %>
@@ -84,7 +94,7 @@
 			<div class="upgrade-popup hidden">
 				<p><strong><%= name %></strong></p>
 				<p><%= description %></p>
-				<p class="cost"><%= cost %></p>
+				<p class="cost">Cost: <span class="info"><%= cost %></span></p>
 				<p><strong>Effects:</strong>
 				<% steps.each(function(step) { if (step.get('level') > 0) { %>
 				<br>
@@ -110,7 +120,7 @@
 		<script src="js/nautsbuilder/views/character.js"></script>
 		<script src="js/nautsbuilder/views/character-build.js"></script>
 		<script src="js/nautsbuilder/views/character-order.js"></script>
-		<script src="js/nautsbuilder/views/character-stats.js"></script>
+		<script src="js/nautsbuilder/views/character-info.js"></script>
 		<script src="js/nautsbuilder/views/skill.js"></script>
 		<script src="js/nautsbuilder/views/upgrade.js"></script>
 		<script src="js/nautsbuilder/app.js"></script>

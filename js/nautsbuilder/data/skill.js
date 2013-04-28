@@ -3,7 +3,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		this.upgrades = this.get('upgrades');
 
 		this.set('baseEffects', leiminauts.utils.treatEffects(this.get('effects')));
-		this.set('totalCost', this.get('cost')*1);
+		this.set('totalCost', 0);
 		this.set('effects', []);
 		this.upgrades.on('change', this.updateEffects, this);
 		this.on('change:active', this.updateEffects, this);
@@ -46,6 +46,7 @@ leiminauts.Skill = Backbone.Model.extend({
 	updateEffects: function(e) {
 		if (!this.get('active')) {
 			this.set('effects', []);
+			this.set('totalCost', 0);
 			return false;
 		}
 		var activeUpgrades = this.getActiveUpgrades();
@@ -66,7 +67,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		// Ie Leon has 2 upgrades that add damages to its tong (1: +3/+6/+9 and 2: +9)
 		//
 		// this is KIND OF a mess. deal with it.
-		this.set('effects', []);
+		this.set('effects', [], {silent: true});
 		var effects = {};
 		var organizeEffects = function(attributesList) {
 			_(attributesList).each(function(attr) {
@@ -111,6 +112,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		}, this);
 		this.setDPS();
 		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
+		console.log(this.get('effects'));
 	},
 
 	setDPS: function() {

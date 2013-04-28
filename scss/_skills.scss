@@ -1,6 +1,5 @@
 .skill-wrapper {
-	margin: 3px 0;
-	width: 1084px;
+	margin: 3px auto;
 	position: relative;
 }
 
@@ -71,6 +70,7 @@
 
 .skill-icon {
 	cursor: pointer;
+	@include user-select(none);
 }
 
 .skill-cost {

@@ -1,5 +1,18 @@
 leiminauts.Character = Backbone.Model.extend({
+	initialize: function() {
+		this.set('totalCost', 0);
+		this.set('level', 0);
+		this.get('skills').on('change:totalCost', this.onCostChange, this);
+	},
 
+	onCostChange: function() {
+		var cost = 0;
+		this.get('skills').each(function(skill) {
+			cost += skill.get('totalCost');
+		});
+		this.set('level', Math.floor( (cost-100)/100) <= 0 ? 0 : Math.floor((cost-100)/100));
+		this.set('totalCost', cost);
+	}
 });
 
 /**

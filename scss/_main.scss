@@ -4,10 +4,39 @@
 	top: 0;
 	left: 0;
 	pointer-events: none;
+	.cost {
+		@extend %cost;
+	}
+	.info {
+		@extend %info;
+	}
 }
 
 .icon-details {
 	@extend %info;
 	position: absolute;
 	bottom: 0;
+}
+
+.char-builder {
+	width: 1084px;
+	margin: 50px;
+}
+
+.char-info {
+	@extend %box;
+	margin-left: 594px;
+	padding-left: 0;
+	margin-top: $base-line-height;
+	.char-icon {
+		float: left;
+		margin-right: 20px;
+	}
+	.char-total-cost .cost {
+		@extend %cost;
+	}
+	.info {
+		@extend %info;
+		font-size: $base-font-size;
+	}
 }
