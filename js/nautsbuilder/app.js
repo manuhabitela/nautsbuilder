@@ -1,7 +1,8 @@
 leiminauts.App = Backbone.Router.extend({
 	routes: {
 		"": "list",
-		":naut(/:build)(/:order)": "buildMaker"
+		":naut(/:build)(/:order)": "buildMaker",
+		":naut/": "buildMaker"
 	},
 
 	initialize: function(options) {
@@ -30,9 +31,7 @@ leiminauts.App = Backbone.Router.extend({
 		});
 		this.showView( charView );
 
-		if (build || order)
-			this.updateBuildFromUrl();
-
+		this.updateBuildFromUrl();
 		character.get('skills').on('change', this.updateBuildUrl, this);
 		this.updateBuildUrl();
 	},
@@ -49,17 +48,23 @@ leiminauts.App = Backbone.Router.extend({
 		var character = this.currentView.model;
 		var currentUrl = this.getCurrentUrl();
 		var urlParts = currentUrl.split('/');
-		if (urlParts.length <= 1) //no build, no order, just the character
+		var build = urlParts.length > 1 ? urlParts[1] : null;
+		if (build === null) { //reset
+			character.get('skills').each(function(skill) {
+				skill.get('upgrades').each(function(upgrade) {
+					upgrade.setStep(0);
+				});
+				skill.setActive(false);
+			});
 			return false;
-		var build = urlParts[1];
-
+		}
 		var currentSkill = null;
 		//we look at the build as a grid: 4 skills + 6 upgrades by skills = 28 items
 		//each line of the grid contains 7 items, the first one being the skill and the others the upgrades
 		for (var i = 0; i < 28; i++) {
 			if (i % 7 === 0) { //it's a skill!
 				currentSkill = character.get('skills').at(i/7);
-				currentSkill.set('active', build.charAt(i) === "1");
+				currentSkill.setActive(build.charAt(i) === "1");
 			} else if (currentSkill) { //it's an upgrade!
 				currentSkill.get('upgrades').at( (i % 7) - 1 ).setStep(build.charAt(i));
 			}

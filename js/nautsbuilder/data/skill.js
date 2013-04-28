@@ -13,6 +13,11 @@ leiminauts.Skill = Backbone.Model.extend({
 
 	},
 
+	setActive: function(active) {
+		if (this.get('toggable'))
+			this.set('active', !!active);
+	},
+
 	updateUpgradesState: function() {
 		this.upgrades.each(function(upgrade) {
 			upgrade.setStep(0);
@@ -81,7 +86,6 @@ leiminauts.Skill = Backbone.Model.extend({
 					var effectNumber = parseFloat(effect, 10);
 					if (_(effectNumber).isNaN()) effectNumber = 0;
 					if (regexRes[3] && regexRes[3] == "%" && effectNumber !== 0) {
-						console.log(value, effectNumber, (1 + parseFloat(value, 10)/100))
 						effectNumber = effectNumber * (1 + parseFloat(value, 10)/100);
 						showUnit = false;
 					}

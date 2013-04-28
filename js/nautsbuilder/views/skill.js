@@ -23,9 +23,7 @@ leiminauts.SkillView = Backbone.View.extend({
 	},
 
 	toggleState: function() {
-		if (!this.model.get('toggable'))
-			return false;
-		this.model.set('active', !this.model.get('active'));
+		this.model.setActive(!this.model.get('active'));
 	},
 
 	render: function() {
