@@ -101,7 +101,20 @@ leiminauts.Skill = Backbone.Model.extend({
 			});
 			this.get('effects').push({ "key": key, value: effect });
 		}, this);
-		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key; }));
+		this.setDPS();
+		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
+	},
+
+	setDPS: function() {
+		var effects = _(this.get('effects'));
+		var attackSpeed = effects.findWhere({key: "attack speed"});
+		var damage = effects.findWhere({key: "damage"});
+		var dps = effects.findWhere({key: "dps"});
+		if (attackSpeed && damage) {
+			var dpsVal = (parseFloat(attackSpeed.value, 10)/60*parseFloat(damage.value, 10)).toFixed(2);
+			if (dps) dps.value = dpsVal;
+			else effects.push({key: "DPS", value: dpsVal});
+		}
 	}
 });
 
