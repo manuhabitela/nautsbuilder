@@ -3267,7 +3267,7 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 	};
 	var self = window.MouseTooltip;
 })();
-/* Nautsbuilder - Awesomenauts build calculator v0.1 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.2 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * Licensed GPL v2 http://www.opensource.org/licenses/gpl-2.0.php */
 
@@ -3332,7 +3332,20 @@ leiminauts.utils = {
 	}
 }
 leiminauts.Character = Backbone.Model.extend({
+	initialize: function() {
+		this.set('totalCost', 0);
+		this.set('level', 0);
+		this.get('skills').on('change:totalCost', this.onCostChange, this);
+	},
 
+	onCostChange: function() {
+		var cost = 0;
+		this.get('skills').each(function(skill) {
+			cost += skill.get('totalCost');
+		});
+		this.set('level', Math.floor( (cost-100)/100) <= 0 ? 0 : Math.floor((cost-100)/100));
+		this.set('totalCost', cost);
+	}
 });
 
 /**
@@ -3396,6 +3409,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		this.upgrades = this.get('upgrades');
 
 		this.set('baseEffects', leiminauts.utils.treatEffects(this.get('effects')));
+		this.set('totalCost', 0);
 		this.set('effects', []);
 		this.upgrades.on('change', this.updateEffects, this);
 		this.on('change:active', this.updateEffects, this);
@@ -3438,6 +3452,7 @@ leiminauts.Skill = Backbone.Model.extend({
 	updateEffects: function(e) {
 		if (!this.get('active')) {
 			this.set('effects', []);
+			this.set('totalCost', 0);
 			return false;
 		}
 		var activeUpgrades = this.getActiveUpgrades();
@@ -3447,11 +3462,18 @@ leiminauts.Skill = Backbone.Model.extend({
 				upgrade.set('locked', activeUpgrades.length >= 3 && !_(activeUpgrades).contains(upgrade));
 		}, this);
 
+		var cost = parseInt(this.get('cost'), 10);
+		//update total skill cost
+		_(activeUpgrades).each(function(upgrade) {
+			cost += upgrade.get('current_step').get('level')*upgrade.get('cost');
+		});
+		this.set('totalCost', cost);
+
 		//combine similar steps: some characters have upgrades that enhance similar things.
 		// Ie Leon has 2 upgrades that add damages to its tong (1: +3/+6/+9 and 2: +9)
 		//
 		// this is KIND OF a mess. deal with it.
-		this.set('effects', []);
+		this.set('effects', [], {silent: true});
 		var effects = {};
 		var organizeEffects = function(attributesList) {
 			_(attributesList).each(function(attr) {
@@ -3494,7 +3516,21 @@ leiminauts.Skill = Backbone.Model.extend({
 			});
 			this.get('effects').push({ "key": key, value: effect });
 		}, this);
-		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key; }));
+		this.setDPS();
+		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
+		console.log(this.get('effects'));
+	},
+
+	setDPS: function() {
+		var effects = _(this.get('effects'));
+		var attackSpeed = effects.findWhere({key: "attack speed"});
+		var damage = effects.findWhere({key: "damage"});
+		var dps = effects.findWhere({key: "dps"});
+		if (attackSpeed && damage) {
+			var dpsVal = (parseFloat(attackSpeed.value, 10)/60*parseFloat(damage.value, 10)).toFixed(2);
+			if (dps) dps.value = dpsVal;
+			else effects.push({key: "DPS", value: dpsVal});
+		}
 	}
 });
 
@@ -3585,12 +3621,12 @@ leiminauts.CharacterView = Backbone.View.extend({
 	},
 
 	initialize: function(opts) {
-		_.defaults(opts, { build: null, order: null });
+		_.defaults(opts, { build: null, order: null, info: null });
 
 		this.template = _.template( $('#char-tpl').html() );
 
-		this.stats = new leiminauts.StatsView({ character: this });
 		this.build = new leiminauts.BuildView({ character: this, state: opts.build });
+		this.info = new leiminauts.InfoView({ character: this, state: opts.info });
 		this.order = new leiminauts.OrderView({ character: this, state: opts.order });
 
 		this.render();
@@ -3598,8 +3634,8 @@ leiminauts.CharacterView = Backbone.View.extend({
 
 	render: function() {
 		this.$el.html(this.template( this.model.toJSON() ));
-		this.assign(this.stats, '.stats');
 		this.assign(this.build, '.build');
+		this.assign(this.info, '.char-info');
 		this.assign(this.order, '.order');
 		return this;
 	}
@@ -3656,27 +3692,6 @@ leiminauts.OrderView = Backbone.View.extend({
 		return this;
 	}
 });
-leiminauts.StatsView = Backbone.View.extend({
-	tagName: 'div',
-
-	className: 'stats',
-
-	events: {
-	},
-
-	initialize: function() {
-		if (this.options.character) {
-			this.character = this.options.character;
-			this.model = this.character.model;
-		}
-		this.template = _.template( $('#stats-tpl').html() );
-	},
-
-	render: function() {
-		this.$el.html(this.template( this.model.toJSON() ));
-		return this;
-	}
-});
 leiminauts.SkillView = Backbone.View.extend({
 	tagName: 'div',
 
@@ -3717,9 +3732,9 @@ leiminauts.SkillView = Backbone.View.extend({
 	},
 
 	renderUpgradesInfo: function() {
-		this.$(".skill-upgrades-desc").html(
+		this.$(".skill-effects").html(
 			_.template(
-				$('#build-skill-info-tpl').html(),
+				$('#build-skill-effects-tpl').html(),
 				this.model.toJSON()
 			)
 		);
@@ -3884,7 +3899,7 @@ leiminauts.App = Backbone.Router.extend({
 MouseTooltip.init();
 
 Tabletop.init({
-	key: "0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE",
+	key: "0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE",
 	wait: false,
 	debug: true,
 	callback: function(data, tabletop) {
