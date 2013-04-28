@@ -24,3 +24,7 @@ Instructions to write!
 # Licence
 
 Licensed under GPL v2 http://www.opensource.org/licenses/gpl-2.0.php
+
+# Credits
+
+I want to sincerely thank my awesomenauts partners, Antoine, J and Fifou, who didn't help me at all to make this thing.
