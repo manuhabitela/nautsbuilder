@@ -1,0 +1,22 @@
+.chars-list {
+	list-style-type: none;
+	text-align: center;
+	.char {
+		display: inline-block;
+		cursor: pointer;
+		padding: 0;
+		background-color: hsla(197, 70%, 50%, 0.2);
+		margin: 3px 0;
+		border: 5px solid transparent;
+		&:hover {
+			border-color: #FFF292;
+			border-radius: 5px;
+		}
+	}
+	.char-icon {
+		vertical-align: middle;
+	}
+	.char-name {
+		padding: 10px;
+	}
+}

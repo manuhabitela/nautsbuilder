@@ -38,9 +38,9 @@ leiminauts.SkillView = Backbone.View.extend({
 	},
 
 	renderUpgradesInfo: function() {
-		this.$(".skill-upgrades-desc").html(
+		this.$(".skill-effects").html(
 			_.template(
-				$('#build-skill-info-tpl').html(),
+				$('#build-skill-effects-tpl').html(),
 				this.model.toJSON()
 			)
 		);

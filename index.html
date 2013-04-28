@@ -11,7 +11,8 @@
 		<meta name="viewport" content="width=device-width">
 		<!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'> -->
 		<link rel="stylesheet" href="css/style.css">
-		<script src="js/lib/modernizr.custom.js"></script>
+		<!-- <link rel="stylesheet" href="dist/styles.min.css"> -->
+		<!--<script src="js/lib/modernizr.custom.js"></script>-->
 	</head>
 	<body>
 		<!--[if lte IE 8]>
@@ -32,14 +33,8 @@
 		</script>
 
 		<script type="text/template" id="char-tpl">
-			<div class="stats"></div>
 			<div class="build"></div>
 			<div class="order"></div>
-		</script>
-
-		<script type="text/template" id="stats-tpl">
-			<p><%= name %></p>
-			<p><%= description %></p>
 		</script>
 
 		<script type="text/template" id="build-tpl">
@@ -51,9 +46,10 @@
 		</script>
 
 		<script type="text/template" id="build-skill-tpl">
-		<div class="skill <%= active ? 'active' : '' %>">
+		<div class="skill <%= active ? 'active' : '' %> <%= type ? type : '' %>">
 			<div class="skill-info">
 				<div class="skill-icon"><img src="<%= icon %>" alt=""></div>
+				<% if (cost > 0) { %><div class="skill-cost icon-details"><%= cost %></div><% } %>
 				<div class="skill-popup hidden">
 					<p><strong><%= name %></strong></p>
 					<p><%= description %></p>
@@ -62,20 +58,29 @@
 			</div>
 			<div class="skill-upgrades">
 			</div>
-			<div class="skill-upgrades-desc">
-			</div>
 		</div>
+		<% if (!_(effects).isEmpty()) { %>
+		<div class="skill-effects">
+		</div>
+		<% } %>
 		</script>
 
-		<script type="text/template" id="build-skill-info-tpl">
-		<% _(effects).each(function(effect) { %>
-			<p><%= effect.key %>: <%= effect.value %></p>
-		<% }) %>
+		<script type="text/template" id="build-skill-effects-tpl">
+			<% _(effects).each(function(effect, i, list) {
+				if (i % 5 == 0) { if (i !== 0) { %></dl><% } %><dl><% } %>
+				<dt class="<%= _(effect.key).underscored() %>"><span><%= _(effect.key).capitalized() %>:</span></dt>
+				<dd><%= effect.value %></dd>
+				<% if (list[i+1] == undefined) { %>
+					<dt><span class="cost">Total cost:</span></dt>
+					<dd><%= totalCost %></dd>
+				</dl><% } %>
+			<% }) %>
 		</script>
 
 		<script type="text/template" id="build-upgrade-tpl">
 			<div class="upgrade-icon"><img src="<%= icon %>" alt=""></div>
-			<!--<div class="upgrade-step"><%= current_step.get('level') || 0 %>/<%= max_step %></div>-->
+			<div class="upgrade-cost icon-details "><%= cost %></div>
+			<div class="upgrade-step icon-details <%= current_step.get('level') == max_step ? 'max' : '' %>"><%= current_step.get('level') || 0 %>/<%= max_step %></div>
 			<div class="upgrade-popup hidden">
 				<p><strong><%= name %></strong></p>
 				<p><%= description %></p>

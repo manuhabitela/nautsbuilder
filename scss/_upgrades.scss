@@ -1,0 +1,33 @@
+.upgrade {
+	display: inline-block;
+	vertical-align: top;
+	@extend %dark-box;
+	margin: 0 2px;
+	&.active:after {
+		display: none;
+	}
+	cursor: pointer;
+	&.locked {
+		cursor: not-allowed;
+	}
+}
+
+.upgrade-icon {
+	@extend %icon;
+}
+
+.upgrade-cost {
+	left: 0;
+}
+
+.upgrade-step {
+	right: 0;
+	display: none;
+	background-color: #B07C06;
+	&.max {
+		background-color: #07AF26;
+	}
+	.upgrade.active & {
+		display: block;
+	}
+}

@@ -1,5 +1,6 @@
 %icon {
 	width: 90px;
+	height: 90px;
 	img {
 		max-width: 100%;
 		width: auto;
@@ -7,22 +8,37 @@
 	}
 }
 
-%tooltip {
-	max-width: 300px;
+%box {
 	border-radius: 5px;
-	border: 2px solid #000;
-	background: #4c4c4c;
-	color: #fff;
-	font-family: sans-serif;
-	font-size: small;
 	padding: 8px 12px;
-	z-index: 999;
 	p:first-child {
 		margin-top: 0;
 	}
 	p:last-child {
 		margin-bottom: 0;
 	}
+}
+
+%info {
+	font-size: x-small;
+	padding: 2px 4px;
+	border-radius: 5px;
+	font-weight: bold;
+	background: black;
+	background: rgba(black, 0.5);
+	color: #fff;
+	z-index: 30;
+}
+
+%tooltip {
+	@extend %box;
+	max-width: 300px;
+	font-family: sans-serif;
+	font-size: small;
+	z-index: 999;
+	background: rgba(#FFF68E, 0.95);
+	color: #222;
+	border: none;
 }
 
 %dark-box {
@@ -40,4 +56,10 @@
 		background: black;
 		opacity: 0.75;
 	}
+}
+
+.cost {
+	padding-left: 24px;
+	min-height: 21px;
+	background: image-url('solar.png') no-repeat center left;
 }
