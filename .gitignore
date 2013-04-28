@@ -9,3 +9,5 @@ config/database.php
 vendor
 composer.lock
 composer.phar
+
+node_modules
