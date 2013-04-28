@@ -66,13 +66,13 @@
 		</script>
 
 		<script type="text/template" id="build-skill-effects-tpl">
-			<% _(effects).each(function(effect, i, list) {
+			<% var finalEffects = _(effects).clone();
+			if (totalCost > 0) finalEffects.push({key: "Total cost", value: totalCost});
+			_(finalEffects).each(function(effect, i, list) {
 				if (i % 5 == 0) { if (i !== 0) { %></dl><% } %><dl><% } %>
 				<dt class="<%= _(effect.key).underscored() %>"><span><%= _(effect.key).capitalized() %>:</span></dt>
 				<dd><%= effect.value %></dd>
 				<% if (list[i+1] == undefined) { %>
-					<dt><span class="cost">Total cost:</span></dt>
-					<dd><%= totalCost %></dd>
 				</dl><% } %>
 			<% }) %>
 		</script>
@@ -115,11 +115,13 @@
 		<script src="js/nautsbuilder/views/upgrade.js"></script>
 		<script src="js/nautsbuilder/app.js"></script>
 		<script src="js/main.js"></script>
-		<!--<script>
-			var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+
+		<!--<script src="dist/scripts.min.js"></script>-->
+		<script>
+			var _gaq=[['_setAccount','UA-13184829-2'],['_trackPageview']];
 			(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
 			g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
 			s.parentNode.insertBefore(g,s)}(document,'script'));
-		</script>-->
+		</script>
 	</body>
 </html>

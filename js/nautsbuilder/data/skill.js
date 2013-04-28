@@ -3,6 +3,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		this.upgrades = this.get('upgrades');
 
 		this.set('baseEffects', leiminauts.utils.treatEffects(this.get('effects')));
+		this.set('totalCost', this.get('cost')*1);
 		this.set('effects', []);
 		this.upgrades.on('change', this.updateEffects, this);
 		this.on('change:active', this.updateEffects, this);

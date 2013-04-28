@@ -31,3 +31,7 @@
 		display: block;
 	}
 }
+
+.upgrade-popup .cost {
+	@extend %cost;
+}

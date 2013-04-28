@@ -45,7 +45,8 @@
 	dd {
 		@extend %info;
 	}
-	dt .cost {
+	dt.total_cost span {
+		@extend %cost;
 		display: inline-block;
 		line-height: 21px;
 	}
