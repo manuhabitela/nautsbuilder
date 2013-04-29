@@ -17,7 +17,7 @@ Currently only one character is in the spreadsheet, mostly to test, since the ap
 
 # Filling the spreadsheet correctly
 
-The spreadsheet is available here https://docs.google.com/spreadsheet/ccc?key=0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc#gid=0 Just to be safe, the NautsBuilder doesn't use this one but a copy, so don't worry if the data you add is not visible directly.
+The spreadsheet is available here https://docs.google.com/spreadsheet/ccc?key=0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc
 
 It is pretty simple to fill but there a few things to know.
 
@@ -46,7 +46,7 @@ The Character sheet is easy. `name` and `icon` fields are required so the app wo
 * Upgrades should be listed in the order you want them to appear in the NautsBuilder. This should match the order in the game (ie Slash has Chainsaw Addon, then Enhanced Muscle Fibers, then Clover of Honour, etc).
 * If an upgrade is common to every character or so (present in the 4th row of upgrades, like Solar Tree or Piggy Bank), bind it to the "Jump" skill.
 * If the upgrade replaces a common upgrade (like Solar Krab Burgers for Voltar), bind the upgrade to the character's jump skill (for Voltar, this would be "Hover"), and write the upgrade it must replaces in the `replaces` field (for Voltar and his burgers, this would be "Piggy Bank").
-* Upgrade has multiple steps: describe them in `step1`, `step2`, `step3` fields. **Steps are formatted just like skill effects**: a `;` separated list of `key:value` pairs. The "keys" should match the ones of the skill. For example, if a skill has a `damage: 8`, and one of its upgrades adds 4 damage, make sure to write `damage: +4` in the step field, and not `damages: +4` or `adds 4 damage`.
+* Upgrade has multiple steps: describe them in `step1`, `step2`... fields. **Steps are formatted just like skill effects**: a `;` separated list of `key:value` pairs. The "keys" should match the ones of the skill. For example, if a skill has a `damage: 8`, and one of its upgrades adds 4 damage, make sure to write `damage: +4` in the step field, and not `damages: +4` or `adds 4 damage`.
 
 
 
