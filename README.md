@@ -15,11 +15,11 @@ The only "catch" is that this spreadsheet must be filled will all the characters
 
 Currently only one character is in the spreadsheet, mostly to test, since the app is in active work in progress.
 
-The spreadsheet is available here https://docs.google.com/spreadsheet/ccc?key=0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE&usp=sharing - If you wanna help by filling info for some characters, let me know!
-
 # Filling the spreadsheet correctly
 
-The spreadsheet is pretty simple to fill but there a few things to know.
+The spreadsheet is available here https://docs.google.com/spreadsheet/ccc?key=0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc#gid=0 Just to be safe, the NautsBuilder doesn't use this one but a copy, so don't worry if the data you add is not visible directly.
+
+It is pretty simple to fill but there a few things to know.
 
 * There are 3 different sheets: Characters, Skills, and Upgrades. You can switch sheets at the bottom of the screen.
 * For every sheet, please **don't put any empty rows or columns**: any row/column after a completely empty row/column would become unavailable by the NautsBuilder.
