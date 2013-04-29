@@ -23,7 +23,6 @@ It is pretty simple to fill but there a few things to know.
 
 * There are 3 different sheets: Characters, Skills, and Upgrades. You can switch sheets at the bottom of the screen.
 * For every sheet, please **don't put any empty rows or columns**: any row/column after a completely empty row/column would become unavailable by the NautsBuilder.
-* **Don't worry about any icons for the time being**: Icons are currently just link to the ones existing on the wiki but I want to change that (to be completely independent of it).
 * Every `description` field will translate \*sentences like this\* as *sentences in italics like this*.
 * To fill everything easily and quickly, find the wiki page of the character you're working on (ie for Leon: http://awesomenauts.wikia.com/wiki/Leon_Chameleon). Almost every info on skills and upgrades are there. From time to time you might need to look at the game if you want more info.
 * Finally if you have trouble, you can see an example of well-formatted data with **Leon Chameleon**, or ping me in the [forum](http://www.awesomenauts.com/forum/viewtopic.php?f=14&t=13663) (Leimi).
