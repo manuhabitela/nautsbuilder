@@ -111,8 +111,19 @@ leiminauts.Skill = Backbone.Model.extend({
 			this.get('effects').push({ "key": key, value: effect });
 		}, this);
 		this.setDPS();
+		this.setCommonEffects();
 		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
-		console.log(this.get('effects'));
+	},
+
+	//each character has these effects
+	setCommonEffects: function() {
+		var effects = _(this.get('effects'));
+		var solar = effects.findWhere({key: "solar"});
+		var solarPerMin = effects.findWhere({key: "solar per min"});
+		if (!solar)
+			effects.push({key: "Solar", value: 200});
+		if (!solarPerMin)
+			effects.push({key: "Solar per min", value: 30});
 	},
 
 	setDPS: function() {
