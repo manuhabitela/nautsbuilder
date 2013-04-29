@@ -1,18 +1,23 @@
 _.mixin({
-	//pass "A String like this" and get "a_string_like_this"
-	underscored: function(string) {
-		if (!_.isString(string)) return false;
-		return string.toLowerCase().replace(' ', '_');
-	},
-
-	//pass "a_string_like_this" and get "A String like this"
+	//https://github.com/epeli/underscore.string
+	//pass "a_string_like_this" and get "A String Like This"
 	capitalized: function(string) {
 		if (!_.isString(string)) return false;
-		return string.replace('_', ' ').replace(/(?:^|\s)\S/g, function(c){ return c.toUpperCase(); });
+		return string.replace(/_/g, ' ').replace(/(?:^|\s)\S/g, function(c){ return c.toUpperCase(); });
+	},
+	//pass "A String like this" and get "A_String_like_this"
+	underscored: function(string) {
+		if (!_.isString(string)) return false;
+		return string.replace(/[\s]+/g, '_');
+	},
+
+	//pass "A_string_Like_this" and get "A string Like this"
+	ununderscored: function(string) {
+		if (!_.isString(string)) return false;
+		return string.replace(/_/g, ' ');
 	},
 
 	//http://stackoverflow.com/questions/3000649/trim-spaces-from-start-and-end-of-string
-	//https://github.com/epeli/underscore.string/blob/master/lib/underscore.string.js#L346
 	trim: function(string, characters) {
 		if (!string) return '';
 		characters = characters || null;
@@ -27,7 +32,7 @@ _.mixin({
 	//kinda markdown style: pass *this* and get <em>this</em>
 	italics: function(string) {
 		if (!string) return '';
-		return string.replace(/\n/g, "<br>").replace(/\*(.*)\*/, '<em>$1</em>')
+		return string.replace(/\n/g, "<br>").replace(/\*(.*)\*/, '<em>$1</em>');
 	}
 });
 

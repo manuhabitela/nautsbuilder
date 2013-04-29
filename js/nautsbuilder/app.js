@@ -1,3 +1,9 @@
+/*
+This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright owner: Emmanuel Pelletier <pelletier.emmanuel@gmail.com>
+ */
 leiminauts.App = Backbone.Router.extend({
 	routes: {
 		"": "list",
@@ -23,7 +29,7 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	buildMaker: function(naut, build, order) {
-		var character = this.data.findWhere({ name: _.capitalized(naut) });
+		var character = this.data.findWhere({ name: _.ununderscored(naut) });
 		var charView = new leiminauts.CharacterView({
 			model: character,
 			build: build || null,
