@@ -19,6 +19,7 @@ leiminauts.CharacterView = Backbone.View.extend({
 	},
 
 	render: function() {
+		$('body').attr('data-page', 'char');
 		this.$el.html(this.template( this.model.toJSON() ));
 		this.assign(this.build, '.build');
 		this.assign(this.info, '.char-info');

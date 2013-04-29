@@ -10,7 +10,7 @@
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
 		<!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'> -->
-		<link rel="stylesheet" href="css/style.css?v=2">
+		<link rel="stylesheet" href="css/style.css?v=3">
 		<!-- <link rel="stylesheet" href="dist/styles.min.css"> -->
 		<!--<script src="js/lib/modernizr.custom.js"></script>-->
 	</head>
@@ -18,18 +18,47 @@
 		<!--[if lte IE 8]>
 		   <p class="obsolete-browser">You use an <strong>obsolete</strong> browser. <a href="http://browsehappy.com/">Upgrade it</a> to use the web <strong>safely</strong>!</p>
 	   <![endif]-->
-		<p>Warning: this is a work-in-progress. Bugs are not intended but certainly here! <a style="color: #ccc" href="http://www.awesomenauts.com/forum/viewtopic.php?p=147590" target="_blank">Feedback appreciated</a>
+
 		<div id="container">
 
 		</div>
 
+		<p>Warning: this is a work-in-progress. Bugs are not intended but certainly here! <a style="color: #ccc" href="http://www.awesomenauts.com/forum/viewtopic.php?p=147590" target="_blank">Feedback appreciated</a></p>
+
 		<script type="text/template" id="chars-tpl">
+			<div class="current-char">
+				<% if (currentChar) { %>
+					<div class="current-char-left">
+						<div class="current-char-box current-char-type">
+						<%= _.capitalized(currentChar.get('role')) %> - <%= _.capitalized(currentChar.get('attacktype')) %>
+						</div>
+						<div class="current-char-box current-char-skills">
+							<% currentChar.get('skills').each(function(skill) { %>
+							<div class="current-char-skill">
+								<div class="current-char-skill-icon"><img src="<%= skill.get('icon') %>" alt=""></div>
+								<div class="current-char-skill-desc"><p><%= skill.get('description') %><p></div>
+							</div>
+							<% }) %>
+						</div>
+					</div>
+					<div class="current-char-info">
+						<img class="current-char-image" src="<%= currentChar.get('image') %>" alt="">
+						<h1 class="current-char-name"><%= currentChar.get('name') %></h1>
+					</div>
+					<div class="current-char-right">
+						<div class="current-char-box current-char-desc">
+							<p><%= currentChar.get('description') %></p>
+						</div>
+					</div>
+				<% } %>
+			</div>
+			<ul class="chars-list">
 			<% _.each(characters, function(character) { %>
 				<li class="char" data-id="<%= _.underscored(character.name) %>">
-					<img class="char-icon"src="<%= character.icon %>" alt="">
-					<span class="char-name"><%= character.name %></span>
+					<img class="char-icon" src="<%= character.icon %>" alt="">
 				</li>
 			<% }); %>
+			</ul>
 		</script>
 
 		<script type="text/template" id="char-tpl">
@@ -110,21 +139,20 @@
 		<script src="js/lib/backbone.js?v=2"></script>
 		<script src="js/lib/tabletop.js?v=2"></script>
 		<script src="js/lib/mousetooltip.js?v=2"></script>
-		<script src="js/nautsbuilder/data/cache.js?v=2"></script>
-		<script src="js/nautsbuilder/utils.js?v=2"></script>
-		<script src="js/nautsbuilder/data/character.js?v=2"></script>
-		<script src="js/nautsbuilder/data/skill.js?v=2"></script>
-		<script src="js/nautsbuilder/data/upgrade.js?v=2"></script>
-		<script src="js/nautsbuilder/data/step.js?v=2"></script>
-		<script src="js/nautsbuilder/views/characters.js?v=2"></script>
-		<script src="js/nautsbuilder/views/character.js?v=2"></script>
-		<script src="js/nautsbuilder/views/character-build.js?v=2"></script>
-		<script src="js/nautsbuilder/views/character-order.js?v=2"></script>
-		<script src="js/nautsbuilder/views/character-info.js?v=2"></script>
-		<script src="js/nautsbuilder/views/skill.js?v=2"></script>
-		<script src="js/nautsbuilder/views/upgrade.js?v=2"></script>
-		<script src="js/nautsbuilder/app.js?v=2"></script>
-		<script src="js/main.js?v=3"></script>
+		<script src="js/nautsbuilder/utils.js?v=3"></script>
+		<script src="js/nautsbuilder/data/character.js?v=3"></script>
+		<script src="js/nautsbuilder/data/skill.js?v=3"></script>
+		<script src="js/nautsbuilder/data/upgrade.js?v=3"></script>
+		<script src="js/nautsbuilder/data/step.js?v=3"></script>
+		<script src="js/nautsbuilder/views/characters.js?v=3"></script>
+		<script src="js/nautsbuilder/views/character.js?v=3"></script>
+		<script src="js/nautsbuilder/views/character-build.js?v=3"></script>
+		<script src="js/nautsbuilder/views/character-order.js?v=3"></script>
+		<script src="js/nautsbuilder/views/character-info.js?v=3"></script>
+		<script src="js/nautsbuilder/views/skill.js?v=3"></script>
+		<script src="js/nautsbuilder/views/upgrade.js?v=3"></script>
+		<script src="js/nautsbuilder/app.js?v=3"></script>
+		<script src="js/main.js?v=1337"></script>
 
 		<!--<script src="dist/scripts.min.js"></script>-->
 		<script>

@@ -1,11 +1,12 @@
 .chars-list {
 	list-style-type: none;
 	text-align: center;
+	margin: 0;
+	padding: 0;
 	.char {
 		display: inline-block;
 		cursor: pointer;
 		padding: 0;
-		background-color: hsla(197, 70%, 50%, 0.2);
 		margin: 3px 0;
 		border: 5px solid transparent;
 		&:hover {
@@ -16,7 +17,74 @@
 	.char-icon {
 		vertical-align: middle;
 	}
-	.char-name {
-		padding: 10px;
+}
+
+.current-char {
+	@extend .clearfix;
+	height: 600px;
+}
+
+.current-char-box {
+	padding: 10px;
+	border-radius: 5px;
+	background: rgba(black, 0.5);
+	margin: 10px 30px;
+	font-size: small;
+	max-height: 600px;
+	overflow: auto;
+	p:first-child {
+		margin-top: 0;
+	}
+	p:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.current-char-left, .current-char-right {
+	width: 30%;
+}
+
+.current-char-left {
+	float: left;
+	max-height: 400px;
+}
+
+.current-char-info {
+	float: left;
+	width: 100%-(30%*2);
+	text-align: center;
+	position: relative;
+}
+
+.current-char-name {
+	position: absolute;
+	bottom: 60px;
+	left: 0;
+	right: 0;
+	font-size: 4em;
+	margin: 0;
+	line-height: 1;
+	text-shadow: 0 2px 6px black;
+}
+
+.current-char-right {
+	float: right;
+}
+
+.current-char-image {
+	height: auto;
+	max-height: 550px;
+}
+
+.current-char-skill {
+	@extend .clearfix;
+}
+
+.current-char-skill-icon {
+	float: left;
+	margin: 10px;
+	margin-left: 0;
+	img {
+		width: 60px;
 	}
 }
