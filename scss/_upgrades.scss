@@ -3,6 +3,9 @@
 	vertical-align: top;
 	@extend %dark-box;
 	margin: 0 2px;
+	.skill.jump &:after {
+		border-radius: 8px 8px 25px 25px / 90px 90px 20px 20px;
+	}
 	&.active:after {
 		display: none;
 	}
