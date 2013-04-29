@@ -48,7 +48,12 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 					if (skill.type == "jump") {
 						skillUpgrades = _(upgrades).where({ skill: "Jump" });
 						//some chars have turbo pills, others have light; we remove the one unused
-						var unwantedPills = character.lightpills !== "0" ? "Power Pills Turbo" : "Power Pills Light";
+						var jumpEffects = leiminauts.utils.treatEffects(skill.effects);
+						var pills = _(jumpEffects).findWhere({key: "pills"});
+						var unwantedPills = "Power Pills Light";
+						if (pills && pills.value == "light") {
+							unwantedPills = "Power Pills Turbo";
+						}
 						skillUpgrades.splice( _(upgrades).indexOf( _(upgrades).findWhere({ name: unwantedPills }) ), 1 );
 
 						//some chars have unique jump upgrades that replace common ones
