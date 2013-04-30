@@ -13,7 +13,7 @@ This allows to quickly and easily change characters attributes and upgrades in c
 
 The only "catch" is that this spreadsheet must be filled will all the characters, all their skills, and all their upgrades. This is easy (thanks copy and paste) but takes a little while as a one-man team.
 
-Currently only one character is in the spreadsheet, mostly to test, since the app is in active work in progress.
+Thanks to the community, all characters/skills/upgrades are now in the spreadsheet :)
 
 # Filling the spreadsheet correctly
 
@@ -56,3 +56,5 @@ Licensed under GPL v2 http://www.opensource.org/licenses/gpl-2.0.php
 # Credits
 
 I want to sincerely thank my awesomenauts partners, Antoine, J and Fifou, who didn't help me at all to make this thing.
+Big thanks to Carty1234, boxtoy, nokos, Devenger, Riyita and MikalMirkas, who, certainly among others, filled the spreadsheet will the data really fast.
+
