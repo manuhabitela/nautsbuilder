@@ -3267,25 +3267,30 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 	};
 	var self = window.MouseTooltip;
 })();
-/* Nautsbuilder - Awesomenauts build calculator v0.2 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.3 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * Licensed GPL v2 http://www.opensource.org/licenses/gpl-2.0.php */
 
 _.mixin({
-	//pass "A String like this" and get "a_string_like_this"
-	underscored: function(string) {
-		if (!_.isString(string)) return false;
-		return string.toLowerCase().replace(' ', '_');
-	},
-
-	//pass "a_string_like_this" and get "A String like this"
+	//https://github.com/epeli/underscore.string
+	//pass "a_string_like_this" and get "A String Like This"
 	capitalized: function(string) {
 		if (!_.isString(string)) return false;
-		return string.replace('_', ' ').replace(/(?:^|\s)\S/g, function(c){ return c.toUpperCase(); });
+		return string.replace(/_/g, ' ').replace(/(?:^|\s)\S/g, function(c){ return c.toUpperCase(); });
+	},
+	//pass "A String like this" and get "A_String_like_this"
+	underscored: function(string) {
+		if (!_.isString(string)) return false;
+		return string.replace(/[\s]+/g, '_');
+	},
+
+	//pass "A_string_Like_this" and get "A string Like this"
+	ununderscored: function(string) {
+		if (!_.isString(string)) return false;
+		return string.replace(/_/g, ' ');
 	},
 
 	//http://stackoverflow.com/questions/3000649/trim-spaces-from-start-and-end-of-string
-	//https://github.com/epeli/underscore.string/blob/master/lib/underscore.string.js#L346
 	trim: function(string, characters) {
 		if (!string) return '';
 		characters = characters || null;
@@ -3300,7 +3305,7 @@ _.mixin({
 	//kinda markdown style: pass *this* and get <em>this</em>
 	italics: function(string) {
 		if (!string) return '';
-		return string.replace(/\n/g, "<br>").replace(/\*(.*)\*/, '<em>$1</em>')
+		return string.replace(/\n/g, "<br>").replace(/\*(.*)\*/, '<em>$1</em>');
 	}
 });
 
@@ -3315,6 +3320,7 @@ leiminauts.utils = {
 	//takes a string like "damage: +2; crit chance: +15%" and returns an array like [{damage: "+2"}, {"crit chance": "+15%"}]
 	treatEffects: function(effectsString) {
 		var effects = [];
+		if (!_(effectsString).isString()) return effectsString;
 		var attributes = effectsString.toLowerCase().split(';');
 		_(attributes).each(function(attr, i) {
 			attribute = _(attr).trim().split(':');
@@ -3330,7 +3336,7 @@ leiminauts.utils = {
 		}, this);
 		return effects;
 	}
-}
+};
 leiminauts.Character = Backbone.Model.extend({
 	initialize: function() {
 		this.set('totalCost', 0);
@@ -3366,38 +3372,50 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 
 			var characters, skills, upgrades;
 			if (this.spreadsheet) {
-				characters = this.spreadsheet.sheets('Characters').all();
-				skills = this.spreadsheet.sheets('Skills').all();
-				upgrades = this.spreadsheet.sheets('Upgrades').all();
-			} else {
-				characters = nautsbuilderoffline.characters;
-				skills = nautsbuilderoffline.skills;
-				upgrades = nautsbuilderoffline.upgrades;
-			}
-			_.each(characters, function(character) {
-				_.each(skills, function(skill) {
-					var skillUpgrades = [];
-					//the jump skill has common upgrades, but also some custom ones sometimes
-					if (skill.type == "jump") {
-						skillUpgrades = _(upgrades).where({ skill: "Jump" });
-						//some chars have turbo pills, others have light; we remove the one unused
-						var unwantedPills = character.lightpills !== "0" ? "Power Pills Turbo" : "Power Pills Light";
-						skillUpgrades.splice( _(upgrades).indexOf( _(upgrades).findWhere({ name: unwantedPills }) ), 1 );
+				leiminauts.characters = this.spreadsheet.sheets('Characters').all();
+				leiminauts.skills = this.spreadsheet.sheets('Skills').all();
+				leiminauts.upgrades = this.spreadsheet.sheets('Upgrades').all();
 
-						//some chars have unique jump upgrades that replace common ones
-						var customJumpUpgrades = _(upgrades).where({ skill: skill.name });
-						_(skillUpgrades).each(function(upgrade, i) {
-							_(customJumpUpgrades).each(function(jupgrade) {
-								if (jupgrade.replaces == upgrade.name)
-									skillUpgrades[i] = _(jupgrade).clone();
-							});
-						});
-					} else {
-						skillUpgrades = _(upgrades).where({ skill: skill.name });
-					}
-					skill.upgrades = new leiminauts.Upgrades(skillUpgrades);
+				if (Modernizr.localstorage) {
+					localStorage.setItem('nautsbuilder.characters', JSON.stringify(characters));
+					localStorage.setItem('nautsbuilder.skills', JSON.stringify(skills));
+					localStorage.setItem('nautsbuilder.upgrades', JSON.stringify(upgrades));
+					localStorage.setItem('nautsbuilder.date', new Date().getTime());
+				}
+			} else {
+				leiminauts.characters = JSON.parse(localStorage.getItem('nautsbuilder.characters'));
+				leiminauts.skills = JSON.parse(localStorage.getItem('nautsbuilder.skills'));
+				leiminauts.upgrades = JSON.parse(localStorage.getItem('nautsbuilder.upgrades'));
+			}
+			_.each(leiminauts.characters, function(character) {
+				_.each(leiminauts.skills, function(skill) {
+					// var skillUpgrades = [];
+					// //the jump skill has common upgrades, but also some custom ones sometimes
+					// if (skill.type == "jump") {
+					// 	skillUpgrades = _(upgrades).where({ skill: "Jump" });
+					// 	//some chars have turbo pills, others have light; we remove the one unused
+					// 	var jumpEffects = leiminauts.utils.treatEffects(skill.effects);
+					// 	var pills = _(jumpEffects).findWhere({key: "pills"});
+					// 	var unwantedPills = "Power Pills Light";
+					// 	if (pills && pills.value == "light") {
+					// 		unwantedPills = "Power Pills Turbo";
+					// 	}
+					// 	skillUpgrades.splice( _(skillUpgrades).indexOf( _(skillUpgrades).findWhere({ name: unwantedPills }) ), 1 );
+
+					// 	//some chars have unique jump upgrades that replace common ones
+					// 	var customJumpUpgrades = _(upgrades).where({ skill: skill.name });
+					// 	_(skillUpgrades).each(function(upgrade, i) {
+					// 		_(customJumpUpgrades).each(function(jupgrade) {
+					// 			if (jupgrade.replaces == upgrade.name)
+					// 				skillUpgrades[i] = _(jupgrade).clone();
+					// 		});
+					// 	});
+					// } else {
+					// 	skillUpgrades = _(upgrades).where({ skill: skill.name });
+					// }
+					// skill.upgrades = new leiminauts.Upgrades(skillUpgrades);
 				});
-				var charSkills = _(skills).where({ character: character.name });
+				var charSkills = _(leiminauts.skills).where({ character: character.name });
 				character.skills = new leiminauts.Skills(charSkills);
 				this.add(character);
 			}, this);
@@ -3406,11 +3424,10 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 });
 leiminauts.Skill = Backbone.Model.extend({
 	initialize: function(attrs, opts) {
+		this.set('upgrades', new leiminauts.Upgrades());
 		this.upgrades = this.get('upgrades');
-
-		this.set('baseEffects', leiminauts.utils.treatEffects(this.get('effects')));
+		this.prepareBaseEffects();
 		this.set('totalCost', 0);
-		this.set('effects', []);
 		this.upgrades.on('change', this.updateEffects, this);
 		this.on('change:active', this.updateEffects, this);
 
@@ -3418,6 +3435,34 @@ leiminauts.Skill = Backbone.Model.extend({
 		this.set('active', this.get('cost') !== undefined && this.get('cost') <= 0);
 		this.set('toggable', !this.get('active'));
 
+	},
+
+	initUpgrades: function() {
+		var skillUpgrades = [];
+		//the jump skill has common upgrades, but also some custom ones sometimes
+		if (this.get('type') == "jump") {
+			skillUpgrades = _(leiminauts.upgrades).where({ skill: "Jump" });
+			//some chars have turbo pills, others have light; we remove the one unused
+			var jumpEffects = leiminauts.utils.treatEffects(this.get('effects'));
+			var pills = _(jumpEffects).findWhere({key: "pills"});
+			var unwantedPills = "Power Pills Light";
+			if (pills && pills.value == "light") {
+				unwantedPills = "Power Pills Turbo";
+			}
+			skillUpgrades.splice( _(skillUpgrades).indexOf( _(skillUpgrades).findWhere({ name: unwantedPills }) ), 1 );
+
+			//some chars have unique jump upgrades that replace common ones
+			var customJumpUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
+			_(skillUpgrades).each(function(upgrade, i) {
+				_(customJumpUpgrades).each(function(jupgrade) {
+					if (jupgrade.replaces == upgrade.name)
+						skillUpgrades[i] = _(jupgrade).clone();
+				});
+			});
+		} else {
+			skillUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
+		}
+		this.get('upgrades').reset(skillUpgrades);
 	},
 
 	setActive: function(active) {
@@ -3518,7 +3563,22 @@ leiminauts.Skill = Backbone.Model.extend({
 		}, this);
 		this.setDPS();
 		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
-		console.log(this.get('effects'));
+	},
+
+	prepareBaseEffects: function() {
+		if (!_(this.get('effects')).isString())
+			return false;
+		this.set('baseEffects', leiminauts.utils.treatEffects(this.get('effects')));
+		if (this.get('type') == "jump") {
+			var effects = _(this.get('baseEffects'));
+			effects.splice( _(effects).indexOf( _(effects).findWhere({ name: 'pills' }) ), 1 );
+			var solar = effects.findWhere({key: "solar"});
+			var solarPerMin = effects.findWhere({key: "solar per min"});
+			if (!solar)
+				effects.push({key: "solar", value: 200});
+			if (!solarPerMin)
+				effects.push({key: "solar per min", value: 30});
+		}
 	},
 
 	setDPS: function() {
@@ -3590,9 +3650,7 @@ leiminauts.Steps = Backbone.Collection.extend({
 	model: leiminauts.Step
 });
 leiminauts.CharactersView = Backbone.View.extend({
-	tagName: 'ul',
-
-	className: 'chars-list',
+	className: 'chars-list-container',
 
 	events: {
 		"click .char": "selectCharacter"
@@ -3601,15 +3659,30 @@ leiminauts.CharactersView = Backbone.View.extend({
 	initialize: function() {
 		this.template = _.template( $('#chars-tpl').html() );
 		this.collection.on('add remove reset', this.render, this);
+
+		this.currentChar = null;
+
+		this.mouseOverTimeout = null;
+
+		this.$el.on('mouseover', '.char', _.bind(_.debounce(this.showCharInfo, 200), this));
 	},
 
 	render: function() {
-		this.$el.html(this.template({ "characters": this.collection.toJSON() }));
+		$('body').attr('data-page', 'chars-list');
+		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar }));
 		return this;
 	},
 
 	selectCharacter: function(e) {
 		this.trigger('selected', $(e.currentTarget).attr('data-id'));
+	},
+
+	showCharInfo: function(e) {
+		var character = $(e.currentTarget).attr('data-id');
+		if (this.currentChar === null || this.currentChar.get('name') !== _.ununderscored(character)) {
+			this.currentChar = this.collection.findWhere({name: _.ununderscored(character)});
+			this.render();
+		}
 	}
 });
 leiminauts.CharacterView = Backbone.View.extend({
@@ -3623,6 +3696,10 @@ leiminauts.CharacterView = Backbone.View.extend({
 	initialize: function(opts) {
 		_.defaults(opts, { build: null, order: null, info: null });
 
+		this.model.get('skills').each(function(skill) {
+			skill.initUpgrades();
+		});
+
 		this.template = _.template( $('#char-tpl').html() );
 
 		this.build = new leiminauts.BuildView({ character: this, state: opts.build });
@@ -3633,6 +3710,7 @@ leiminauts.CharacterView = Backbone.View.extend({
 	},
 
 	render: function() {
+		$('body').attr('data-page', 'char');
 		this.$el.html(this.template( this.model.toJSON() ));
 		this.assign(this.build, '.build');
 		this.assign(this.info, '.char-info');
@@ -3796,6 +3874,12 @@ leiminauts.UpgradeView = Backbone.View.extend({
 			this.model.setStep(currentStep +1);
 	}
 });
+/*
+This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright owner: Emmanuel Pelletier <pelletier.emmanuel@gmail.com>
+ */
 leiminauts.App = Backbone.Router.extend({
 	routes: {
 		"": "list",
@@ -3821,7 +3905,7 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	buildMaker: function(naut, build, order) {
-		var character = this.data.findWhere({ name: _.capitalized(naut) });
+		var character = this.data.findWhere({ name: _.ununderscored(naut) });
 		var charView = new leiminauts.CharacterView({
 			model: character,
 			build: build || null,
@@ -3896,24 +3980,33 @@ leiminauts.App = Backbone.Router.extend({
 		return _(window.location.hash.substring(1)).trim('/'); //no # and trailing slash
 	}
 });
-MouseTooltip.init();
+;(function() {
+	MouseTooltip.init();
 
-Tabletop.init({
-	key: "0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE",
-	wait: false,
-	debug: true,
-	callback: function(data, tabletop) {
-		window.nautsbuilder = new leiminauts.App({
-			el: '#container',
-			spreadsheet: tabletop
-		});
+	leiminauts.init = function(opts) {
+		opts = opts || {};
+		_.defaults(opts, { el: "#container", spreadsheet: false });
+		console.log(opts);
+		window.nautsbuilder = new leiminauts.App(opts);
 		Backbone.history.start({pushState: false, root: "/nautsbuilder/"});
-	}
-});
+	};
 
-//offline mode
-// window.nautsbuilder = new leiminauts.App({
-// 	el: '#container',
-// 	spreadsheet: false
-// });
-// Backbone.history.start({pushState: false, root: "/nautsbuilder/"});
+	leiminauts.lastDataUpdate = new Date("April 30, 2013 09:00:00 GMT+0200");
+	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') || 0;
+
+	if (leiminauts.lastDataUpdate.getTime() > leiminauts.localDate) {
+		//dev 0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE
+		//prod 0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE
+		//opened 0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc
+		Tabletop.init({
+			key: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc",
+			wait: false,
+			debug: false,
+			callback: function(data, tabletop) {
+				leiminauts.init({ spreadsheet: tabletop });
+			}
+		});
+	} else {
+		leiminauts.init({});
+	}
+}());
