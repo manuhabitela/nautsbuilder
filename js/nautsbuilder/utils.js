@@ -47,6 +47,7 @@ leiminauts.utils = {
 	//takes a string like "damage: +2; crit chance: +15%" and returns an array like [{damage: "+2"}, {"crit chance": "+15%"}]
 	treatEffects: function(effectsString) {
 		var effects = [];
+		if (!_(effectsString).isString()) return effectsString;
 		var attributes = effectsString.toLowerCase().split(';');
 		_(attributes).each(function(attr, i) {
 			attribute = _(attr).trim().split(':');
@@ -62,4 +63,4 @@ leiminauts.utils = {
 		}, this);
 		return effects;
 	}
-}
+};

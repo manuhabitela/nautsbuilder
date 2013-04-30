@@ -33,43 +33,50 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 
 			var characters, skills, upgrades;
 			if (this.spreadsheet) {
-				characters = this.spreadsheet.sheets('Characters').all();
-				skills = this.spreadsheet.sheets('Skills').all();
-				upgrades = this.spreadsheet.sheets('Upgrades').all();
-			} else {
-				characters = nautsbuilderoffline.characters;
-				skills = nautsbuilderoffline.skills;
-				upgrades = nautsbuilderoffline.upgrades;
-			}
-			_.each(characters, function(character) {
-				_.each(skills, function(skill) {
-					var skillUpgrades = [];
-					//the jump skill has common upgrades, but also some custom ones sometimes
-					if (skill.type == "jump") {
-						skillUpgrades = _(upgrades).where({ skill: "Jump" });
-						//some chars have turbo pills, others have light; we remove the one unused
-						var jumpEffects = leiminauts.utils.treatEffects(skill.effects);
-						var pills = _(jumpEffects).findWhere({key: "pills"});
-						var unwantedPills = "Power Pills Light";
-						if (pills && pills.value == "light") {
-							unwantedPills = "Power Pills Turbo";
-						}
-						skillUpgrades.splice( _(skillUpgrades).indexOf( _(skillUpgrades).findWhere({ name: unwantedPills }) ), 1 );
+				leiminauts.characters = this.spreadsheet.sheets('Characters').all();
+				leiminauts.skills = this.spreadsheet.sheets('Skills').all();
+				leiminauts.upgrades = this.spreadsheet.sheets('Upgrades').all();
 
-						//some chars have unique jump upgrades that replace common ones
-						var customJumpUpgrades = _(upgrades).where({ skill: skill.name });
-						_(skillUpgrades).each(function(upgrade, i) {
-							_(customJumpUpgrades).each(function(jupgrade) {
-								if (jupgrade.replaces == upgrade.name)
-									skillUpgrades[i] = _(jupgrade).clone();
-							});
-						});
-					} else {
-						skillUpgrades = _(upgrades).where({ skill: skill.name });
-					}
-					skill.upgrades = new leiminauts.Upgrades(skillUpgrades);
+				if (Modernizr.localstorage) {
+					localStorage.setItem('nautsbuilder.characters', JSON.stringify(characters));
+					localStorage.setItem('nautsbuilder.skills', JSON.stringify(skills));
+					localStorage.setItem('nautsbuilder.upgrades', JSON.stringify(upgrades));
+					localStorage.setItem('nautsbuilder.date', new Date().getTime());
+				}
+			} else {
+				leiminauts.characters = JSON.parse(localStorage.getItem('nautsbuilder.characters'));
+				leiminauts.skills = JSON.parse(localStorage.getItem('nautsbuilder.skills'));
+				leiminauts.upgrades = JSON.parse(localStorage.getItem('nautsbuilder.upgrades'));
+			}
+			_.each(leiminauts.characters, function(character) {
+				_.each(leiminauts.skills, function(skill) {
+					// var skillUpgrades = [];
+					// //the jump skill has common upgrades, but also some custom ones sometimes
+					// if (skill.type == "jump") {
+					// 	skillUpgrades = _(upgrades).where({ skill: "Jump" });
+					// 	//some chars have turbo pills, others have light; we remove the one unused
+					// 	var jumpEffects = leiminauts.utils.treatEffects(skill.effects);
+					// 	var pills = _(jumpEffects).findWhere({key: "pills"});
+					// 	var unwantedPills = "Power Pills Light";
+					// 	if (pills && pills.value == "light") {
+					// 		unwantedPills = "Power Pills Turbo";
+					// 	}
+					// 	skillUpgrades.splice( _(skillUpgrades).indexOf( _(skillUpgrades).findWhere({ name: unwantedPills }) ), 1 );
+
+					// 	//some chars have unique jump upgrades that replace common ones
+					// 	var customJumpUpgrades = _(upgrades).where({ skill: skill.name });
+					// 	_(skillUpgrades).each(function(upgrade, i) {
+					// 		_(customJumpUpgrades).each(function(jupgrade) {
+					// 			if (jupgrade.replaces == upgrade.name)
+					// 				skillUpgrades[i] = _(jupgrade).clone();
+					// 		});
+					// 	});
+					// } else {
+					// 	skillUpgrades = _(upgrades).where({ skill: skill.name });
+					// }
+					// skill.upgrades = new leiminauts.Upgrades(skillUpgrades);
 				});
-				var charSkills = _(skills).where({ character: character.name });
+				var charSkills = _(leiminauts.skills).where({ character: character.name });
 				character.skills = new leiminauts.Skills(charSkills);
 				this.add(character);
 			}, this);

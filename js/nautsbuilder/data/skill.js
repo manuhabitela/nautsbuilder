@@ -1,9 +1,9 @@
 leiminauts.Skill = Backbone.Model.extend({
 	initialize: function(attrs, opts) {
+		this.set('upgrades', new leiminauts.Upgrades());
 		this.upgrades = this.get('upgrades');
 		this.prepareBaseEffects();
 		this.set('totalCost', 0);
-		this.set('effects', []);
 		this.upgrades.on('change', this.updateEffects, this);
 		this.on('change:active', this.updateEffects, this);
 
@@ -11,6 +11,34 @@ leiminauts.Skill = Backbone.Model.extend({
 		this.set('active', this.get('cost') !== undefined && this.get('cost') <= 0);
 		this.set('toggable', !this.get('active'));
 
+	},
+
+	initUpgrades: function() {
+		var skillUpgrades = [];
+		//the jump skill has common upgrades, but also some custom ones sometimes
+		if (this.get('type') == "jump") {
+			skillUpgrades = _(leiminauts.upgrades).where({ skill: "Jump" });
+			//some chars have turbo pills, others have light; we remove the one unused
+			var jumpEffects = leiminauts.utils.treatEffects(this.get('effects'));
+			var pills = _(jumpEffects).findWhere({key: "pills"});
+			var unwantedPills = "Power Pills Light";
+			if (pills && pills.value == "light") {
+				unwantedPills = "Power Pills Turbo";
+			}
+			skillUpgrades.splice( _(skillUpgrades).indexOf( _(skillUpgrades).findWhere({ name: unwantedPills }) ), 1 );
+
+			//some chars have unique jump upgrades that replace common ones
+			var customJumpUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
+			_(skillUpgrades).each(function(upgrade, i) {
+				_(customJumpUpgrades).each(function(jupgrade) {
+					if (jupgrade.replaces == upgrade.name)
+						skillUpgrades[i] = _(jupgrade).clone();
+				});
+			});
+		} else {
+			skillUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
+		}
+		this.get('upgrades').reset(skillUpgrades);
 	},
 
 	setActive: function(active) {
@@ -123,9 +151,9 @@ leiminauts.Skill = Backbone.Model.extend({
 			var solar = effects.findWhere({key: "solar"});
 			var solarPerMin = effects.findWhere({key: "solar per min"});
 			if (!solar)
-				effects.push({key: "Solar", value: 200});
+				effects.push({key: "solar", value: 200});
 			if (!solarPerMin)
-				effects.push({key: "Solar per min", value: 30});
+				effects.push({key: "solar per min", value: 30});
 		}
 	},
 
