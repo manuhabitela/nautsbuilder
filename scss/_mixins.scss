@@ -4,6 +4,7 @@
 @mixin respond-to($media) {
 	$break-small: 640px;
 	$break-large: 980px;
+	$break-small-height: 780px;
 	@if $media == small {
 		@media only screen and (max-width: $break-small) { @content; }
 	}
@@ -12,6 +13,9 @@
 	}
 	@else if $media == large {
 		@media only screen and (min-width: $break-large) { @content; }
+	}
+	@else if $media == shrunken {
+		@media only screen and (max-height: $break-small-height) { @content; }
 	}
 }
 

@@ -2,8 +2,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 	className: 'chars-list-container',
 
 	events: {
-		"click .char": "selectCharacter",
-		"mouseover .char": "showCharInfo"
+		"click .char": "selectCharacter"
 	},
 
 	initialize: function() {
@@ -11,6 +10,10 @@ leiminauts.CharactersView = Backbone.View.extend({
 		this.collection.on('add remove reset', this.render, this);
 
 		this.currentChar = null;
+
+		this.mouseOverTimeout = null;
+
+		this.$el.on('mouseover', '.char', _.bind(_.debounce(this.showCharInfo, 200), this));
 	},
 
 	render: function() {

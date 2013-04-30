@@ -25,7 +25,6 @@ audio:not([controls]) { display: none; height: 0; }
 html { font-family: sans-serif; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; height: 100%; }
 
 body { margin: 0; padding: 10px; height: 100%; background-color: #001D2F; background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(800px 800px, #02526d, #001322); background-image: -moz-radial-gradient(800px 800px, #02526d, #001322); background-image: -o-radial-gradient(800px 800px, #02526d, #001322); background-image: radial-gradient(800px 800px, #02526d, #001322); background-image: -webkit-gradient(radial, 90% 90%, 0, 90% 90%, 100, color-stop(0%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(90% 90%, #02526d, #001322); background-image: -moz-radial-gradient(90% 90%, #02526d, #001322); background-image: -o-radial-gradient(90% 90%, #02526d, #001322); background-image: radial-gradient(90% 90%, #02526d, #001322); }
-body[data-page="chars-list"] { background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(800px 800px, #6d0206, #220000); background-image: -moz-radial-gradient(800px 800px, #6d0206, #220000); background-image: -o-radial-gradient(800px 800px, #6d0206, #220000); background-image: radial-gradient(800px 800px, #6d0206, #220000); background-image: -webkit-gradient(radial, 90% 90%, 0, 90% 90%, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(90% 90%, #6d0206, #220000); background-image: -moz-radial-gradient(90% 90%, #6d0206, #220000); background-image: -o-radial-gradient(90% 90%, #6d0206, #220000); background-image: radial-gradient(90% 90%, #6d0206, #220000); }
 
 a:focus { outline: thin dotted; }
 
@@ -55,7 +54,7 @@ img { border: 0; }
 
 svg:not(:root) { overflow: hidden; }
 
-fieldset { border: 1px solid #c0c0c0; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
+fieldset { border: 1px solid silver; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
 
 legend { border: 0; padding: 0; }
 
@@ -114,6 +113,8 @@ body, button, select, input, textarea, label { color: whitesmoke; font-family: V
 
 #mouse-tooltip { position: absolute; top: 0; left: 0; pointer-events: none; }
 
+#warning { position: fixed; top: 0; left: 0; font-size: 11px; line-height: 11px; margin: 0; }
+
 .icon-details { position: absolute; bottom: 0; }
 
 .char-builder { width: 1084px; margin: 50px; }
@@ -122,31 +123,42 @@ body, button, select, input, textarea, label { color: whitesmoke; font-family: V
 .char-info .char-icon { float: left; margin-right: 20px; }
 .char-info .info { font-size: 1em; }
 
-.chars-list { list-style-type: none; text-align: center; margin: 0; padding: 0; }
-.chars-list .char { display: inline-block; cursor: pointer; padding: 0; margin: 3px 0; border: 5px solid transparent; }
-.chars-list .char:hover { border-color: #FFF292; border-radius: 5px; }
-.chars-list .char-icon { vertical-align: middle; }
+body[data-page="chars-list"] { background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(800px 800px, #6d0206, #220000); background-image: -moz-radial-gradient(800px 800px, #6d0206, #220000); background-image: -o-radial-gradient(800px 800px, #6d0206, #220000); background-image: radial-gradient(800px 800px, #6d0206, #220000); background-image: -webkit-gradient(radial, 90% 90%, 0, 90% 90%, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(90% 90%, #6d0206, #220000); background-image: -moz-radial-gradient(90% 90%, #6d0206, #220000); background-image: -o-radial-gradient(90% 90%, #6d0206, #220000); background-image: radial-gradient(90% 90%, #6d0206, #220000); }
+body[data-page="chars-list"] #container, body[data-page="chars-list"] .chars-list-container, body[data-page="chars-list"] .current-char { height: 100%; }
 
-.current-char { height: 600px; }
+.current-char { padding-bottom: 100px; }
 
-.current-char-box { padding: 10px; border-radius: 5px; background: rgba(0, 0, 0, 0.5); margin: 10px 30px; font-size: small; max-height: 600px; overflow: auto; }
+.current-char-box { padding: 10px; border-radius: 5px; background: rgba(0, 0, 0, 0.5); font-size: small; margin: 5px; }
 .current-char-box p:first-child { margin-top: 0; }
 .current-char-box p:last-child { margin-bottom: 0; }
 
-.current-char-left, .current-char-right { width: 30%; }
+.current-char-left, .current-char-right { width: 30%; height: auto; max-height: 100%; overflow: auto; }
+.current-char-left::-webkit-scrollbar, .current-char-right::-webkit-scrollbar { width: 12px; }
+.current-char-left::-webkit-scrollbar-track, .current-char-right::-webkit-scrollbar-track { -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); border-radius: 5px; }
+.current-char-left::-webkit-scrollbar-thumb, .current-char-right::-webkit-scrollbar-thumb { border-radius: 5px; background: rgba(0, 0, 0, 0.5); }
 
-.current-char-left { float: left; max-height: 400px; }
+.current-char-left { float: left; max-height: 100%; overflow: auto; }
 
 .current-char-info { float: left; width: 40%; text-align: center; position: relative; }
 
 .current-char-name { position: absolute; bottom: 60px; left: 0; right: 0; font-size: 4em; margin: 0; line-height: 1; text-shadow: 0 2px 6px black; }
+@media only screen and (max-height: 780px) { .current-char-name { font-size: 3em; } }
 
 .current-char-right { float: right; }
 
-.current-char-image { height: auto; max-height: 550px; }
+.current-char-image { height: auto; max-height: 100%; }
+
+@media only screen and (max-height: 780px) { .current-char-skill { font-size: 11px; } }
 
 .current-char-skill-icon { float: left; margin: 10px; margin-left: 0; }
 .current-char-skill-icon img { width: 60px; }
+@media only screen and (max-height: 780px) { .current-char-skill-icon img { width: 40px; } }
+
+.chars-list { position: fixed; left: 0; right: 0; bottom: 0; height: 100px; list-style-type: none; text-align: center; margin: 0; padding: 0; }
+.chars-list .char { display: inline-block; cursor: pointer; padding: 0; margin: 3px 0; border: 5px solid transparent; }
+.chars-list .char:hover, .chars-list .char.active { border-color: #FFF292; border-radius: 5px; }
+.chars-list .char.active { border-color: #ffec5f; }
+.chars-list .char-icon { vertical-align: middle; }
 
 .skill-wrapper { margin: 3px auto; position: relative; }
 

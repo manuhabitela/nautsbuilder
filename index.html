@@ -12,7 +12,7 @@
 		<!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'> -->
 		<link rel="stylesheet" href="css/style.css?v=3">
 		<!-- <link rel="stylesheet" href="dist/styles.min.css"> -->
-		<!--<script src="js/lib/modernizr.custom.js"></script>-->
+		<script src="js/lib/modernizr.custom.js"></script>
 	</head>
 	<body>
 		<!--[if lte IE 8]>
@@ -23,7 +23,7 @@
 
 		</div>
 
-		<p>Warning: this is a work-in-progress. Bugs are not intended but certainly here! <a style="color: #ccc" href="http://www.awesomenauts.com/forum/viewtopic.php?p=147590" target="_blank">Feedback appreciated</a></p>
+		<p id="warning">Warning: this is a work-in-progress. Bugs are not intended but certainly here! <a style="color: #ccc" href="http://www.awesomenauts.com/forum/viewtopic.php?p=147590" target="_blank">Feedback appreciated</a></p>
 
 		<script type="text/template" id="chars-tpl">
 			<div class="current-char">
@@ -54,7 +54,7 @@
 			</div>
 			<ul class="chars-list">
 			<% _.each(characters, function(character) { %>
-				<li class="char" data-id="<%= _.underscored(character.name) %>">
+				<li class="char <%= currentChar && currentChar.get('name') == character.name ? 'active' : '' %>" data-id="<%= _.underscored(character.name) %>">
 					<img class="char-icon" src="<%= character.icon %>" alt="">
 				</li>
 			<% }); %>
@@ -109,7 +109,7 @@
 			if (totalCost > 0) finalEffects.push({key: "Total cost", value: totalCost});
 			_(finalEffects).each(function(effect, i, list) {
 				if (i % 5 == 0) { if (i !== 0) { %></dl><% } %><dl><% } %>
-				<dt class="<%= _(effect.key).underscored() %>"><span><%= _(effect.key).capitalized() %>:</span></dt>
+				<dt class="<%= _(effect.key).underscored().toLowerCase() %>"><span><%= _(effect.key).capitalized() %>:</span></dt>
 				<dd><%= effect.value %></dd>
 				<% if (list[i+1] == undefined) { %>
 				</dl><% } %>

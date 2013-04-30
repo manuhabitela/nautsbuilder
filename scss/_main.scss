@@ -12,6 +12,15 @@
 	}
 }
 
+#warning {
+	position: fixed;
+	top: 0;
+	left: 0;
+	font-size: 11px;
+	line-height: 11px;
+	margin: 0;
+}
+
 .icon-details {
 	@extend %info;
 	position: absolute;
