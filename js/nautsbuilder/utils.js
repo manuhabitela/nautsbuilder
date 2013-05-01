@@ -67,5 +67,12 @@ leiminauts.utils = {
 			}
 		}, this);
 		return effects;
+	},
+
+	number: function(number, decimals) {
+		number = number*1;
+		if (_(number).isNaN()) return number;
+		decimals = decimals || 2;
+		return number % 1 !== 0 ? number.toFixed(decimals) : number;
 	}
 };

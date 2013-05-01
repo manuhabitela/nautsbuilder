@@ -89,6 +89,7 @@ leiminauts.Skill = Backbone.Model.extend({
 
 	updateEffects: function(e) {
 		if (!this.get('selected')) return false;
+		console.log(this.get('name'));
 		if (!this.get('active')) {
 			this.set('effects', []);
 			this.set('totalCost', 0);
@@ -152,6 +153,7 @@ leiminauts.Skill = Backbone.Model.extend({
 					}
 					else
 						effectNumber += parseFloat(value, 10);
+					effectNumber = leiminauts.utils.number(effectNumber);
 					effect = effectNumber;
 					if (regexRes[3] && showUnit) effect += regexRes[3];
 					if (regexRes[1] && regexRes[1] == "+" && effectNumber > 0 && (!oldEffect || oldEffect.toString().indexOf('+') === 0))
@@ -162,6 +164,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			});
 			this.get('effects').push({ "key": key, value: effect });
 		}, this);
+		this.setSpecificEffects();
 		this.setDPS();
 		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
 	},
@@ -173,7 +176,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		this.set('baseEffects', leiminauts.utils.treatEffects(this.get('effects')));
 		if (this.get('type') == "jump") {
 			var effects = _(this.get('baseEffects'));
-			effects.splice( _(effects).indexOf( _(effects).findWhere({ name: 'pills' }) ), 1 );
+			effects.splice( _(effects).indexOf( _(effects).findWhere({ key: 'pills' }) ), 1 );
 			var solar = effects.findWhere({key: "solar"});
 			var solarPerMin = effects.findWhere({key: "solar per min"});
 			if (!solar)
@@ -183,14 +186,55 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 	},
 
+	setSpecificEffects: function() {
+		if (!this.get('selected')) return false;
+		var effects = _(this.get('effects'));
+		var avgDmg = 0;
+
+		if (this.get('name') == "Missiles") {
+			var missilesSequence = [];
+			var baseDamage = effects.findWhere({key: "avg damage"}).value;
+			_(4).times(function() { missilesSequence.push(baseDamage); });
+			var missiles = effects.filter(function(effect) {
+				return (/^missile [0-9]$/).test(effect.key);
+			});
+			_(missiles).each(function(missile) {
+				var number = parseInt(missile.key.substr(-1), 10)-1;
+				missilesSequence[number] = (baseDamage + (4*number))*parseInt(missile.value, 10);
+			});
+
+			avgDmg = _(missilesSequence).reduce(function(memo, num){ return memo + num; }, 0) / missilesSequence.length;
+			effects.push({key: "damage", value: missilesSequence.join(' > ')});
+			effects.findWhere({key: "avg damage"}).value = leiminauts.utils.number(avgDmg);
+		}
+
+		if (this.get('name') == "Bash") {
+			var punchsSequence = _(this.get('baseEffects')).findWhere({key:"damage"}).value.split(' > ');
+			var punchs = effects.filter(function(effect) {
+				return (/^punch [0-9]$/).test(effect.key);
+			});
+			_(punchs).each(function(punch) {
+				var number = parseInt(punch.key.substr(-1), 10)-1;
+				punchsSequence[number] = punchsSequence[number]*1 + parseInt(punch.value, 10);
+				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: punch.key }) ), 1 );
+			});
+
+			avgDmg = _(punchsSequence).reduce(function(memo, num){ return memo + num*1; }, 0) / punchsSequence.length;
+			effects.findWhere({key: "damage"}).value = punchsSequence.join(' > ');
+			effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
+		}
+	},
+
 	setDPS: function() {
 		if (!this.get('selected')) return false;
 		var effects = _(this.get('effects'));
 		var attackSpeed = effects.findWhere({key: "attack speed"});
 		var damage = effects.findWhere({key: "damage"});
+		if (!damage) damage = effects.findWhere({key: "avg damage"});
 		var dps = effects.findWhere({key: "dps"});
 		if (attackSpeed && damage) {
 			var dpsVal = (parseFloat(attackSpeed.value, 10)/60*parseFloat(damage.value, 10)).toFixed(2);
+			dpsVal = leiminauts.utils.number(dpsVal);
 			if (dps) dps.value = dpsVal;
 			else effects.push({key: "DPS", value: dpsVal});
 		}
