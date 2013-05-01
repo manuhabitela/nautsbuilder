@@ -3267,10 +3267,15 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 	};
 	var self = window.MouseTooltip;
 })();
-/* Nautsbuilder - Awesomenauts build calculator v0.3 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.4 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
-* Licensed GPL v2 http://www.opensource.org/licenses/gpl-2.0.php */
+* This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 _.mixin({
 	//https://github.com/epeli/underscore.string
 	//pass "a_string_like_this" and get "A String Like This"
@@ -3337,6 +3342,11 @@ leiminauts.utils = {
 		return effects;
 	}
 };
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 leiminauts.Character = Backbone.Model.extend({
 	initialize: function() {
 		this.set('totalCost', 0);
@@ -3422,8 +3432,15 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 		}
 	}
 });
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 leiminauts.Skill = Backbone.Model.extend({
 	initialize: function(attrs, opts) {
+		this._originalEffects = this.get('effects');
+
 		this.set('upgrades', new leiminauts.Upgrades());
 		this.upgrades = this.get('upgrades');
 		this.prepareBaseEffects();
@@ -3434,7 +3451,6 @@ leiminauts.Skill = Backbone.Model.extend({
 		this.on('change:active', this.updateUpgradesState, this);
 		this.set('active', this.get('cost') !== undefined && this.get('cost') <= 0);
 		this.set('toggable', !this.get('active'));
-
 	},
 
 	initUpgrades: function() {
@@ -3451,6 +3467,9 @@ leiminauts.Skill = Backbone.Model.extend({
 			}
 			skillUpgrades.splice( _(skillUpgrades).indexOf( _(skillUpgrades).findWhere({ name: unwantedPills }) ), 1 );
 
+			var effects = leiminauts.utils.treatEffects(this._originalEffects);
+			effects.splice( _(effects).indexOf( _(effects).findWhere({ key: 'pills' }) ), 1 );
+
 			//some chars have unique jump upgrades that replace common ones
 			var customJumpUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
 			_(skillUpgrades).each(function(upgrade, i) {
@@ -3463,6 +3482,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			skillUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
 		}
 		this.get('upgrades').reset(skillUpgrades);
+		this.updateUpgradesState();
 	},
 
 	setActive: function(active) {
@@ -3535,25 +3555,32 @@ leiminauts.Skill = Backbone.Model.extend({
 		//for leon tong with max damage, our effects var now looks like: { "damage": ["+9", "+9"], "range": ["+2.4"], ...  }
 		//we must combine effects values that looks like numbers so we have "damage": "+18",
 		//without forgetting the possible "+", "-", "%", "s", etc
-		var effectRegex = /^(\+|-)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
+		var effectRegex = /^(\+|-|\/)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
 		_(effects).each(function(values, key) {
 			var effect = "";
 			var oldEffect = false;
-			_(values).each(function(value) {
+			_(values).each(function(value, i) {
 				regexRes = effectRegex.exec(value);
 				if (regexRes !== null) {
 					var showUnit = true;
-					var effectNumber = parseFloat(effect, 10);
+					var effectNumber = parseFloat(effect);
 					if (_(effectNumber).isNaN()) effectNumber = 0;
-					if (regexRes[3] && regexRes[3] == "%" && effectNumber !== 0) {
-						effectNumber = effectNumber * (1 + parseFloat(value, 10)/100);
+
+					//if original value is %, we just += values. Otherwise (ie attack speed), we calculate the % based on original value
+					if (regexRes[3] && regexRes[3] == "%" && effectNumber !== 0 && values[0].substr(-1) != "%") {
+						effectNumber += parseFloat(values[0]) * (parseFloat(value)/100);
+						// effectNumber = effectNumber * (1 + parseFloat(value)/100);
 						showUnit = false;
+					}
+					//we divide if there is a "/"
+					else if (regexRes[1] && regexRes[1] == "/") {
+						effectNumber = effectNumber/parseFloat(value.substr(1));
 					}
 					else
 						effectNumber += parseFloat(value, 10);
 					effect = effectNumber;
 					if (regexRes[3] && showUnit) effect += regexRes[3];
-					if (regexRes[1] && effectNumber > 0 && (!oldEffect || oldEffect.toString().indexOf('+') === 0))
+					if (regexRes[1] && regexRes[1] == "+" && effectNumber > 0 && (!oldEffect || oldEffect.toString().indexOf('+') === 0))
 						effect = "+" + effect;
 				} else
 					effect = value;
@@ -3597,6 +3624,11 @@ leiminauts.Skill = Backbone.Model.extend({
 leiminauts.Skills = Backbone.Collection.extend({
 	model: leiminauts.Skill
 });
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 leiminauts.Upgrade = Backbone.Model.extend({
 	defaults: {
 		current_step: null,
@@ -3632,6 +3664,11 @@ leiminauts.Upgrade = Backbone.Model.extend({
 leiminauts.Upgrades = Backbone.Collection.extend({
 	model: leiminauts.Upgrade
 });
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 leiminauts.Step = Backbone.Model.extend({
 	defaults: {
 		level: 0,
@@ -3649,6 +3686,11 @@ leiminauts.Step = Backbone.Model.extend({
 leiminauts.Steps = Backbone.Collection.extend({
 	model: leiminauts.Step
 });
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 leiminauts.CharactersView = Backbone.View.extend({
 	className: 'chars-list-container',
 
@@ -3685,6 +3727,11 @@ leiminauts.CharactersView = Backbone.View.extend({
 		}
 	}
 });
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 leiminauts.CharacterView = Backbone.View.extend({
 	tagName: 'div',
 
@@ -3718,6 +3765,11 @@ leiminauts.CharacterView = Backbone.View.extend({
 		return this;
 	}
 });
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 leiminauts.BuildView = Backbone.View.extend({
 	tagName: 'div',
 
@@ -3749,6 +3801,11 @@ leiminauts.BuildView = Backbone.View.extend({
 		return this;
 	}
 });
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 leiminauts.OrderView = Backbone.View.extend({
 	tagName: 'div',
 
@@ -3770,6 +3827,11 @@ leiminauts.OrderView = Backbone.View.extend({
 		return this;
 	}
 });
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 leiminauts.SkillView = Backbone.View.extend({
 	tagName: 'div',
 
@@ -3825,6 +3887,11 @@ leiminauts.SkillView = Backbone.View.extend({
 			MouseTooltip.hide();
 	}
 });
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 leiminauts.UpgradeView = Backbone.View.extend({
 	tagName: 'div',
 
@@ -3874,11 +3941,10 @@ leiminauts.UpgradeView = Backbone.View.extend({
 			this.model.setStep(currentStep +1);
 	}
 });
-/*
-This Source Code Form is subject to the terms of the Mozilla Public
+/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- * copyright owner: Emmanuel Pelletier <pelletier.emmanuel@gmail.com>
+ * copyright (c) 2013, Emmanuel Pelletier
  */
 leiminauts.App = Backbone.Router.extend({
 	routes: {
@@ -3980,8 +4046,13 @@ leiminauts.App = Backbone.Router.extend({
 		return _(window.location.hash.substring(1)).trim('/'); //no # and trailing slash
 	}
 });
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 ;(function() {
-	MouseTooltip.init();
+	MouseTooltip.init({ "3d": true });
 
 	leiminauts.init = function(opts) {
 		opts = opts || {};
@@ -3993,6 +4064,7 @@ leiminauts.App = Backbone.Router.extend({
 
 	leiminauts.lastDataUpdate = new Date("April 30, 2013 09:00:00 GMT+0200");
 	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') || 0;
+	leiminauts.localDate = 0; //while dev
 
 	if (leiminauts.lastDataUpdate.getTime() > leiminauts.localDate) {
 		//dev 0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE

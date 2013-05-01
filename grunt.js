@@ -1,6 +1,6 @@
 var nautsbuilder = {
 	"name": "Nautsbuilder - Awesomenauts build calculator",
-	"version": "0.3"
+	"version": "0.4"
 };
 
 module.exports = function(grunt) {
@@ -11,7 +11,7 @@ module.exports = function(grunt) {
 		meta: {
 			banner: "/* <%= pkg.name %> v<%= pkg.version %> - https://github.com/Leimi/awesomenauts-build-maker\n" +
 			"* Copyright (c) <%= grunt.template.today('yyyy') %> Emmanuel Pelletier\n" +
-			'* Licensed GPL v2 http://www.opensource.org/licenses/gpl-2.0.php */'
+			"* This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */"
 		},
 		concat: {
 			dist: {
