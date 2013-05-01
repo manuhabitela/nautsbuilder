@@ -3267,7 +3267,7 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 	};
 	var self = window.MouseTooltip;
 })();
-/* Nautsbuilder - Awesomenauts build calculator v0.4 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.4.2 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -3340,6 +3340,13 @@ leiminauts.utils = {
 			}
 		}, this);
 		return effects;
+	},
+
+	number: function(number, decimals) {
+		number = number*1;
+		if (_(number).isNaN()) return number;
+		decimals = decimals || 2;
+		return number % 1 !== 0 ? number.toFixed(decimals) : number;
 	}
 };
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -3352,6 +3359,8 @@ leiminauts.Character = Backbone.Model.extend({
 		this.set('totalCost', 0);
 		this.set('level', 0);
 		this.get('skills').on('change:totalCost', this.onCostChange, this);
+
+		this.on('change:selected', this.onSelectedChange, this);
 	},
 
 	onCostChange: function() {
@@ -3361,6 +3370,12 @@ leiminauts.Character = Backbone.Model.extend({
 		});
 		this.set('level', Math.floor( (cost-100)/100) <= 0 ? 0 : Math.floor((cost-100)/100));
 		this.set('totalCost', cost);
+	},
+
+	onSelectedChange: function() {
+		this.get('skills').each(function(skill) {
+			skill.set('selected', this.get('selected'));
+		}, this);
 	}
 });
 
@@ -3398,33 +3413,6 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 				leiminauts.upgrades = JSON.parse(localStorage.getItem('nautsbuilder.upgrades'));
 			}
 			_.each(leiminauts.characters, function(character) {
-				_.each(leiminauts.skills, function(skill) {
-					// var skillUpgrades = [];
-					// //the jump skill has common upgrades, but also some custom ones sometimes
-					// if (skill.type == "jump") {
-					// 	skillUpgrades = _(upgrades).where({ skill: "Jump" });
-					// 	//some chars have turbo pills, others have light; we remove the one unused
-					// 	var jumpEffects = leiminauts.utils.treatEffects(skill.effects);
-					// 	var pills = _(jumpEffects).findWhere({key: "pills"});
-					// 	var unwantedPills = "Power Pills Light";
-					// 	if (pills && pills.value == "light") {
-					// 		unwantedPills = "Power Pills Turbo";
-					// 	}
-					// 	skillUpgrades.splice( _(skillUpgrades).indexOf( _(skillUpgrades).findWhere({ name: unwantedPills }) ), 1 );
-
-					// 	//some chars have unique jump upgrades that replace common ones
-					// 	var customJumpUpgrades = _(upgrades).where({ skill: skill.name });
-					// 	_(skillUpgrades).each(function(upgrade, i) {
-					// 		_(customJumpUpgrades).each(function(jupgrade) {
-					// 			if (jupgrade.replaces == upgrade.name)
-					// 				skillUpgrades[i] = _(jupgrade).clone();
-					// 		});
-					// 	});
-					// } else {
-					// 	skillUpgrades = _(upgrades).where({ skill: skill.name });
-					// }
-					// skill.upgrades = new leiminauts.Upgrades(skillUpgrades);
-				});
 				var charSkills = _(leiminauts.skills).where({ character: character.name });
 				character.skills = new leiminauts.Skills(charSkills);
 				this.add(character);
@@ -3439,18 +3427,25 @@ leiminauts.CharactersData = Backbone.Collection.extend({
  */
 leiminauts.Skill = Backbone.Model.extend({
 	initialize: function(attrs, opts) {
-		this._originalEffects = this.get('effects');
-
 		this.set('upgrades', new leiminauts.Upgrades());
 		this.upgrades = this.get('upgrades');
-		this.prepareBaseEffects();
-		this.set('totalCost', 0);
 		this.upgrades.on('change', this.updateEffects, this);
 		this.on('change:active', this.updateEffects, this);
 
 		this.on('change:active', this.updateUpgradesState, this);
-		this.set('active', this.get('cost') !== undefined && this.get('cost') <= 0);
-		this.set('toggable', !this.get('active'));
+
+		this.on('change:selected', this.onSelectedChange, this);
+	},
+
+	onSelectedChange: function() {
+		if (this.get('selected') && this.get('upgrades').length <= 0) {
+			this._originalEffects = this.get('effects');
+			this.prepareBaseEffects();
+			this.initUpgrades();
+			this.set('totalCost', 0);
+			this.set('active', this.get('cost') !== undefined && this.get('cost') <= 0);
+			this.set('toggable', !this.get('active'));
+		}
 	},
 
 	initUpgrades: function() {
@@ -3515,6 +3510,8 @@ leiminauts.Skill = Backbone.Model.extend({
 	},
 
 	updateEffects: function(e) {
+		if (!this.get('selected')) return false;
+		console.log(this.get('name'));
 		if (!this.get('active')) {
 			this.set('effects', []);
 			this.set('totalCost', 0);
@@ -3578,6 +3575,7 @@ leiminauts.Skill = Backbone.Model.extend({
 					}
 					else
 						effectNumber += parseFloat(value, 10);
+					effectNumber = leiminauts.utils.number(effectNumber);
 					effect = effectNumber;
 					if (regexRes[3] && showUnit) effect += regexRes[3];
 					if (regexRes[1] && regexRes[1] == "+" && effectNumber > 0 && (!oldEffect || oldEffect.toString().indexOf('+') === 0))
@@ -3588,17 +3586,19 @@ leiminauts.Skill = Backbone.Model.extend({
 			});
 			this.get('effects').push({ "key": key, value: effect });
 		}, this);
+		this.setSpecificEffects();
 		this.setDPS();
 		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
 	},
 
 	prepareBaseEffects: function() {
+		if (!this.get('selected')) return false;
 		if (!_(this.get('effects')).isString())
 			return false;
 		this.set('baseEffects', leiminauts.utils.treatEffects(this.get('effects')));
 		if (this.get('type') == "jump") {
 			var effects = _(this.get('baseEffects'));
-			effects.splice( _(effects).indexOf( _(effects).findWhere({ name: 'pills' }) ), 1 );
+			effects.splice( _(effects).indexOf( _(effects).findWhere({ key: 'pills' }) ), 1 );
 			var solar = effects.findWhere({key: "solar"});
 			var solarPerMin = effects.findWhere({key: "solar per min"});
 			if (!solar)
@@ -3608,13 +3608,55 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 	},
 
+	setSpecificEffects: function() {
+		if (!this.get('selected')) return false;
+		var effects = _(this.get('effects'));
+		var avgDmg = 0;
+
+		if (this.get('name') == "Missiles") {
+			var missilesSequence = [];
+			var baseDamage = effects.findWhere({key: "avg damage"}).value;
+			_(4).times(function() { missilesSequence.push(baseDamage); });
+			var missiles = effects.filter(function(effect) {
+				return (/^missile [0-9]$/).test(effect.key);
+			});
+			_(missiles).each(function(missile) {
+				var number = parseInt(missile.key.substr(-1), 10)-1;
+				missilesSequence[number] = (baseDamage + (4*number))*parseInt(missile.value, 10);
+			});
+
+			avgDmg = _(missilesSequence).reduce(function(memo, num){ return memo + num; }, 0) / missilesSequence.length;
+			effects.push({key: "damage", value: missilesSequence.join(' > ')});
+			effects.findWhere({key: "avg damage"}).value = leiminauts.utils.number(avgDmg);
+		}
+
+		if (this.get('name') == "Bash") {
+			var punchsSequence = _(this.get('baseEffects')).findWhere({key:"damage"}).value.split(' > ');
+			var punchs = effects.filter(function(effect) {
+				return (/^punch [0-9]$/).test(effect.key);
+			});
+			_(punchs).each(function(punch) {
+				var number = parseInt(punch.key.substr(-1), 10)-1;
+				punchsSequence[number] = punchsSequence[number]*1 + parseInt(punch.value, 10);
+				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: punch.key }) ), 1 );
+			});
+
+			avgDmg = _(punchsSequence).reduce(function(memo, num){ return memo + num*1; }, 0) / punchsSequence.length;
+			effects.findWhere({key: "damage"}).value = punchsSequence.join(' > ');
+			effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
+		}
+	},
+
 	setDPS: function() {
+		if (!this.get('selected')) return false;
 		var effects = _(this.get('effects'));
 		var attackSpeed = effects.findWhere({key: "attack speed"});
 		var damage = effects.findWhere({key: "damage"});
+		if (!damage) damage = effects.findWhere({key: "avg damage"});
 		var dps = effects.findWhere({key: "dps"});
 		if (attackSpeed && damage) {
 			var dpsVal = (parseFloat(attackSpeed.value, 10)/60*parseFloat(damage.value, 10)).toFixed(2);
+			dpsVal = leiminauts.utils.number(dpsVal);
 			if (dps) dps.value = dpsVal;
 			else effects.push({key: "DPS", value: dpsVal});
 		}
@@ -3743,9 +3785,7 @@ leiminauts.CharacterView = Backbone.View.extend({
 	initialize: function(opts) {
 		_.defaults(opts, { build: null, order: null, info: null });
 
-		this.model.get('skills').each(function(skill) {
-			skill.initUpgrades();
-		});
+		this.model.set('selected', true);
 
 		this.template = _.template( $('#char-tpl').html() );
 
@@ -3972,6 +4012,8 @@ leiminauts.App = Backbone.Router.extend({
 
 	buildMaker: function(naut, build, order) {
 		var character = this.data.findWhere({ name: _.ununderscored(naut) });
+		var others = this.data.reject(function(other) { _(other).isEqual(character); });
+		_(others).each(function(other) { other.set('selected', false); });
 		var charView = new leiminauts.CharacterView({
 			model: character,
 			build: build || null,

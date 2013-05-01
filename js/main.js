@@ -4,7 +4,7 @@
  * copyright (c) 2013, Emmanuel Pelletier
  */
 ;(function() {
-	MouseTooltip.init();
+	MouseTooltip.init({ "3d": true });
 
 	leiminauts.init = function(opts) {
 		opts = opts || {};
@@ -16,6 +16,7 @@
 
 	leiminauts.lastDataUpdate = new Date("April 30, 2013 09:00:00 GMT+0200");
 	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') || 0;
+	leiminauts.localDate = 0; //while dev
 
 	if (leiminauts.lastDataUpdate.getTime() > leiminauts.localDate) {
 		//dev 0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE
