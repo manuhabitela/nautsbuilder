@@ -11,3 +11,6 @@ composer.lock
 composer.phar
 
 node_modules
+
+.htaccess
+sftp-config.json
