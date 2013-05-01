@@ -5,18 +5,25 @@
  */
 leiminauts.Skill = Backbone.Model.extend({
 	initialize: function(attrs, opts) {
-		this._originalEffects = this.get('effects');
-
 		this.set('upgrades', new leiminauts.Upgrades());
 		this.upgrades = this.get('upgrades');
-		this.prepareBaseEffects();
-		this.set('totalCost', 0);
 		this.upgrades.on('change', this.updateEffects, this);
 		this.on('change:active', this.updateEffects, this);
 
 		this.on('change:active', this.updateUpgradesState, this);
-		this.set('active', this.get('cost') !== undefined && this.get('cost') <= 0);
-		this.set('toggable', !this.get('active'));
+
+		this.on('change:selected', this.onSelectedChange, this);
+	},
+
+	onSelectedChange: function() {
+		if (this.get('selected') && this.get('upgrades').length <= 0) {
+			this._originalEffects = this.get('effects');
+			this.prepareBaseEffects();
+			this.initUpgrades();
+			this.set('totalCost', 0);
+			this.set('active', this.get('cost') !== undefined && this.get('cost') <= 0);
+			this.set('toggable', !this.get('active'));
+		}
 	},
 
 	initUpgrades: function() {
@@ -81,6 +88,7 @@ leiminauts.Skill = Backbone.Model.extend({
 	},
 
 	updateEffects: function(e) {
+		if (!this.get('selected')) return false;
 		if (!this.get('active')) {
 			this.set('effects', []);
 			this.set('totalCost', 0);
@@ -159,6 +167,7 @@ leiminauts.Skill = Backbone.Model.extend({
 	},
 
 	prepareBaseEffects: function() {
+		if (!this.get('selected')) return false;
 		if (!_(this.get('effects')).isString())
 			return false;
 		this.set('baseEffects', leiminauts.utils.treatEffects(this.get('effects')));
@@ -175,6 +184,7 @@ leiminauts.Skill = Backbone.Model.extend({
 	},
 
 	setDPS: function() {
+		if (!this.get('selected')) return false;
 		var effects = _(this.get('effects'));
 		var attackSpeed = effects.findWhere({key: "attack speed"});
 		var damage = effects.findWhere({key: "damage"});

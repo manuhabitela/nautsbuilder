@@ -14,9 +14,7 @@ leiminauts.CharacterView = Backbone.View.extend({
 	initialize: function(opts) {
 		_.defaults(opts, { build: null, order: null, info: null });
 
-		this.model.get('skills').each(function(skill) {
-			skill.initUpgrades();
-		});
+		this.model.set('selected', true);
 
 		this.template = _.template( $('#char-tpl').html() );
 

@@ -29,6 +29,8 @@ leiminauts.App = Backbone.Router.extend({
 
 	buildMaker: function(naut, build, order) {
 		var character = this.data.findWhere({ name: _.ununderscored(naut) });
+		var others = this.data.reject(function(other) { _(other).isEqual(character); });
+		_(others).each(function(other) { other.set('selected', false); });
 		var charView = new leiminauts.CharacterView({
 			model: character,
 			build: build || null,
