@@ -5,6 +5,8 @@
  */
 leiminauts.Skill = Backbone.Model.extend({
 	initialize: function(attrs, opts) {
+		this._originalEffects = this.get('effects');
+
 		this.set('upgrades', new leiminauts.Upgrades());
 		this.upgrades = this.get('upgrades');
 		this.prepareBaseEffects();
@@ -15,7 +17,6 @@ leiminauts.Skill = Backbone.Model.extend({
 		this.on('change:active', this.updateUpgradesState, this);
 		this.set('active', this.get('cost') !== undefined && this.get('cost') <= 0);
 		this.set('toggable', !this.get('active'));
-
 	},
 
 	initUpgrades: function() {
@@ -32,6 +33,9 @@ leiminauts.Skill = Backbone.Model.extend({
 			}
 			skillUpgrades.splice( _(skillUpgrades).indexOf( _(skillUpgrades).findWhere({ name: unwantedPills }) ), 1 );
 
+			var effects = leiminauts.utils.treatEffects(this._originalEffects);
+			effects.splice( _(effects).indexOf( _(effects).findWhere({ key: 'pills' }) ), 1 );
+
 			//some chars have unique jump upgrades that replace common ones
 			var customJumpUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
 			_(skillUpgrades).each(function(upgrade, i) {
@@ -44,6 +48,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			skillUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
 		}
 		this.get('upgrades').reset(skillUpgrades);
+		this.updateUpgradesState();
 	},
 
 	setActive: function(active) {
@@ -116,25 +121,32 @@ leiminauts.Skill = Backbone.Model.extend({
 		//for leon tong with max damage, our effects var now looks like: { "damage": ["+9", "+9"], "range": ["+2.4"], ...  }
 		//we must combine effects values that looks like numbers so we have "damage": "+18",
 		//without forgetting the possible "+", "-", "%", "s", etc
-		var effectRegex = /^(\+|-)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
+		var effectRegex = /^(\+|-|\/)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
 		_(effects).each(function(values, key) {
 			var effect = "";
 			var oldEffect = false;
-			_(values).each(function(value) {
+			_(values).each(function(value, i) {
 				regexRes = effectRegex.exec(value);
 				if (regexRes !== null) {
 					var showUnit = true;
-					var effectNumber = parseFloat(effect, 10);
+					var effectNumber = parseFloat(effect);
 					if (_(effectNumber).isNaN()) effectNumber = 0;
-					if (regexRes[3] && regexRes[3] == "%" && effectNumber !== 0) {
-						effectNumber = effectNumber * (1 + parseFloat(value, 10)/100);
+
+					//if original value is %, we just += values. Otherwise (ie attack speed), we calculate the % based on original value
+					if (regexRes[3] && regexRes[3] == "%" && effectNumber !== 0 && values[0].substr(-1) != "%") {
+						effectNumber += parseFloat(values[0]) * (parseFloat(value)/100);
+						// effectNumber = effectNumber * (1 + parseFloat(value)/100);
 						showUnit = false;
+					}
+					//we divide if there is a "/"
+					else if (regexRes[1] && regexRes[1] == "/") {
+						effectNumber = effectNumber/parseFloat(value.substr(1));
 					}
 					else
 						effectNumber += parseFloat(value, 10);
 					effect = effectNumber;
 					if (regexRes[3] && showUnit) effect += regexRes[3];
-					if (regexRes[1] && effectNumber > 0 && (!oldEffect || oldEffect.toString().indexOf('+') === 0))
+					if (regexRes[1] && regexRes[1] == "+" && effectNumber > 0 && (!oldEffect || oldEffect.toString().indexOf('+') === 0))
 						effect = "+" + effect;
 				} else
 					effect = value;
