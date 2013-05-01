@@ -46,9 +46,11 @@ Characters should be listed in the same order as they are in the character selec
 * If the upgrade replaces a common upgrade (like Solar Krab Burgers for Voltar), bind the upgrade to the character's jump skill (for Voltar, this would be "Hover"), and write the upgrade it must replaces in the `replaces` field (for Voltar and his burgers, this would be "Piggy Bank").
 * Upgrade has multiple steps: describe them in `step1`, `step2`... fields. **Steps are formatted just like skill effects**: a `;` separated list of `key:value` pairs. The "keys" should match the ones of the skill. For example, if a skill has a `damage: 8`, and one of its upgrades adds 4 damage, make sure to write `damage: +4` in the step field, and not `damages: +4` or `adds 4 damage`.
 
-# Licence
+# License
 
-Licensed under GPL v2 http://www.opensource.org/licenses/gpl-2.0.php
+Licensed under MPL v2 http://mozilla.org/MPL/2.0/
+
+That pretty much means you can take the code and integrate it in your app (open-sourced or not). Remember you must open-source the changes you make to the Nautsbuilder code.
 
 # Credits
 
