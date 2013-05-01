@@ -93,6 +93,11 @@
 					<p><strong><%= name %></strong></p>
 					<p><%= description %></p>
 					<p class="cost">Cost: <span class="info"><%= cost %></span></p>
+					<p><strong>Effects:</strong><br>
+					<% _(baseEffects).each(function(effect) { %>
+						<%= _(effect.key).capitalized() %>: <%= effect.value %>;
+					<% }) %>
+					</p>
 				</div>
 			</div>
 			<div class="skill-upgrades">
