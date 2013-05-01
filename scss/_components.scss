@@ -33,7 +33,6 @@
 %tooltip {
 	@extend %box;
 	max-width: 300px;
-	font-family: sans-serif;
 	font-size: small;
 	z-index: 999;
 	background: rgba(#FFF68E, 0.95);
@@ -54,7 +53,7 @@
 		right: 1px;
 		content: ' ';
 		background: black;
-		opacity: 0.7;
+		opacity: 0.55;
 	}
 }
 

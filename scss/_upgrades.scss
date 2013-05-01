@@ -21,11 +21,11 @@
 }
 
 .upgrade-cost {
-	left: 0;
+	right: 0;
 }
 
 .upgrade-step {
-	right: 0;
+	left: 0;
 	display: none;
 	background-color: #B07C06;
 	&.max {

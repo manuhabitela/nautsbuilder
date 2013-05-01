@@ -7,10 +7,10 @@
 
 #mouse-tooltip .info, .icon-details, .char-info .info, .skill-effects dd { font-size: x-small; padding: 2px 4px; border-radius: 5px; font-weight: bold; background: black; background: rgba(0, 0, 0, 0.5); color: #fff; z-index: 30; }
 
-#mouse-tooltip { max-width: 300px; font-family: sans-serif; font-size: small; z-index: 999; background: rgba(255, 246, 142, 0.95); color: #222; border: none; }
+#mouse-tooltip { max-width: 300px; font-size: small; z-index: 999; background: rgba(255, 246, 142, 0.95); color: #222; border: none; }
 
 .skill-icon, .upgrade { position: relative; z-index: 10; }
-.skill-icon:after, .upgrade:after { position: absolute; z-index: 20; display: block; top: 1px; bottom: 1px; left: 1px; right: 1px; content: ' '; background: black; opacity: 0.7; }
+.skill-icon:after, .upgrade:after { position: absolute; z-index: 20; display: block; top: 1px; bottom: 1px; left: 1px; right: 1px; content: ' '; background: black; opacity: 0.55; }
 
 #mouse-tooltip .cost, .char-info .char-total-cost .cost, .skill-effects dt.total_cost span, .upgrade-popup .cost { padding-left: 24px; min-height: 21px; background: url('../img/solar_small.png?1367166637') no-repeat center left; }
 
@@ -54,7 +54,7 @@ img { border: 0; }
 
 svg:not(:root) { overflow: hidden; }
 
-fieldset { border: 1px solid silver; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
+fieldset { border: 1px solid #c0c0c0; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
 
 legend { border: 0; padding: 0; }
 
@@ -139,7 +139,7 @@ body[data-page="chars-list"] #container, body[data-page="chars-list"] .chars-lis
 
 .current-char-left { float: left; max-height: 100%; overflow: auto; }
 
-.current-char-info { float: left; width: 40%; text-align: center; position: relative; }
+.current-char-info { float: left; width: 40%; text-align: center; position: relative; height: 100%; }
 
 .current-char-name { position: absolute; bottom: 60px; left: 0; right: 0; font-size: 4em; margin: 0; line-height: 1; text-shadow: 0 2px 6px black; }
 @media only screen and (max-height: 780px) { .current-char-name { font-size: 3em; } }
@@ -191,8 +191,8 @@ body[data-page="chars-list"] #container, body[data-page="chars-list"] .chars-lis
 
 .upgrade-icon { -webkit-user-select: none; -moz-user-select: none; user-select: none; }
 
-.upgrade-cost { left: 0; }
+.upgrade-cost { right: 0; }
 
-.upgrade-step { right: 0; display: none; background-color: #B07C06; }
+.upgrade-step { left: 0; display: none; background-color: #B07C06; }
 .upgrade-step.max { background-color: #07AF26; }
 .upgrade.active .upgrade-step { display: block; }
