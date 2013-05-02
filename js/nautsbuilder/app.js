@@ -28,7 +28,10 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	buildMaker: function(naut, build, order) {
-		var character = this.data.findWhere({ name: _.ununderscored(naut) });
+		var character = this.data.filter(function(character) {
+			return character.get('name').toLowerCase() ==  _.ununderscored(naut).toLowerCase();
+		});
+		if (character.length) character = character[0]; else return false;
 		var others = this.data.reject(function(other) { _(other).isEqual(character); });
 		_(others).each(function(other) { other.set('selected', false); });
 		var charView = new leiminauts.CharacterView({
