@@ -1,7 +1,4 @@
-body[data-page="chars-list"] {
-	@include background-image(radial-gradient(800px 800px, #6D0206, #220000));
-	@include background-image(radial-gradient(90% 90%, #6D0206, #220000));
-
+body.page-red {
 	#container, .chars-list-container, .current-char {
 		height: 100%;
 	}

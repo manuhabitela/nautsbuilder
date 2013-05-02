@@ -21,6 +21,7 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	list: function() {
+		$('body').removeClass('page-blue').addClass('page-red');
 		var charsView = new leiminauts.CharactersView({
 			collection: this.data
 		});
@@ -28,6 +29,7 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	buildMaker: function(naut, build, order) {
+		$('body').addClass('page-blue').removeClass('page-red');
 		var character = this.data.filter(function(character) {
 			return character.get('name').toLowerCase() ==  _.ununderscored(naut).toLowerCase();
 		});

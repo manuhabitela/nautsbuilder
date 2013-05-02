@@ -6,10 +6,12 @@
 ;(function() {
 	MouseTooltip.init({ "3d": true });
 
+	//small "hack" to set the page to red background directly if we're on root
+	$('body').toggleClass('page-red', !window.location.hash.length);
+
 	leiminauts.init = function(opts) {
 		opts = opts || {};
 		_.defaults(opts, { el: "#container", spreadsheet: false });
-		console.log(opts);
 		window.nautsbuilder = new leiminauts.App(opts);
 		Backbone.history.start({pushState: false, root: "/nautsbuilder/"});
 	};
