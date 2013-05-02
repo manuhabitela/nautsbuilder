@@ -202,7 +202,11 @@ leiminauts.Skill = Backbone.Model.extend({
 				var number = parseInt(missile.key.substr(-1), 10)-1;
 				missilesSequence[number] = (baseDamage + (4*number))*parseInt(missile.value, 10);
 			});
-
+			
+			while ((missilesSequence.length > 1) && (missilesSequence[missilesSequence.length-1] == baseDamage)) {
+			    missilesSequence.pop();
+			}
+			
 			avgDmg = _(missilesSequence).reduce(function(memo, num){ return memo + num; }, 0) / missilesSequence.length;
 			effects.push({key: "damage", value: missilesSequence.join(' > ')});
 			effects.findWhere({key: "avg damage"}).value = leiminauts.utils.number(avgDmg);
