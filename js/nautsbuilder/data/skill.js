@@ -63,7 +63,8 @@ leiminauts.Skill = Backbone.Model.extend({
 			this.set('active', !!active);
 	},
 
-	updateUpgradesState: function() {
+	updateUpgradesState: function(active) {
+		active = active !== undefined ? active : this.get('active');
 		this.upgrades.each(function(upgrade) {
 			upgrade.setStep(0);
 			upgrade.set('locked', !this.get('active'));

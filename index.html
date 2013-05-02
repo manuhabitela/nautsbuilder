@@ -68,6 +68,7 @@
 		</script>
 
 		<script type="text/template" id="build-tpl">
+			<div class="build-cancel" title="Reset this build">x</div>
 		</script>
 
 		<script type="text/template" id="info-tpl">
@@ -102,8 +103,7 @@
 			</div>
 			<div class="skill-upgrades">
 			</div>
-			<!--<div class="skill-cancel">x
-			</div>-->
+			<div class="skill-cancel <%= ((toggable && active) || (upgrades.where({ active: true }).length > 0)) ? 'active' : '' %>" title="Reset this skill">x</div>
 		</div>
 		<% if (effects.length > 0) { %>
 		<div class="skill-effects">

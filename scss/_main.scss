@@ -14,7 +14,7 @@
 
 #warning {
 	position: fixed;
-	top: 0;
+	bottom: 2px;
 	left: 0;
 	font-size: 11px;
 	line-height: 11px;
@@ -25,28 +25,4 @@
 	@extend %info;
 	position: absolute;
 	bottom: 0;
-}
-
-.char-builder {
-	width: 1084px;
-	margin: 50px;
-}
-
-.char-info {
-	@extend %box;
-	margin-left: 594px;
-	padding-left: 0;
-	padding-top: 0;
-	margin-top: 20px;
-	.char-icon {
-		float: left;
-		margin-right: 20px;
-	}
-	.char-total-cost .cost {
-		@extend %cost;
-	}
-	.info {
-		@extend %info;
-		font-size: $base-font-size;
-	}
 }

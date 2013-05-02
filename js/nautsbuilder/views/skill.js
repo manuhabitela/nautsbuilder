@@ -11,7 +11,8 @@ leiminauts.SkillView = Backbone.View.extend({
 	events: {
 		'mouseover .skill-icon': 'handleTooltip',
 		'mouseout .skill-icon': 'handleTooltip',
-		'click .skill-icon': 'toggleState'
+		'click .skill-icon': 'toggleState',
+		'click .skill-cancel': 'reset'
 	},
 
 	initialize: function() {
@@ -29,6 +30,12 @@ leiminauts.SkillView = Backbone.View.extend({
 
 	toggleState: function() {
 		this.model.setActive(!this.model.get('active'));
+	},
+
+	reset: function() {
+		this.model.setActive(false);
+		if (!this.model.get('toggable'))
+			this.model.updateUpgradesState(false);
 	},
 
 	render: function() {

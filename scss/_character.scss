@@ -1,0 +1,67 @@
+.char-builder {
+}
+
+.build {
+	width: 1104px;
+	margin: 20px;
+	position: relative;
+}
+
+.build-cancel {
+	@extend %cancel;
+	background-size: 32px 32px;
+	width: 28px;
+	height: 32px;
+	position: absolute;
+	left: 690px;
+	top: -17px;
+	z-index: 100;
+	opacity: 0.3;
+	&.active {
+		opacity: 1;
+		&:hover {
+			opacity: 0.9;
+		}
+	}
+}
+
+.char-builder {
+	.current-char {
+		@extend .hidden;
+	}
+
+	.chars-list {
+		.char {
+			border-width: 1px;
+			margin: 2px 0 2px -4px;
+			&:hover, &.active {
+				border-radius: 0;
+			}
+			&.home-button {
+				&:hover, &.active { border-color: transparent; opacity: 0.8; }
+			}
+		}
+		.char-icon {
+			width: 20px;
+		}
+	}
+}
+
+.char-info {
+	@extend %box;
+	margin-left: 644px;
+	padding-left: 0;
+	padding-top: 0;
+	margin-top: 20px;
+	.char-icon {
+		float: left;
+		margin-right: 20px;
+	}
+	.char-total-cost .cost {
+		@extend %cost;
+	}
+	.info {
+		@extend %info;
+		font-size: $base-font-size;
+	}
+}

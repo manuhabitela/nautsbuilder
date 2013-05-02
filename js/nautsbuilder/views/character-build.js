@@ -9,6 +9,7 @@ leiminauts.BuildView = Backbone.View.extend({
 	className: 'build',
 
 	events: {
+		"click .build-cancel": "reset"
 	},
 
 	initialize: function() {
@@ -23,14 +24,42 @@ leiminauts.BuildView = Backbone.View.extend({
 		}, this);
 
 		this.template = _.template( $('#build-tpl').html() );
+
+		//not that good to put this here but YOLO
+		this.model.get('skills').on('change:active', this.toggleResetButtonClass, this);
+		this.model.get('skills').each(_.bind(function(skill) { skill.get('upgrades').on('change:active', this.toggleResetButtonClass, this); }, this));
+		this.toggleResetButtonClass();
+	},
+
+	//not that good to put this here but YOLO
+	toggleResetButtonClass: function() {
+		if (!this.$resetButton) return false;
+
+		var active = false;
+		this.model.get('skills').each(function(skill) {
+			if ( (skill.get('active') && skill.get('toggable')) || skill.getActiveUpgrades().length > 0) {
+				active = true;
+				return false;
+			}
+		});
+		this.$resetButton.toggleClass('active', active);
 	},
 
 	render: function() {
 		this.$el.html(this.template( this.model.toJSON() ));
+		this.$resetButton = this.$('.build-cancel');
 		_(this.skills).each(function(skill) {
 			skill.delegateEvents();
 			this.$el.append(skill.render().el);
 		}, this);
 		return this;
+	},
+
+	reset: function() {
+		this.model.get('skills').each(function(skill) {
+			skill.setActive(false);
+			if (!skill.get('toggable'))
+				skill.updateUpgradesState(false);
+		});
 	}
 });

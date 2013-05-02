@@ -88,3 +88,18 @@
 		display: none;
 	}
 }
+
+.skill-cancel {
+	@extend %cancel;
+	margin-top: 32px;
+	background-size: 24px 24px;
+	width: 21px;
+	height: 24px;
+	opacity: 0.3;
+	&.active {
+		opacity: 1;
+		&:hover {
+			opacity: 0.9;
+		}
+	}
+}
