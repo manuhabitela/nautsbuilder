@@ -202,6 +202,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			_(missiles).each(function(missile) {
 				var number = parseInt(missile.key.substr(-1), 10)-1;
 				missilesSequence[number] = (baseDamage + (4*number))*parseInt(missile.value, 10);
+				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: missile.key }) ), 1 );
 			});
 
 			avgDmg = _(missilesSequence).reduce(function(memo, num){ return memo + num; }, 0) / missilesSequence.length;
