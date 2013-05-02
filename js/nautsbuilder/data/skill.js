@@ -90,7 +90,6 @@ leiminauts.Skill = Backbone.Model.extend({
 
 	updateEffects: function(e) {
 		if (!this.get('selected')) return false;
-		console.log(this.get('name'));
 		if (!this.get('active')) {
 			this.set('effects', []);
 			this.set('totalCost', 0);
@@ -113,24 +112,34 @@ leiminauts.Skill = Backbone.Model.extend({
 		//combine similar steps: some characters have upgrades that enhance similar things.
 		// Ie Leon has 2 upgrades that add damages to its tong (1: +3/+6/+9 and 2: +9)
 		//
-		// this is KIND OF a mess. deal with it.
+		// this is KIND OF a mess
+		// update 2nd of may 2013: THIS IS A BIG FREAKIN MESS. HOW DARE YOU. Sorry, future me.
 		this.set('effects', [], {silent: true});
 		var effects = {};
+		var effectsAtEnd = [];
 		var organizeEffects = function(attributesList) {
 			_(attributesList).each(function(attr) {
-				if (effects[attr.key] !== undefined)
-					effects[attr.key].push(attr.value);
-				else
-					effects[attr.key] = [attr.value];
+				var val = attr.value;
+				//if the effect concerns a division, it is put at the end of the array so that it divides the whole value
+				if (attributesList !== effectsAtEnd && val.toString().charAt(0) == "/" && !_(parseFloat(val.substr(1))).isNaN())
+					effectsAtEnd.push({key: attr.key, value: val});
+				else {
+					if (effects[attr.key] !== undefined)
+						effects[attr.key].push(attr.value);
+					else
+						effects[attr.key] = [attr.value];
+				}
 			});
 		};
 		organizeEffects(this.get('baseEffects'));
 		_(activeSteps).each(function(step, i) {
 			organizeEffects(step.get('attrs'));
 		});
+		organizeEffects(effectsAtEnd);
+
 		//for leon tong with max damage, our effects var now looks like: { "damage": ["+9", "+9"], "range": ["+2.4"], ...  }
 		//we must combine effects values that looks like numbers so we have "damage": "+18",
-		//without forgetting the possible "+", "-", "%", "s", etc
+		//without forgetting the possible "+", "-", "%", "/", "s"
 		var effectRegex = /^(\+|-|\/)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
 		_(effects).each(function(values, key) {
 			var effect = "";
@@ -145,7 +154,6 @@ leiminauts.Skill = Backbone.Model.extend({
 					//if original value is %, we just += values. Otherwise (ie attack speed), we calculate the % based on original value
 					if (regexRes[3] && regexRes[3] == "%" && effectNumber !== 0 && values[0].substr(-1) != "%") {
 						effectNumber += parseFloat(values[0]) * (parseFloat(value)/100);
-						// effectNumber = effectNumber * (1 + parseFloat(value)/100);
 						showUnit = false;
 					}
 					//we divide if there is a "/"
@@ -231,8 +239,8 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (!this.get('selected')) return false;
 		var effects = _(this.get('effects'));
 		var attackSpeed = effects.findWhere({key: "attack speed"});
-		var damage = effects.findWhere({key: "damage"});
-		if (!damage) damage = effects.findWhere({key: "avg damage"});
+		var damage = effects.findWhere({key: "avg damage"});
+		if (!damage) damage = effects.findWhere({key: "damage"});
 		var dps = effects.findWhere({key: "dps"});
 		if (attackSpeed && damage) {
 			var dpsVal = (parseFloat(attackSpeed.value, 10)/60*parseFloat(damage.value, 10)).toFixed(2);
