@@ -14,13 +14,18 @@ module.exports = function(grunt) {
 			"* This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */"
 		},
 		concat: {
-			dist: {
+			lib: {
 				src: [
 					'js/lib/jquery.min.js',
 					'js/lib/underscore.js',
 					'js/lib/backbone.js',
 					'js/lib/tabletop.js',
-					'js/lib/mousetooltip.js',
+					'js/lib/mousetooltip.js'
+				],
+				dest: 'dist/libs.js'
+			},
+			app: {
+				src: [
 					'<banner>',
 					'js/nautsbuilder/utils.js',
 					'js/nautsbuilder/data/character.js',
@@ -41,7 +46,11 @@ module.exports = function(grunt) {
 			}
 		},
 		min: {
-			dist: {
+			libs: {
+				src: ['dist/libs.js'],
+				dest: 'dist/libs.min.js'
+			},
+			app: {
 				src: ['<banner>', 'dist/scripts.js'],
 				dest: 'dist/scripts.min.js'
 			}
