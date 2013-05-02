@@ -4,9 +4,11 @@ body.page-red {
 	}
 }
 
+
 .current-char {
 	@extend .clearfix;
 	padding-bottom: 100px;
+	@include background-image(radial-gradient(50% -100px, rgba(#E6CA08, 0.8), transparent 600px));
 }
 
 .current-char-box {

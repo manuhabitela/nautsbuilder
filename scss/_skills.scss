@@ -12,7 +12,7 @@
 	display: inline-block;
 	text-align: left;
 	border-radius: 50px 0px 0px 50px;
-	padding: 5px;
+	padding: 5px 8px 5px 5px;
 	background-color: hsla(197, 70%, 50%, 0.8);
 	position: relative;
 	max-height: 100px;
@@ -20,6 +20,7 @@
 
 .skill-effects {
 	@extend %box;
+	padding-top: 7px;
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -55,13 +56,11 @@
 	}
 }
 
-.skill:hover + .skill-effects, .skill-effects:hover {
+.skill-wrapper:hover > .skill-effects, .skill-effects:hover {
 	background-color: #1E8FBC;
 	max-height: 600px;
 	overflow: visible;
 	z-index: 50;
-	// font-size: $base-font-size*.9;
-	// line-height: $base-line-height;
 }
 
 .skill-info {
