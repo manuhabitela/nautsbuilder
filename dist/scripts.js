@@ -3267,7 +3267,7 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 	};
 	var self = window.MouseTooltip;
 })();
-/* Nautsbuilder - Awesomenauts build calculator v0.4.2 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.5 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -3357,7 +3357,7 @@ leiminauts.utils = {
 leiminauts.Character = Backbone.Model.extend({
 	initialize: function() {
 		this.set('totalCost', 0);
-		this.set('level', 0);
+		this.set('level', 1);
 		this.get('skills').on('change:totalCost', this.onCostChange, this);
 
 		this.on('change:selected', this.onSelectedChange, this);
@@ -3368,7 +3368,7 @@ leiminauts.Character = Backbone.Model.extend({
 		this.get('skills').each(function(skill) {
 			cost += skill.get('totalCost');
 		});
-		this.set('level', Math.floor( (cost-100)/100) <= 0 ? 0 : Math.floor((cost-100)/100));
+		this.set('level', Math.floor( (cost-100)/100) <= 1 ? 1 : Math.floor((cost-100)/100));
 		this.set('totalCost', cost);
 	},
 
@@ -3485,7 +3485,8 @@ leiminauts.Skill = Backbone.Model.extend({
 			this.set('active', !!active);
 	},
 
-	updateUpgradesState: function() {
+	updateUpgradesState: function(active) {
+		active = active !== undefined ? active : this.get('active');
 		this.upgrades.each(function(upgrade) {
 			upgrade.setStep(0);
 			upgrade.set('locked', !this.get('active'));
@@ -3511,7 +3512,6 @@ leiminauts.Skill = Backbone.Model.extend({
 
 	updateEffects: function(e) {
 		if (!this.get('selected')) return false;
-		console.log(this.get('name'));
 		if (!this.get('active')) {
 			this.set('effects', []);
 			this.set('totalCost', 0);
@@ -3534,24 +3534,34 @@ leiminauts.Skill = Backbone.Model.extend({
 		//combine similar steps: some characters have upgrades that enhance similar things.
 		// Ie Leon has 2 upgrades that add damages to its tong (1: +3/+6/+9 and 2: +9)
 		//
-		// this is KIND OF a mess. deal with it.
+		// this is KIND OF a mess
+		// update 2nd of may 2013: THIS IS A BIG FREAKIN MESS. HOW DARE YOU. Sorry, future me.
 		this.set('effects', [], {silent: true});
 		var effects = {};
+		var effectsAtEnd = [];
 		var organizeEffects = function(attributesList) {
 			_(attributesList).each(function(attr) {
-				if (effects[attr.key] !== undefined)
-					effects[attr.key].push(attr.value);
-				else
-					effects[attr.key] = [attr.value];
+				var val = attr.value;
+				//if the effect concerns a division, it is put at the end of the array so that it divides the whole value
+				if (attributesList !== effectsAtEnd && val.toString().charAt(0) == "/" && !_(parseFloat(val.substr(1))).isNaN())
+					effectsAtEnd.push({key: attr.key, value: val});
+				else {
+					if (effects[attr.key] !== undefined)
+						effects[attr.key].push(attr.value);
+					else
+						effects[attr.key] = [attr.value];
+				}
 			});
 		};
 		organizeEffects(this.get('baseEffects'));
 		_(activeSteps).each(function(step, i) {
 			organizeEffects(step.get('attrs'));
 		});
+		organizeEffects(effectsAtEnd);
+
 		//for leon tong with max damage, our effects var now looks like: { "damage": ["+9", "+9"], "range": ["+2.4"], ...  }
 		//we must combine effects values that looks like numbers so we have "damage": "+18",
-		//without forgetting the possible "+", "-", "%", "s", etc
+		//without forgetting the possible "+", "-", "%", "/", "s"
 		var effectRegex = /^(\+|-|\/)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
 		_(effects).each(function(values, key) {
 			var effect = "";
@@ -3566,7 +3576,6 @@ leiminauts.Skill = Backbone.Model.extend({
 					//if original value is %, we just += values. Otherwise (ie attack speed), we calculate the % based on original value
 					if (regexRes[3] && regexRes[3] == "%" && effectNumber !== 0 && values[0].substr(-1) != "%") {
 						effectNumber += parseFloat(values[0]) * (parseFloat(value)/100);
-						// effectNumber = effectNumber * (1 + parseFloat(value)/100);
 						showUnit = false;
 					}
 					//we divide if there is a "/"
@@ -3615,7 +3624,7 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		if (this.get('name') == "Missiles") {
 			var missilesSequence = [];
-			var baseDamage = effects.findWhere({key: "avg damage"}).value;
+			var baseDamage = effects.findWhere({key: "damage"}).value;
 			_(4).times(function() { missilesSequence.push(baseDamage); });
 			var missiles = effects.filter(function(effect) {
 				return (/^missile [0-9]$/).test(effect.key);
@@ -3623,11 +3632,13 @@ leiminauts.Skill = Backbone.Model.extend({
 			_(missiles).each(function(missile) {
 				var number = parseInt(missile.key.substr(-1), 10)-1;
 				missilesSequence[number] = (baseDamage + (4*number))*parseInt(missile.value, 10);
+				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: missile.key }) ), 1 );
 			});
-
+			while ((missilesSequence.length > 1) && (missilesSequence[missilesSequence.length-1] == baseDamage))
+				missilesSequence.pop();
 			avgDmg = _(missilesSequence).reduce(function(memo, num){ return memo + num; }, 0) / missilesSequence.length;
-			effects.push({key: "damage", value: missilesSequence.join(' > ')});
-			effects.findWhere({key: "avg damage"}).value = leiminauts.utils.number(avgDmg);
+			effects.findWhere({key: "damage"}).value = missilesSequence.join(' > ');
+			effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
 		}
 
 		if (this.get('name') == "Bash") {
@@ -3651,8 +3662,8 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (!this.get('selected')) return false;
 		var effects = _(this.get('effects'));
 		var attackSpeed = effects.findWhere({key: "attack speed"});
-		var damage = effects.findWhere({key: "damage"});
-		if (!damage) damage = effects.findWhere({key: "avg damage"});
+		var damage = effects.findWhere({key: "avg damage"});
+		if (!damage) damage = effects.findWhere({key: "damage"});
 		var dps = effects.findWhere({key: "dps"});
 		if (attackSpeed && damage) {
 			var dpsVal = (parseFloat(attackSpeed.value, 10)/60*parseFloat(damage.value, 10)).toFixed(2);
@@ -3666,6 +3677,7 @@ leiminauts.Skill = Backbone.Model.extend({
 leiminauts.Skills = Backbone.Collection.extend({
 	model: leiminauts.Skill
 });
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -3744,24 +3756,27 @@ leiminauts.CharactersView = Backbone.View.extend({
 		this.template = _.template( $('#chars-tpl').html() );
 		this.collection.on('add remove reset', this.render, this);
 
+		if (this.options.character !== undefined)
+			this.character = this.options.character.model.toJSON();
+
 		this.currentChar = null;
 
 		this.mouseOverTimeout = null;
 
-		this.$el.on('mouseover', '.char', _.bind(_.debounce(this.showCharInfo, 200), this));
+		this.$el.on('mouseover', '.char', _.bind(_.debounce(this.showCharInfo, 50), this));
 	},
 
 	render: function() {
-		$('body').attr('data-page', 'chars-list');
-		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar }));
+		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar, character: this.character }));
 		return this;
 	},
 
 	selectCharacter: function(e) {
-		this.trigger('selected', $(e.currentTarget).attr('data-id'));
+		this.collection.trigger('selected', $(e.currentTarget).attr('data-id'));
 	},
 
 	showCharInfo: function(e) {
+		if (this.character) return false;
 		var character = $(e.currentTarget).attr('data-id');
 		if (this.currentChar === null || this.currentChar.get('name') !== _.ununderscored(character)) {
 			this.currentChar = this.collection.findWhere({name: _.ununderscored(character)});
@@ -3789,6 +3804,7 @@ leiminauts.CharacterView = Backbone.View.extend({
 
 		this.template = _.template( $('#char-tpl').html() );
 
+		this.characters = new leiminauts.CharactersView({ character: this, state: opts.build, collection: this.collection });
 		this.build = new leiminauts.BuildView({ character: this, state: opts.build });
 		this.info = new leiminauts.InfoView({ character: this, state: opts.info });
 		this.order = new leiminauts.OrderView({ character: this, state: opts.order });
@@ -3799,6 +3815,7 @@ leiminauts.CharacterView = Backbone.View.extend({
 	render: function() {
 		$('body').attr('data-page', 'char');
 		this.$el.html(this.template( this.model.toJSON() ));
+		this.assign(this.characters, '.chars');
 		this.assign(this.build, '.build');
 		this.assign(this.info, '.char-info');
 		this.assign(this.order, '.order');
@@ -3816,6 +3833,7 @@ leiminauts.BuildView = Backbone.View.extend({
 	className: 'build',
 
 	events: {
+		"click .build-cancel": "reset"
 	},
 
 	initialize: function() {
@@ -3830,15 +3848,43 @@ leiminauts.BuildView = Backbone.View.extend({
 		}, this);
 
 		this.template = _.template( $('#build-tpl').html() );
+
+		//not that good to put this here but YOLO
+		this.model.get('skills').on('change:active', this.toggleResetButtonClass, this);
+		this.model.get('skills').each(_.bind(function(skill) { skill.get('upgrades').on('change:active', this.toggleResetButtonClass, this); }, this));
+		this.toggleResetButtonClass();
+	},
+
+	//not that good to put this here but YOLO
+	toggleResetButtonClass: function() {
+		if (!this.$resetButton) return false;
+
+		var active = false;
+		this.model.get('skills').each(function(skill) {
+			if ( (skill.get('active') && skill.get('toggable')) || skill.getActiveUpgrades().length > 0) {
+				active = true;
+				return false;
+			}
+		});
+		this.$resetButton.toggleClass('active', active);
 	},
 
 	render: function() {
 		this.$el.html(this.template( this.model.toJSON() ));
+		this.$resetButton = this.$('.build-cancel');
 		_(this.skills).each(function(skill) {
 			skill.delegateEvents();
 			this.$el.append(skill.render().el);
 		}, this);
 		return this;
+	},
+
+	reset: function() {
+		this.model.get('skills').each(function(skill) {
+			skill.setActive(false);
+			if (!skill.get('toggable'))
+				skill.updateUpgradesState(false);
+		});
 	}
 });
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -3880,7 +3926,8 @@ leiminauts.SkillView = Backbone.View.extend({
 	events: {
 		'mouseover .skill-icon': 'handleTooltip',
 		'mouseout .skill-icon': 'handleTooltip',
-		'click .skill-icon': 'toggleState'
+		'click .skill-icon': 'toggleState',
+		'click .skill-cancel': 'reset'
 	},
 
 	initialize: function() {
@@ -3898,6 +3945,12 @@ leiminauts.SkillView = Backbone.View.extend({
 
 	toggleState: function() {
 		this.model.setActive(!this.model.get('active'));
+	},
+
+	reset: function() {
+		this.model.setActive(false);
+		if (!this.model.get('toggable'))
+			this.model.updateUpgradesState(false);
 	},
 
 	render: function() {
@@ -3996,34 +4049,40 @@ leiminauts.App = Backbone.Router.extend({
 	initialize: function(options) {
 		if (options.spreadsheet !== undefined) {
 			this.data = new leiminauts.CharactersData(null, { spreadsheet: options.spreadsheet });
+			this.data.on('selected', function(naut) {
+				this.navigate(naut, { trigger: true });
+			}, this);
 		}
 		this.$el = $(options.el);
 	},
 
 	list: function() {
+		$('body').removeClass('page-blue').addClass('page-red');
 		var charsView = new leiminauts.CharactersView({
 			collection: this.data
 		});
-		charsView.on('selected', function(naut) {
-			this.navigate(naut, { trigger: true });
-		}, this);
 		this.showView( charsView );
 	},
 
 	buildMaker: function(naut, build, order) {
-		var character = this.data.findWhere({ name: _.ununderscored(naut) });
+		$('body').addClass('page-blue').removeClass('page-red');
+		var character = this.data.filter(function(character) {
+			return character.get('name').toLowerCase() ==  _.ununderscored(naut).toLowerCase();
+		});
+		if (character.length) character = character[0]; else return false;
 		var others = this.data.reject(function(other) { _(other).isEqual(character); });
 		_(others).each(function(other) { other.set('selected', false); });
 		var charView = new leiminauts.CharacterView({
+			collection: this.data,
 			model: character,
 			build: build || null,
 			order: order || null
 		});
 		this.showView( charView );
 
-		this.updateBuildFromUrl();
-		character.get('skills').on('change', this.updateBuildUrl, this);
-		this.updateBuildUrl();
+		this.updateBuildFromUrl(character);
+		character.get('skills').on('change', _.bind(function() { this.updateBuildUrl(character); }, this), this);
+		this.updateBuildUrl(character);
 	},
 
 	showView: function(view) {
@@ -4034,8 +4093,7 @@ leiminauts.App = Backbone.Router.extend({
 		return view;
 	},
 
-	updateBuildFromUrl: function() {
-		var character = this.currentView.model;
+	updateBuildFromUrl: function(character) {
 		var currentUrl = this.getCurrentUrl();
 		var urlParts = currentUrl.split('/');
 		var build = urlParts.length > 1 ? urlParts[1] : null;
@@ -4061,8 +4119,7 @@ leiminauts.App = Backbone.Router.extend({
 		}
 	},
 
-	updateBuildUrl: function() {
-		var character = this.currentView.model;
+	updateBuildUrl: function(character) {
 		var buildUrl = "";
 		character.get('skills').each(function(skill) {
 			buildUrl += skill.get('active') ? "1" : "0";
@@ -4096,10 +4153,12 @@ leiminauts.App = Backbone.Router.extend({
 ;(function() {
 	MouseTooltip.init({ "3d": true });
 
+	//small "hack" to set the page to red background directly if we're on root
+	$('body').toggleClass('page-red', !window.location.hash.length);
+
 	leiminauts.init = function(opts) {
 		opts = opts || {};
 		_.defaults(opts, { el: "#container", spreadsheet: false });
-		console.log(opts);
 		window.nautsbuilder = new leiminauts.App(opts);
 		Backbone.history.start({pushState: false, root: "/nautsbuilder/"});
 	};
