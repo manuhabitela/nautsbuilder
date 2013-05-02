@@ -202,7 +202,7 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		if (this.get('name') == "Missiles") {
 			var missilesSequence = [];
-			var baseDamage = effects.findWhere({key: "avg damage"}).value;
+			var baseDamage = effects.findWhere({key: "damage"}).value;
 			_(4).times(function() { missilesSequence.push(baseDamage); });
 			var missiles = effects.filter(function(effect) {
 				return (/^missile [0-9]$/).test(effect.key);
@@ -212,14 +212,11 @@ leiminauts.Skill = Backbone.Model.extend({
 				missilesSequence[number] = (baseDamage + (4*number))*parseInt(missile.value, 10);
 				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: missile.key }) ), 1 );
 			});
-			
-			while ((missilesSequence.length > 1) && (missilesSequence[missilesSequence.length-1] == baseDamage)) {
-			    missilesSequence.pop();
-			}
-			
+			while ((missilesSequence.length > 1) && (missilesSequence[missilesSequence.length-1] == baseDamage))
+				missilesSequence.pop();
 			avgDmg = _(missilesSequence).reduce(function(memo, num){ return memo + num; }, 0) / missilesSequence.length;
-			effects.push({key: "damage", value: missilesSequence.join(' > ')});
-			effects.findWhere({key: "avg damage"}).value = leiminauts.utils.number(avgDmg);
+			effects.findWhere({key: "damage"}).value = missilesSequence.join(' > ');
+			effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
 		}
 
 		if (this.get('name') == "Bash") {
