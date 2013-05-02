@@ -13,6 +13,9 @@ leiminauts.App = Backbone.Router.extend({
 	initialize: function(options) {
 		if (options.spreadsheet !== undefined) {
 			this.data = new leiminauts.CharactersData(null, { spreadsheet: options.spreadsheet });
+			this.data.on('selected', function(naut) {
+				this.navigate(naut, { trigger: true });
+			}, this);
 		}
 		this.$el = $(options.el);
 	},
@@ -21,9 +24,6 @@ leiminauts.App = Backbone.Router.extend({
 		var charsView = new leiminauts.CharactersView({
 			collection: this.data
 		});
-		charsView.on('selected', function(naut) {
-			this.navigate(naut, { trigger: true });
-		}, this);
 		this.showView( charsView );
 	},
 
@@ -32,15 +32,16 @@ leiminauts.App = Backbone.Router.extend({
 		var others = this.data.reject(function(other) { _(other).isEqual(character); });
 		_(others).each(function(other) { other.set('selected', false); });
 		var charView = new leiminauts.CharacterView({
+			collection: this.data,
 			model: character,
 			build: build || null,
 			order: order || null
 		});
 		this.showView( charView );
 
-		this.updateBuildFromUrl();
-		character.get('skills').on('change', this.updateBuildUrl, this);
-		this.updateBuildUrl();
+		this.updateBuildFromUrl(character);
+		character.get('skills').on('change', _.bind(function() { this.updateBuildUrl(character); }, this), this);
+		this.updateBuildUrl(character);
 	},
 
 	showView: function(view) {
@@ -51,8 +52,7 @@ leiminauts.App = Backbone.Router.extend({
 		return view;
 	},
 
-	updateBuildFromUrl: function() {
-		var character = this.currentView.model;
+	updateBuildFromUrl: function(character) {
 		var currentUrl = this.getCurrentUrl();
 		var urlParts = currentUrl.split('/');
 		var build = urlParts.length > 1 ? urlParts[1] : null;
@@ -78,8 +78,7 @@ leiminauts.App = Backbone.Router.extend({
 		}
 	},
 
-	updateBuildUrl: function() {
-		var character = this.currentView.model;
+	updateBuildUrl: function(character) {
 		var buildUrl = "";
 		character.get('skills').each(function(skill) {
 			buildUrl += skill.get('active') ? "1" : "0";

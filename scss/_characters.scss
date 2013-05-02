@@ -102,13 +102,15 @@ body[data-page="chars-list"] {
 }
 
 .chars-list {
-	position: fixed;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	height: 100px;
+	.chars-list-container & {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 100px;
+		text-align: center;
+	}
 	list-style-type: none;
-	text-align: center;
 	margin: 0;
 	padding: 0;
 	.char {
@@ -127,5 +129,6 @@ body[data-page="chars-list"] {
 	}
 	.char-icon {
 		vertical-align: middle;
+		width: 80px;
 	}
 }

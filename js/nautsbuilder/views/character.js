@@ -18,6 +18,7 @@ leiminauts.CharacterView = Backbone.View.extend({
 
 		this.template = _.template( $('#char-tpl').html() );
 
+		this.characters = new leiminauts.CharactersView({ character: this, state: opts.build, collection: this.collection });
 		this.build = new leiminauts.BuildView({ character: this, state: opts.build });
 		this.info = new leiminauts.InfoView({ character: this, state: opts.info });
 		this.order = new leiminauts.OrderView({ character: this, state: opts.order });
@@ -28,6 +29,7 @@ leiminauts.CharacterView = Backbone.View.extend({
 	render: function() {
 		$('body').attr('data-page', 'char');
 		this.$el.html(this.template( this.model.toJSON() ));
+		this.assign(this.characters, '.chars');
 		this.assign(this.build, '.build');
 		this.assign(this.info, '.char-info');
 		this.assign(this.order, '.order');

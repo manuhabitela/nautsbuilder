@@ -14,24 +14,27 @@ leiminauts.CharactersView = Backbone.View.extend({
 		this.template = _.template( $('#chars-tpl').html() );
 		this.collection.on('add remove reset', this.render, this);
 
+		if (this.options.character !== undefined)
+			this.character = this.options.character.model.toJSON();
+
 		this.currentChar = null;
 
 		this.mouseOverTimeout = null;
 
-		this.$el.on('mouseover', '.char', _.bind(_.debounce(this.showCharInfo, 200), this));
+		this.$el.on('mouseover', '.char', _.bind(_.debounce(this.showCharInfo, 50), this));
 	},
 
 	render: function() {
-		$('body').attr('data-page', 'chars-list');
-		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar }));
+		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar, character: this.character }));
 		return this;
 	},
 
 	selectCharacter: function(e) {
-		this.trigger('selected', $(e.currentTarget).attr('data-id'));
+		this.collection.trigger('selected', $(e.currentTarget).attr('data-id'));
 	},
 
 	showCharInfo: function(e) {
+		if (this.character) return false;
 		var character = $(e.currentTarget).attr('data-id');
 		if (this.currentChar === null || this.currentChar.get('name') !== _.ununderscored(character)) {
 			this.currentChar = this.collection.findWhere({name: _.ununderscored(character)});
