@@ -261,6 +261,13 @@ leiminauts.Skill = Backbone.Model.extend({
 			effects.push({key: "DPS max", value: leiminauts.utils.number(attackPerSecond*maxDamage)});
 		}
 
+		if (this.get('name') == "Spike Dive") {
+			var seahorse = _(this.getActiveUpgrades()).filter(function(upg) { return upg.get('name') == "Dead Seahorse Head"; });
+			if (seahorse.length) seahorse = seahorse[0]; else return false;
+			var extraSpikeDmg = effects.findWhere({key: "damage"}).value/2;
+			effects.push({key: "Extra Spike", value: leiminauts.utils.number(extraSpikeDmg)});
+			effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "extra spike" }) ), 1 );
+		}
 	},
 
 	setDPS: function() {
