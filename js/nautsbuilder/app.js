@@ -6,8 +6,7 @@
 leiminauts.App = Backbone.Router.extend({
 	routes: {
 		"": "list",
-		":naut(/:build)(/:order)": "buildMaker",
-		":naut/": "buildMaker"
+		":naut(/:build)(/:order)": "buildMaker"
 	},
 
 	initialize: function(options) {
@@ -30,6 +29,7 @@ leiminauts.App = Backbone.Router.extend({
 
 	buildMaker: function(naut, build, order) {
 		$('body').addClass('page-blue').removeClass('page-red');
+		if (naut == "Skolldir") naut = "Skølldir"; //to deal with encoding issues in Firefox, ø is replaced by "o" in the URL. Putting back correct name.
 		var character = this.data.filter(function(character) {
 			return character.get('name').toLowerCase() ==  _.ununderscored(naut).toLowerCase();
 		});
@@ -106,6 +106,10 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	getCurrentUrl: function() {
-		return _(window.location.hash.substring(1)).trim('/'); //no # and trailing slash
+		//the "ø"" causes some encoding differences in Chrome and Firefox which leads Backbone to reload pages when not wanted in FF
+		//I tried to work with en/decodeURIComponent and all to correct encoding problems as a whole (in case other incoming dudes have special chars in their name).
+		//Without any success.
+		//Sadness.
+		return _(window.location.hash.substring(1)).trim('/').replace('ø', 'o'); //no # and trailing slash and no special unicode characters
 	}
 });
