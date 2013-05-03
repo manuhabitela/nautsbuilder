@@ -31,11 +31,12 @@ leiminauts.App = Backbone.Router.extend({
 		$('body').addClass('page-blue').removeClass('page-red');
 		if (naut == "Skolldir") naut = "Skølldir"; //to deal with encoding issues in Firefox, ø is replaced by "o" in the URL. Putting back correct name.
 		var character = this.data.filter(function(character) {
-			return character.get('name').toLowerCase() ==  _.ununderscored(naut).toLowerCase();
+			var selected = character.get('name').toLowerCase() ==  _.ununderscored(naut).toLowerCase();
+			character.set('selected', selected);
+			return selected;
 		});
 		if (character.length) character = character[0]; else return false;
-		var others = this.data.reject(function(other) { _(other).isEqual(character); });
-		_(others).each(function(other) { other.set('selected', false); });
+
 		var charView = new leiminauts.CharacterView({
 			collection: this.data,
 			model: character,

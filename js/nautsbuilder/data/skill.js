@@ -7,15 +7,22 @@ leiminauts.Skill = Backbone.Model.extend({
 	initialize: function(attrs, opts) {
 		this.set('upgrades', new leiminauts.Upgrades());
 		this.upgrades = this.get('upgrades');
-		this.upgrades.on('change', this.updateEffects, this);
-		this.on('change:active', this.updateEffects, this);
-
-		this.on('change:active', this.updateUpgradesState, this);
 
 		this.on('change:selected', this.onSelectedChange, this);
 	},
 
 	onSelectedChange: function() {
+		if (this.get('selected')) {
+			this.upgrades.on('change', this.updateEffects, this);
+			this.on('change:active', this.updateEffects, this);
+			this.on('change:active', this.resetUpgradesState, this);
+		} else {
+			this.upgrades.off('change', this.updateEffects, this);
+			this.off('change:active', this.updateEffects, this);
+			this.off('change:active', this.resetUpgradesState, this);
+		}
+
+		//first initialization of the skill: activating upgrades and shit
 		if (this.get('selected') && this.get('upgrades').length <= 0) {
 			this._originalEffects = this.get('effects');
 			this.prepareBaseEffects();
@@ -55,7 +62,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			skillUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
 		}
 		this.get('upgrades').reset(skillUpgrades);
-		this.updateUpgradesState();
+		this.resetUpgradesState();
 	},
 
 	setActive: function(active) {
@@ -63,11 +70,11 @@ leiminauts.Skill = Backbone.Model.extend({
 			this.set('active', !!active);
 	},
 
-	updateUpgradesState: function(active) {
-		active = active !== undefined ? active : this.get('active');
+	resetUpgradesState: function(active) {
+		active = active !== undefined ? active : !this.get('active');
 		this.upgrades.each(function(upgrade) {
 			upgrade.setStep(0);
-			upgrade.set('locked', !this.get('active'));
+			upgrade.set('locked', active);
 		}, this);
 	},
 

@@ -14,8 +14,6 @@ leiminauts.CharacterView = Backbone.View.extend({
 	initialize: function(opts) {
 		_.defaults(opts, { build: null, order: null, info: null });
 
-		this.model.set('selected', true);
-
 		this.template = _.template( $('#char-tpl').html() );
 
 		this.characters = new leiminauts.CharactersView({ character: this, state: opts.build, collection: this.collection });
