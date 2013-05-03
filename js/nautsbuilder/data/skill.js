@@ -241,10 +241,31 @@ leiminauts.Skill = Backbone.Model.extend({
 			effects.findWhere({key: "damage"}).value = punchsSequence.join(' > ');
 			effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
 		}
+
+		//monkey's avg dps and max dps. Avg dps is the dps including all charges but the last one.
+		if (this.get('name') == "Laser") {
+			var minDamage = effects.findWhere({key: "damage"}).value;
+			var maxDamage = effects.findWhere({key: "max damage"}).value;
+			var steps = [];
+			_(maxDamage - minDamage).times(function(i) { steps.push(i+minDamage); });
+			var attackPerSecond = effects.findWhere({key: "attack speed"}).value/60;
+			var tickPerSecond = effects.findWhere({key: "time to next charge"}).value.replace('s', '')*1;
+			var stepAttackPerSecond = attackPerSecond*tickPerSecond;
+			var dmg = 0; time = 0;
+			_(steps).each(function(step) {
+				dmg += stepAttackPerSecond*step;
+				time += tickPerSecond;
+			});
+			var avgDPS = dmg/time;
+			effects.push({key: "DPS until max", value: leiminauts.utils.number(avgDPS)});
+			effects.push({key: "DPS max", value: leiminauts.utils.number(attackPerSecond*maxDamage)});
+		}
+
 	},
 
 	setDPS: function() {
 		if (!this.get('selected')) return false;
+		if (this.get('name') == "Laser") return false; //dps is set in specifics for the laser
 		var effects = _(this.get('effects'));
 		var attackSpeed = effects.findWhere({key: "attack speed"});
 		var damage = effects.findWhere({key: "avg damage"});
