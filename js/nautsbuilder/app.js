@@ -21,6 +21,7 @@ leiminauts.App = Backbone.Router.extend({
 
 	list: function() {
 		$('body').removeClass('page-blue').addClass('page-red');
+
 		var charsView = new leiminauts.CharactersView({
 			collection: this.data
 		});
@@ -29,6 +30,7 @@ leiminauts.App = Backbone.Router.extend({
 
 	buildMaker: function(naut, build, order) {
 		$('body').addClass('page-blue').removeClass('page-red');
+
 		if (naut == "Skolldir") naut = "Skølldir"; //to deal with encoding issues in Firefox, ø is replaced by "o" in the URL. Putting back correct name.
 		var character = this.data.filter(function(character) {
 			var selected = character.get('name').toLowerCase() ==  _.ununderscored(naut).toLowerCase();
@@ -40,9 +42,7 @@ leiminauts.App = Backbone.Router.extend({
 		character.reset();
 		var charView = new leiminauts.CharacterView({
 			collection: this.data,
-			model: character,
-			build: build || null,
-			order: order || null
+			model: character
 		});
 		this.showView( charView );
 
@@ -89,7 +89,6 @@ leiminauts.App = Backbone.Router.extend({
 
 		var currentUrl = this.getCurrentUrl();
 		var newUrl = '';
-		//maybe this shit could be better done with a regex?
 		if (currentUrl.indexOf('/') === -1) //if url is like #leon_chameleon
 			newUrl = currentUrl + '/' + buildUrl;
 		else {

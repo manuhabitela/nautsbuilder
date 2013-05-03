@@ -16,10 +16,10 @@ leiminauts.CharacterView = Backbone.View.extend({
 
 		this.template = _.template( $('#char-tpl').html() );
 
-		this.characters = new leiminauts.CharactersView({ character: this, state: opts.build, collection: this.collection });
-		this.build = new leiminauts.BuildView({ character: this, state: opts.build });
-		this.info = new leiminauts.InfoView({ character: this, state: opts.info });
-		this.order = new leiminauts.OrderView({ character: this, state: opts.order });
+		this.characters = new leiminauts.CharactersView({ character: this, collection: this.collection });
+		this.build = new leiminauts.BuildView({ character: this });
+		this.info = new leiminauts.InfoView({ character: this });
+		this.order = new leiminauts.OrderView({ character: this });
 
 		this.render();
 	},
