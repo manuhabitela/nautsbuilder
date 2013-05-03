@@ -29,6 +29,8 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	buildMaker: function(naut, build, order) {
+		if (!_.isNaN(parseInt(naut, 10)))
+			return false;
 		if (naut == "Skolldir") naut = "Skølldir"; //to deal with encoding issues in Firefox, ø is replaced by "o" in the URL. Putting back correct name.
 		naut = _.ununderscored(naut).toLowerCase();
 
@@ -90,6 +92,8 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	updateBuildUrl: function(character) {
+		if (this.currentView instanceof leiminauts.CharactersView)
+			return false;
 		var buildUrl = "";
 		character.get('skills').each(function(skill) {
 			buildUrl += skill.get('active') ? "1" : "0";

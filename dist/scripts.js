@@ -1,4 +1,4 @@
-/* Nautsbuilder - Awesomenauts build calculator v0.5 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.6 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -107,6 +107,14 @@ leiminauts.Character = Backbone.Model.extend({
 		this.get('skills').each(function(skill) {
 			skill.set('selected', this.get('selected'));
 		}, this);
+	},
+
+	reset: function() {
+		this.get('skills').each(function(skill) {
+			skill.setActive(false);
+			if (!skill.get('toggable'))
+				skill.resetUpgradesState(false);
+		}, this);
 	}
 });
 
@@ -160,15 +168,22 @@ leiminauts.Skill = Backbone.Model.extend({
 	initialize: function(attrs, opts) {
 		this.set('upgrades', new leiminauts.Upgrades());
 		this.upgrades = this.get('upgrades');
-		this.upgrades.on('change', this.updateEffects, this);
-		this.on('change:active', this.updateEffects, this);
-
-		this.on('change:active', this.updateUpgradesState, this);
 
 		this.on('change:selected', this.onSelectedChange, this);
 	},
 
 	onSelectedChange: function() {
+		if (this.get('selected')) {
+			this.upgrades.on('change', this.updateEffects, this);
+			this.on('change:active', this.updateEffects, this);
+			this.on('change:active', this.resetUpgradesState, this);
+		} else {
+			this.upgrades.off('change', this.updateEffects, this);
+			this.off('change:active', this.updateEffects, this);
+			this.off('change:active', this.resetUpgradesState, this);
+		}
+
+		//first initialization of the skill: activating upgrades and shit
 		if (this.get('selected') && this.get('upgrades').length <= 0) {
 			this._originalEffects = this.get('effects');
 			this.prepareBaseEffects();
@@ -208,7 +223,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			skillUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
 		}
 		this.get('upgrades').reset(skillUpgrades);
-		this.updateUpgradesState();
+		this.resetUpgradesState();
 	},
 
 	setActive: function(active) {
@@ -216,11 +231,11 @@ leiminauts.Skill = Backbone.Model.extend({
 			this.set('active', !!active);
 	},
 
-	updateUpgradesState: function(active) {
-		active = active !== undefined ? active : this.get('active');
+	resetUpgradesState: function(active) {
+		active = active !== undefined ? active : !this.get('active');
 		this.upgrades.each(function(upgrade) {
 			upgrade.setStep(0);
-			upgrade.set('locked', !this.get('active'));
+			upgrade.set('locked', active);
 		}, this);
 	},
 
@@ -387,10 +402,38 @@ leiminauts.Skill = Backbone.Model.extend({
 			effects.findWhere({key: "damage"}).value = punchsSequence.join(' > ');
 			effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
 		}
+
+		//monkey's avg dps and max dps. Avg dps is the dps including all charges but the last one.
+		if (this.get('name') == "Laser") {
+			var minDamage = effects.findWhere({key: "damage"}).value;
+			var maxDamage = effects.findWhere({key: "max damage"}).value;
+			var steps = [];
+			_(maxDamage - minDamage).times(function(i) { steps.push(i+minDamage); });
+			var attackPerSecond = effects.findWhere({key: "attack speed"}).value/60;
+			var tickPerSecond = effects.findWhere({key: "time to next charge"}).value.replace('s', '')*1;
+			var stepAttackPerSecond = attackPerSecond*tickPerSecond;
+			var dmg = 0; time = 0;
+			_(steps).each(function(step) {
+				dmg += stepAttackPerSecond*step;
+				time += tickPerSecond;
+			});
+			var avgDPS = dmg/time;
+			effects.push({key: "DPS until max", value: leiminauts.utils.number(avgDPS)});
+			effects.push({key: "DPS max", value: leiminauts.utils.number(attackPerSecond*maxDamage)});
+		}
+
+		if (this.get('name') == "Spike Dive") {
+			var seahorse = _(this.getActiveUpgrades()).filter(function(upg) { return upg.get('name') == "Dead Seahorse Head"; });
+			if (seahorse.length) seahorse = seahorse[0]; else return false;
+			var extraSpikeDmg = effects.findWhere({key: "damage"}).value/2;
+			effects.push({key: "Extra Spike", value: leiminauts.utils.number(extraSpikeDmg)});
+			effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "extra spike" }) ), 1 );
+		}
 	},
 
 	setDPS: function() {
 		if (!this.get('selected')) return false;
+		if (this.get('name') == "Laser") return false; //dps is set in specifics for the laser
 		var effects = _(this.get('effects'));
 		var attackSpeed = effects.findWhere({key: "attack speed"});
 		var damage = effects.findWhere({key: "avg damage"});
@@ -531,14 +574,12 @@ leiminauts.CharacterView = Backbone.View.extend({
 	initialize: function(opts) {
 		_.defaults(opts, { build: null, order: null, info: null });
 
-		this.model.set('selected', true);
-
 		this.template = _.template( $('#char-tpl').html() );
 
-		this.characters = new leiminauts.CharactersView({ character: this, state: opts.build, collection: this.collection });
-		this.build = new leiminauts.BuildView({ character: this, state: opts.build });
-		this.info = new leiminauts.InfoView({ character: this, state: opts.info });
-		this.order = new leiminauts.OrderView({ character: this, state: opts.order });
+		this.characters = new leiminauts.CharactersView({ character: this, collection: this.collection });
+		this.build = new leiminauts.BuildView({ character: this });
+		this.info = new leiminauts.InfoView({ character: this });
+		this.order = new leiminauts.OrderView({ character: this });
 
 		this.render();
 	},
@@ -614,7 +655,7 @@ leiminauts.BuildView = Backbone.View.extend({
 		this.model.get('skills').each(function(skill) {
 			skill.setActive(false);
 			if (!skill.get('toggable'))
-				skill.updateUpgradesState(false);
+				skill.resetUpgradesState(false);
 		});
 	}
 });
@@ -681,7 +722,7 @@ leiminauts.SkillView = Backbone.View.extend({
 	reset: function() {
 		this.model.setActive(false);
 		if (!this.model.get('toggable'))
-			this.model.updateUpgradesState(false);
+			this.model.resetUpgradesState(false);
 	},
 
 	render: function() {
@@ -773,8 +814,7 @@ leiminauts.UpgradeView = Backbone.View.extend({
 leiminauts.App = Backbone.Router.extend({
 	routes: {
 		"": "list",
-		":naut(/:build)(/:order)": "buildMaker",
-		":naut/": "buildMaker"
+		":naut(/:build)(/:order)": "buildMaker"
 	},
 
 	initialize: function(options) {
@@ -789,6 +829,7 @@ leiminauts.App = Backbone.Router.extend({
 
 	list: function() {
 		$('body').removeClass('page-blue').addClass('page-red');
+
 		var charsView = new leiminauts.CharactersView({
 			collection: this.data
 		});
@@ -796,24 +837,37 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	buildMaker: function(naut, build, order) {
+		if (!_.isNaN(parseInt(naut, 10)))
+			return false;
+		if (naut == "Skolldir") naut = "Skølldir"; //to deal with encoding issues in Firefox, ø is replaced by "o" in the URL. Putting back correct name.
+		naut = _.ununderscored(naut).toLowerCase();
+
+		//check if we're just updating current build (with back button)
+		if (this.currentView && this.currentView instanceof leiminauts.CharacterView &&
+			this.currentView.model && this.currentView.model.get('name').toLowerCase() == naut) {
+			this.updateBuildFromUrl(this.currentView.model);
+			return true;
+		}
+
 		$('body').addClass('page-blue').removeClass('page-red');
+
 		var character = this.data.filter(function(character) {
-			return character.get('name').toLowerCase() ==  _.ununderscored(naut).toLowerCase();
+			var selected = character.get('name').toLowerCase() == naut;
+			character.set('selected', selected);
+			return selected;
 		});
 		if (character.length) character = character[0]; else return false;
-		var others = this.data.reject(function(other) { _(other).isEqual(character); });
-		_(others).each(function(other) { other.set('selected', false); });
+
+		character.reset();
 		var charView = new leiminauts.CharacterView({
 			collection: this.data,
-			model: character,
-			build: build || null,
-			order: order || null
+			model: character
 		});
 		this.showView( charView );
 
 		this.updateBuildFromUrl(character);
-		character.get('skills').on('change', _.bind(function() { this.updateBuildUrl(character); }, this), this);
-		this.updateBuildUrl(character);
+		var debouncedUpdated = _.debounce(_.bind(function() { this.updateBuildUrl(character); }, this), 500);
+		character.get('skills').on('change', debouncedUpdated , this);
 	},
 
 	showView: function(view) {
@@ -828,13 +882,8 @@ leiminauts.App = Backbone.Router.extend({
 		var currentUrl = this.getCurrentUrl();
 		var urlParts = currentUrl.split('/');
 		var build = urlParts.length > 1 ? urlParts[1] : null;
-		if (build === null) { //reset
-			character.get('skills').each(function(skill) {
-				skill.get('upgrades').each(function(upgrade) {
-					upgrade.setStep(0);
-				});
-				skill.setActive(false);
-			});
+		if (build === null) {
+			character.reset();
 			return false;
 		}
 		var currentSkill = null;
@@ -851,6 +900,8 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	updateBuildUrl: function(character) {
+		if (this.currentView instanceof leiminauts.CharactersView)
+			return false;
 		var buildUrl = "";
 		character.get('skills').each(function(skill) {
 			buildUrl += skill.get('active') ? "1" : "0";
@@ -861,7 +912,6 @@ leiminauts.App = Backbone.Router.extend({
 
 		var currentUrl = this.getCurrentUrl();
 		var newUrl = '';
-		//maybe this shit could be better done with a regex?
 		if (currentUrl.indexOf('/') === -1) //if url is like #leon_chameleon
 			newUrl = currentUrl + '/' + buildUrl;
 		else {
@@ -873,7 +923,11 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	getCurrentUrl: function() {
-		return _(window.location.hash.substring(1)).trim('/'); //no # and trailing slash
+		//the "ø"" causes some encoding differences in Chrome and Firefox which leads Backbone to reload pages when not wanted in FF
+		//I tried to work with en/decodeURIComponent and all to correct encoding problems as a whole (in case other incoming dudes have special chars in their name).
+		//Without any success.
+		//Sadness.
+		return _(window.location.hash.substring(1)).trim('/').replace('ø', 'o'); //no # and trailing slash and no special unicode characters
 	}
 });
 /* This Source Code Form is subject to the terms of the Mozilla Public
