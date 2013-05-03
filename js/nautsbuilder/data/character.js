@@ -25,6 +25,14 @@ leiminauts.Character = Backbone.Model.extend({
 		this.get('skills').each(function(skill) {
 			skill.set('selected', this.get('selected'));
 		}, this);
+	},
+
+	reset: function() {
+		this.get('skills').each(function(skill) {
+			skill.setActive(false);
+			if (!skill.get('toggable'))
+				skill.resetUpgradesState(false);
+		}, this);
 	}
 });
 

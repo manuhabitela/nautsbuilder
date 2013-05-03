@@ -37,6 +37,7 @@ leiminauts.App = Backbone.Router.extend({
 		});
 		if (character.length) character = character[0]; else return false;
 
+		character.reset();
 		var charView = new leiminauts.CharacterView({
 			collection: this.data,
 			model: character,
@@ -62,15 +63,8 @@ leiminauts.App = Backbone.Router.extend({
 		var currentUrl = this.getCurrentUrl();
 		var urlParts = currentUrl.split('/');
 		var build = urlParts.length > 1 ? urlParts[1] : null;
-		if (build === null) { //reset
-			character.get('skills').each(function(skill) {
-				skill.get('upgrades').each(function(upgrade) {
-					upgrade.setStep(0);
-				});
-				skill.setActive(false);
-			});
-			return false;
-		}
+		if (build === null)
+			character.reset();
 		var currentSkill = null;
 		//we look at the build as a grid: 4 skills + 6 upgrades by skills = 28 items
 		//each line of the grid contains 7 items, the first one being the skill and the others the upgrades
