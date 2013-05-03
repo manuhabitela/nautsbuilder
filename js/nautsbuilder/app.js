@@ -29,11 +29,20 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	buildMaker: function(naut, build, order) {
+		if (naut == "Skolldir") naut = "Skølldir"; //to deal with encoding issues in Firefox, ø is replaced by "o" in the URL. Putting back correct name.
+		naut = _.ununderscored(naut).toLowerCase();
+
+		//check if we're just updating current build (with back button)
+		if (this.currentView && this.currentView instanceof leiminauts.CharacterView &&
+			this.currentView.model && this.currentView.model.get('name').toLowerCase() == naut) {
+			this.updateBuildFromUrl(this.currentView.model);
+			return true;
+		}
+
 		$('body').addClass('page-blue').removeClass('page-red');
 
-		if (naut == "Skolldir") naut = "Skølldir"; //to deal with encoding issues in Firefox, ø is replaced by "o" in the URL. Putting back correct name.
 		var character = this.data.filter(function(character) {
-			var selected = character.get('name').toLowerCase() ==  _.ununderscored(naut).toLowerCase();
+			var selected = character.get('name').toLowerCase() == naut;
 			character.set('selected', selected);
 			return selected;
 		});
@@ -47,8 +56,8 @@ leiminauts.App = Backbone.Router.extend({
 		this.showView( charView );
 
 		this.updateBuildFromUrl(character);
-		character.get('skills').on('change', _.bind(function() { this.updateBuildUrl(character); }, this), this);
-		this.updateBuildUrl(character);
+		var debouncedUpdated = _.debounce(_.bind(function() { this.updateBuildUrl(character); }, this), 500);
+		character.get('skills').on('change', debouncedUpdated , this);
 	},
 
 	showView: function(view) {
@@ -63,8 +72,10 @@ leiminauts.App = Backbone.Router.extend({
 		var currentUrl = this.getCurrentUrl();
 		var urlParts = currentUrl.split('/');
 		var build = urlParts.length > 1 ? urlParts[1] : null;
-		if (build === null)
+		if (build === null) {
 			character.reset();
+			return false;
+		}
 		var currentSkill = null;
 		//we look at the build as a grid: 4 skills + 6 upgrades by skills = 28 items
 		//each line of the grid contains 7 items, the first one being the skill and the others the upgrades
