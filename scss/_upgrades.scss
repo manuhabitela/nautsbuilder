@@ -17,7 +17,6 @@
 	@include transition-property(width, opacity);
 	@include transition-duration(0.3s, 1s);
 	@include transition-timing-function(easeout);
-	@include transform(translateZ(0));
 	width: $icon-width;
 	opacity: 1;
 	.char-builder.maxed-out .build &:not(.active) {

@@ -42,7 +42,7 @@
 	min-height: $skill-height;
 	overflow: hidden;
 	@include transition-property(max-height, background, line-height);
-	@include transition-duration(0.3s);
+	@include transition-duration($compact-transition-time);
 	@include transition-timing-function(easeout);
 	z-index: 40;
 	dl { margin: 0; display: inline-block; width: 184px; vertical-align: top; }

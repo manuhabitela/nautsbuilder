@@ -1,26 +1,50 @@
 .char-builder {
+	margin: 0 auto;
 }
 
-.build {
-	margin: $build-margin;
+.char-builder, .build, .skill-wrapper {
+	@include transition(width $compact-transition-time);
+	@include transform(translateZ(0));
+	width: $build-width;
+	margin-bottom: $build-margin;
+	.char-builder.maxed-out & {
+		width: $build-width - ($skill-width - $skill-compact-width);
+	}
+}
+.char-builder.maxed-out {
+	width: $build-width - ($skill-width - $skill-compact-width);
+}
+
+.build, .order, .char-info {
 	position: relative;
+	@include transition-property(width, transform);
+	@include transition-duration($compact-transition-time);
+	@include transition-timing-function(easeout);
+	@include transform(translateX(-($build-width - ($build-width - ($skill-width - $skill-compact-width)))/2));
+	.char-builder.maxed-out & {
+		@include transform(translateX(0));
+	}
 }
 
 .build, .skill-wrapper {
-	@include transition(width 0.3s);
-	@include transform(translateZ(0));
-	width: $build-width;
 	.char-builder.maxed-out & {
 		width: $build-width - ($skill-width - $skill-compact-width);
 	}
 }
 
 .skill {
-	@include transition(width 0.3s);
+	@include transition(width $compact-transition-time);
 	@include transform(translateZ(0));
 	width: $skill-width;
 	.char-builder.maxed-out & {
 		width: $skill-compact-width;
+	}
+}
+
+.order {
+	width: $skill-width;
+	.char-builder.maxed-out & {
+		width: $skill-compact-width + 200px - 4px - 12px;
 	}
 }
 
@@ -49,8 +73,9 @@
 	.current-char {
 		@extend .hidden;
 	}
-
 	.chars-list {
+		margin-bottom: $build-margin;
+		text-align: center;
 		.char {
 			border-width: 1px;
 			margin: 2px 0 2px -4px;

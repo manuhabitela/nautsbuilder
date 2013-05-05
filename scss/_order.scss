@@ -1,8 +1,3 @@
-.order {
-	width: $skill-width;
-	margin: 0 0 $build-margin $build-margin;
-}
-
 .order > ul {
 	margin: 0;
 	padding: 0;
@@ -10,6 +5,7 @@
 }
 
 .order-item, .sortable-placeholder {
+	cursor: move;
 	display: inline-block;
 	vertical-align: top;
 	position: relative;
