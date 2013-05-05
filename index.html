@@ -6,7 +6,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<title>Awesomenauts builder: skills calculator, skills simulator - Make and share you awesomenauts builds!</title>
+		<title>Nautsbuilder - Awesomenauts builder: skills calculator, skills simulator - Make and share your Awesomenauts builds!</title>
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
 		<!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'> -->
@@ -68,8 +68,8 @@
 		<script type="text/template" id="char-tpl">
 			<div class="chars"></div>
 			<div class="build"></div>
-			<div class="char-info"></div>
 			<div class="order"></div>
+			<div class="char-info"></div>
 		</script>
 
 		<script type="text/template" id="build-tpl">
@@ -77,16 +77,27 @@
 		</script>
 
 		<script type="text/template" id="info-tpl">
-			<img class="char-icon" src="<%= icon %>" alt="">
+			<!--<img class="char-icon" src="<%= icon %>" alt="">
 			<div class="char-popup hidden">
 				<p><strong><%= name %></strong></p>
-			</div>
+			</div>-->
 			<p class="char-total-cost"><span class="cost">Total cost</span>: <span class="info"><%= total_cost %></span></p>
 			<p class="char-level"><span>Required level</span>: <span class="info"><%= level %></span></p>
 		</script>
 
 		<script type="text/template" id="order-tpl">
-
+			<ul>
+			<% _(items).each(function(item) { %>
+				<li data-cid="<%= item.cid %>" class="<%= item.upgrade ? 'order-item order-item-upgrade' : 'order-item order-item-skill' %>">
+					<div>
+						<div class="order-icon"><img src="<%= item.upgrade ? item.upgrade.icon : item.icon %>" alt=""></div>
+						<div class="order-popup hidden">
+							<p><strong><%= item.upgrade ? item.upgrade.name + " stage " + item.level : item.name %></strong></p>
+						</div>
+					</div>
+				</li>
+			<% }) %>
+			</ul>
 		</script>
 
 		<script type="text/template" id="build-skill-tpl">
@@ -148,6 +159,7 @@
 		<script src="js/lib/backbone.js"></script>
 		<script src="js/lib/tabletop.js"></script>
 		<script src="js/lib/mousetooltip.js"></script>
+		<script src="js/lib/jquery.sortable.js"></script>
 		<script src="js/nautsbuilder/utils.js?v=06100"></script>
 		<script src="js/nautsbuilder/data/character.js?v=06100"></script>
 		<script src="js/nautsbuilder/data/skill.js?v=06100"></script>

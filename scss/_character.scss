@@ -62,21 +62,22 @@
 			}
 		}
 		.char-icon {
-			width: 20px;
+			width: 26px;
 		}
 	}
 }
 
 .char-info {
 	@extend %box;
-	margin-left: 644px;
+	@extend .clearfix;
+	margin-left: 13px;
 	padding-left: 0;
 	padding-top: 0;
-	margin-top: 20px;
-	.char-icon {
-		float: left;
-		margin-right: 20px;
-	}
+	margin-top: 0;
+	// .char-icon {
+	// 	float: left;
+	// 	margin-right: 20px;
+	// }
 	.char-total-cost .cost {
 		@extend %cost;
 	}
@@ -84,4 +85,9 @@
 		@extend %info;
 		font-size: $base-font-size;
 	}
+}
+
+.char-info, .order {
+	display: inline-block;
+	vertical-align: top;
 }

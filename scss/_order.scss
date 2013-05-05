@@ -1,0 +1,44 @@
+.order {
+	width: $skill-width;
+	margin: 0 0 $build-margin $build-margin;
+}
+
+.order > ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+.order-item, .sortable-placeholder {
+	display: inline-block;
+	vertical-align: top;
+	position: relative;
+	margin-right: 9px;
+	&:after {
+		position: absolute;
+		content: ' ';
+		display: block;
+		width: 0;
+		height: 0;
+		border: 5px solid transparent;
+		border-left-color: #fed508;
+		top: 50%;
+		right: -14px;
+		margin-top: -2px;
+	}
+	&:last-child:after {
+		display: none;
+	}
+}
+
+.sortable-placeholder {
+	width: 60px;
+	height: 60px;
+	border: 1px dashed gray;
+}
+
+.order-icon {
+	@extend %icon;
+	width: 60px;
+	height: 60px;
+}

@@ -9,8 +9,8 @@ leiminauts.InfoView = Backbone.View.extend({
 	className: 'char-info',
 
 	events: {
-		'mouseover .char-icon': 'handleTooltip',
-		'mouseout .char-icon': 'handleTooltip'
+		//'mouseover .char-icon': 'handleTooltip',
+		//'mouseout .char-icon': 'handleTooltip'
 	},
 
 	initialize: function() {
@@ -26,12 +26,12 @@ leiminauts.InfoView = Backbone.View.extend({
 	render: function() {
 		this.$el.html(this.template( this.model.toJSON() ));
 		return this;
-	},
+	}//,
 
-	handleTooltip: function(e) {
-		if (e.type != "mouseout")
-			MouseTooltip.show(this.$('.char-popup').html());
-		else
-			MouseTooltip.hide();
-	}
+	//handleTooltip: function(e) {
+	//	if (e.type != "mouseout")
+	//		MouseTooltip.show(this.$('.char-popup').html());
+	//	else
+	//		MouseTooltip.hide();
+	//}
 });

@@ -46,6 +46,10 @@ Backbone.View.prototype.assign = function(view, selector) {
 	view.setElement(this.$(selector)).render();
 };
 
+Backbone.Model.prototype.toJSON = function(options) {
+	return _.extend({}, _.clone(this.attributes), { cid: this.cid });
+};
+
 window.leiminauts = window.leiminauts || {};
 
 leiminauts.utils = {

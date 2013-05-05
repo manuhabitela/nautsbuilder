@@ -15,10 +15,10 @@ leiminauts.Upgrade = Backbone.Model.extend({
 		var steps = _(this.attributes).filter(function(attr, key) {
 			return (/^step[0-9]$/).test(key) && attr !== "";
 		});
-		var stepsCollection = new leiminauts.Steps([ new leiminauts.Step() ]);
+		var stepsCollection = new leiminauts.Steps([ new leiminauts.Step({ upgrade: this.toJSON() }) ]);
 		_(steps).each(function(step, i)  {
-			stepsCollection.add({ level: i+1, description: step });
-		});
+			stepsCollection.add({ level: i+1, description: step, upgrade: this.toJSON() });
+		}, this);
 		this.set('steps', stepsCollection);
 		this.set('max_step', stepsCollection.size()-1);
 
