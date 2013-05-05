@@ -83,9 +83,9 @@ body.page-red {
 
 .current-char-skill {
 	@extend .clearfix;
-	@include respond-to(shrunken) {
-		font-size: 11px;
-	}
+	// @include respond-to(shrunken) {
+	// 	font-size: 11px;
+	// }
 }
 
 .current-char-skill-icon {

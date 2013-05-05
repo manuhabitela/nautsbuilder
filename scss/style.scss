@@ -1,5 +1,6 @@
 @import "compass/css3";
 @import "compass/css3/user-interface";
+@include font-face("Zekton", font-files("zekton_rg-webfont.woff", "zekton_rg-webfont.ttf", "zekton_rg-webfont.eot", "zekton_rg-webfont.svg"));
 @import "functions";
 @import "variables";
 @import "mixins";
