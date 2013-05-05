@@ -35,7 +35,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 
 	showCharInfo: function(e) {
 		if (this.character) return false;
-		var character = $(e.currentTarget).attr('data-id');
+		var character = $(e.currentTarget).find('a').attr('href').substr(1);
 		if (this.currentChar === null || this.currentChar.get('name') !== _.ununderscored(character)) {
 			this.currentChar = this.collection.findWhere({name: _.ununderscored(character)});
 			this.render();
