@@ -81,7 +81,7 @@
 			<div class="char-popup hidden">
 				<p><strong><%= name %></strong></p>
 			</div>
-			<p class="char-total-cost"><span class="cost">Total cost</span>: <span class="info"><%= totalCost %></span></p>
+			<p class="char-total-cost"><span class="cost">Total cost</span>: <span class="info"><%= total_cost %></span></p>
 			<p class="char-level"><span>Required level</span>: <span class="info"><%= level %></span></p>
 		</script>
 
@@ -117,7 +117,7 @@
 
 		<script type="text/template" id="build-skill-effects-tpl">
 			<% var finalEffects = _(effects).clone();
-			if (totalCost > 0) finalEffects.push({key: "Total cost", value: totalCost});
+			if (total_cost > 0) finalEffects.push({key: "Total cost", value: total_cost});
 			_(finalEffects).each(function(effect, i, list) {
 				if (i % 5 == 0) { if (i !== 0) { %></dl><% } %><dl><% } %>
 				<dt class="<%= _(effect.key).underscored().toLowerCase() %>"><span><%= _(effect.key).capitalized() %>:</span></dt>

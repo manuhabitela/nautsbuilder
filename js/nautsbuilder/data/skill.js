@@ -27,7 +27,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			this._originalEffects = this.get('effects');
 			this.prepareBaseEffects();
 			this.initUpgrades();
-			this.set('totalCost', 0);
+			this.set('total_cost', 0);
 			this.set('active', this.get('cost') !== undefined && this.get('cost') <= 0);
 			this.set('toggable', !this.get('active'));
 		}
@@ -99,7 +99,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (!this.get('selected')) return false;
 		if (!this.get('active')) {
 			this.set('effects', []);
-			this.set('totalCost', 0);
+			this.set('total_cost', 0);
 			return false;
 		}
 		var activeUpgrades = this.getActiveUpgrades();
@@ -114,7 +114,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		_(activeUpgrades).each(function(upgrade) {
 			cost += upgrade.get('current_step').get('level')*upgrade.get('cost');
 		});
-		this.set('totalCost', cost);
+		this.set('total_cost', cost);
 
 		//combine similar steps: some characters have upgrades that enhance similar things.
 		// Ie Leon has 2 upgrades that add damages to its tong (1: +3/+6/+9 and 2: +9)

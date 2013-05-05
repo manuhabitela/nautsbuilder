@@ -20,7 +20,7 @@ leiminauts.InfoView = Backbone.View.extend({
 		}
 		this.template = _.template( $('#info-tpl').html() );
 
-		this.model.on('change:totalCost', this.render, this);
+		this.model.on('change:total_cost', this.render, this);
 	},
 
 	render: function() {
