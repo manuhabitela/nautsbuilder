@@ -22,6 +22,8 @@ leiminauts.CharacterView = Backbone.View.extend({
 		this.order = new leiminauts.OrderView({ character: this });
 
 		this.render();
+
+		this.model.on('change:maxed_out', this.toggleCompactView, this);
 	},
 
 	render: function() {
@@ -32,5 +34,9 @@ leiminauts.CharacterView = Backbone.View.extend({
 		this.assign(this.info, '.char-info');
 		this.assign(this.order, '.order');
 		return this;
+	},
+
+	toggleCompactView: function() {
+		this.$el.toggleClass('maxed-out', this.model.get('maxed_out'));
 	}
 });

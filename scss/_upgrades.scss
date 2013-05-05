@@ -4,7 +4,7 @@
 	@extend %dark-box;
 	margin: 0 2px;
 	.skill.jump &:after {
-		border-radius: 8px 8px 25px 25px / 90px 90px 20px 20px;
+		border-radius: 8px 8px 25px 25px / $icon-width $icon-width 20px 20px;
 	}
 	&.active:after {
 		display: none;
@@ -13,11 +13,25 @@
 	&.locked {
 		cursor: not-allowed;
 	}
+
+	@include transition-property(width, opacity);
+	@include transition-duration(0.3s, 1s);
+	@include transition-timing-function(easeout);
+	@include transform(translateZ(0));
+	width: $icon-width;
+	opacity: 1;
+	.char-builder.maxed-out .build &:not(.active) {
+		width: 0;
+		margin: 0 1px;
+		opacity: 0;
+		overflow: hidden;
+	}
 }
 
 .upgrade-icon {
 	@extend %icon;
 	@include user-select(none);
+	max-width: 100%;
 }
 
 .upgrade-cost {

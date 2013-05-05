@@ -90,7 +90,7 @@
 		</script>
 
 		<script type="text/template" id="build-skill-tpl">
-		<div class="skill <%= active ? 'active' : '' %> <%= type ? type : '' %>">
+		<div class="skill <%= active ? 'active' : '' %> <%= maxed_out ? 'skill-maxed-out' : '' %> <%= type ? type : '' %>">
 			<div class="skill-info">
 				<div class="skill-icon"><img src="<%= icon %>" alt=""></div>
 				<% if (cost > 0) { %><div class="skill-cost icon-details"><%= cost %></div><% } %>
@@ -109,10 +109,8 @@
 			</div>
 			<div class="skill-cancel <%= ((toggable && active) || (upgrades.where({ active: true }).length > 0)) ? 'active' : '' %>" title="Reset this skill">x</div>
 		</div>
-		<% if (effects.length > 0) { %>
-		<div class="skill-effects">
+		<div class="skill-effects <%= !effects.length ? 'hidden': '' %>">
 		</div>
-		<% } %>
 		</script>
 
 		<script type="text/template" id="build-skill-effects-tpl">

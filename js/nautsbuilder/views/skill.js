@@ -38,13 +38,23 @@ leiminauts.SkillView = Backbone.View.extend({
 			this.model.resetUpgradesState(false);
 	},
 
+	//that's *really* not good to handle this like that but gah - i'm tired
+	//(I don't want the upgrades to rebuild each time we render, it's useless and doesn't permit to use cool animations on compact/full view toggle
 	render: function() {
-		this.$el.html(this.template( this.model.toJSON() ));
-		_(this.upgrades).each(function(upgrade) {
-			upgrade.delegateEvents();
-			this.$('.skill-upgrades').append(upgrade.render().el);
-		}, this);
-
+		var data = this.model.toJSON();
+		if (!this.$el.html()) {
+			this.$el.html(this.template( data ));
+			_(this.upgrades).each(function(upgrade) {
+				upgrade.delegateEvents();
+				this.$('.skill-upgrades').append(upgrade.render().el);
+			}, this);
+		} else {
+			this.$('.skill').toggleClass('active', data.active);
+			this.$('.skill').toggleClass('skill-maxed-out', data.maxed_out);
+			this.$('.skill-effects').toggleClass('hidden', !data.effects.length);
+			this.$('.skill-cancel').toggleClass('active', (data.toggable && data.active) || (data.upgrades.where({ active: true }).length > 0));
+			_(this.upgrades).invoke('delegateEvents');
+		}
 		this.renderUpgradesInfo();
 		return this;
 	},

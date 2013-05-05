@@ -15,7 +15,12 @@
 	padding: 5px 8px 5px 5px;
 	background-color: hsla(197, 70%, 50%, 0.8);
 	position: relative;
-	max-height: 100px;
+	max-height: $skill-height;
+	overflow: hidden;
+}
+
+.skill-upgrades {
+	overflow: hidden;
 }
 
 .skill-effects {
@@ -29,9 +34,9 @@
 	//background: rgba(#226E8F, .5);
 	font-size: 13px;
 	line-height: 1.25em;
-	width: 400px;
-	max-height: 100px;
-	min-height: 100px;
+	width: $build-width - $skill-width - 4px; //4px is margin between skill and effects
+	max-height: $skill-height;
+	min-height: $skill-height;
 	overflow: hidden;
 	@include transition-property(max-height, background, line-height);
 	@include transition-duration(0.3s);
@@ -90,6 +95,12 @@
 
 .skill-cancel {
 	@extend %cancel;
+	.skill-maxed-out & {
+		background-image: image-url("done.png");
+		&:hover {
+			background-image: image-url("cancel.png");
+		}
+	}
 	margin-top: 32px;
 	background-size: 24px 24px;
 	width: 21px;

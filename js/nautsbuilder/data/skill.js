@@ -24,6 +24,7 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		//first initialization of the skill: activating upgrades and shit
 		if (this.get('selected') && this.get('upgrades').length <= 0) {
+			this.set('maxed_out', false);
 			this._originalEffects = this.get('effects');
 			this.prepareBaseEffects();
 			this.initUpgrades();
@@ -76,6 +77,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			upgrade.setStep(0);
 			upgrade.set('locked', active);
 		}, this);
+		this.set('maxed_out', false);
 	},
 
 	getActiveUpgrades: function() {
@@ -103,6 +105,20 @@ leiminauts.Skill = Backbone.Model.extend({
 			return false;
 		}
 		var activeUpgrades = this.getActiveUpgrades();
+
+		//is the skill maxed out?
+		var maxedOut = true;
+		if (activeUpgrades.length >= 3) {
+			_(activeUpgrades).each(function(upgrade) {
+				if (upgrade.get('current_step').get('level') !== upgrade.get('max_step')) {
+					maxedOut = false;
+					return false;
+				}
+			});
+		} else
+			maxedOut = false;
+		this.set('maxed_out', maxedOut);
+
 		var activeSteps = this.getActiveSteps();
 		this.upgrades.each(function(upgrade) {
 			if (this.get('active'))

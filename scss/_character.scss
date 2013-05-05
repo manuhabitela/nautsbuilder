@@ -2,9 +2,26 @@
 }
 
 .build {
-	width: 1104px;
-	margin: 20px;
+	margin: $build-margin;
 	position: relative;
+}
+
+.build, .skill-wrapper {
+	@include transition(width 0.3s);
+	@include transform(translateZ(0));
+	width: $build-width;
+	.char-builder.maxed-out & {
+		width: $build-width - ($skill-width - $skill-compact-width);
+	}
+}
+
+.skill {
+	@include transition(width 0.3s);
+	@include transform(translateZ(0));
+	width: $skill-width;
+	.char-builder.maxed-out & {
+		width: $skill-compact-width;
+	}
 }
 
 .build-cancel {
@@ -13,7 +30,7 @@
 	width: 28px;
 	height: 32px;
 	position: absolute;
-	left: 690px;
+	left: $skill-width - 10px;
 	top: -17px;
 	z-index: 100;
 	opacity: 0.3;
@@ -22,6 +39,9 @@
 		&:hover {
 			opacity: 0.9;
 		}
+	}
+	.char-builder.maxed-out & {
+		left: $skill-compact-width - 10px;
 	}
 }
 
