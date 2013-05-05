@@ -137,7 +137,7 @@
 				<% steps.each(function(step) { if (step.get('level') > 0) { %>
 				<br>
 				<% if (_(current_step).isEqual(step)) { %><strong><% } %>
-					Step <%= step.get('level') %>: <%= step.get('description') %>
+					Stage <%= step.get('level') %>: <%= step.get('description') %>
 				<% if (_(current_step).isEqual(step)) { %></strong><% } %>
 				<% } }) %>
 			</div>
