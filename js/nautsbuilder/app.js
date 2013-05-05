@@ -58,8 +58,8 @@ leiminauts.App = Backbone.Router.extend({
 		this.showView( charView );
 
 		this.updateBuildFromUrl(character);
-		var debouncedUpdated = _.debounce(_.bind(function() { this.updateBuildUrl(character); }, this), 500);
-		character.get('skills').on('change', debouncedUpdated , this);
+		var debouncedUrlUpdate = _.debounce(_.bind(function() { this.updateBuildUrl(character); }, this), 500);
+		character.get('skills').on('change', debouncedUrlUpdate , this);
 	},
 
 	showView: function(view) {
