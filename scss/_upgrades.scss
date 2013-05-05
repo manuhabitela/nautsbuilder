@@ -30,7 +30,6 @@
 
 .upgrade-icon {
 	@extend %icon;
-	@include user-select(none);
 	max-width: 100%;
 }
 

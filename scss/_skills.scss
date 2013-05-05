@@ -17,6 +17,9 @@
 	position: relative;
 	max-height: $skill-height;
 	overflow: hidden;
+	&, & * {
+		@include user-select(none);
+	}
 }
 
 .skill-upgrades {
