@@ -7,7 +7,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 	className: 'chars-list-container',
 
 	events: {
-		"click .char": "selectCharacter"
+		"click .char[data-id]": "selectCharacter"
 	},
 
 	initialize: function() {
