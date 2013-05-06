@@ -37,8 +37,9 @@ leiminauts.OrderView = Backbone.View.extend({
 	},
 
 	toggleView: function() {
-		if (this.$el)
-			this.$el.find('ul').toggleClass('hidden', !this.active);
+		if (!this.$el) return false;
+		this.$el.find('ul').toggleClass('hidden', !this.active);
+		this.$el.find('input[name="active"]').prop('checked', this.active);
 	},
 
 	onBuildChange: function(model) {

@@ -746,8 +746,9 @@ leiminauts.OrderView = Backbone.View.extend({
 	},
 
 	toggleView: function() {
-		if (this.$el)
-			this.$el.find('ul').toggleClass('hidden', !this.active);
+		if (!this.$el) return false;
+		this.$el.find('ul').toggleClass('hidden', !this.active);
+		this.$el.find('input[name="active"]').prop('checked', this.active);
 	},
 
 	onBuildChange: function(model) {
@@ -1059,9 +1060,9 @@ leiminauts.App = Backbone.Router.extend({
 						items.push(item.get('steps').at(1));
 				}
 			});
-			console.log('rest');
 			charView.order.collection.reset(items, { sort: false });
-		}
+		} else
+			charView.order.toggle();
 	},
 
 	updateBuildUrl: function(charView) {

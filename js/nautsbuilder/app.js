@@ -117,9 +117,9 @@ leiminauts.App = Backbone.Router.extend({
 						items.push(item.get('steps').at(1));
 				}
 			});
-			console.log('rest');
 			charView.order.collection.reset(items, { sort: false });
-		}
+		} else
+			charView.order.toggle();
 	},
 
 	updateBuildUrl: function(charView) {
