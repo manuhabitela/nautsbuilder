@@ -1,3 +1,11 @@
+.order-title {
+	font-size: 1.2em;
+	margin-top: 0;
+	em {
+		font-size: .8em;
+	}
+}
+
 .order > ul {
 	margin: 0;
 	padding: 0;
@@ -10,6 +18,7 @@
 	vertical-align: top;
 	position: relative;
 	margin-right: 9px;
+	margin-bottom: 9px;
 	&:after {
 		position: absolute;
 		content: ' ';

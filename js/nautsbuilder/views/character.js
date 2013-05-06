@@ -25,6 +25,10 @@ leiminauts.CharacterView = Backbone.View.extend({
 			this.trigger('order:changed', collection);
 		}, this);
 
+		this.order.on('toggled', function() {
+			this.trigger('order:toggled');
+		}, this);
+
 		this.render();
 
 		this.model.on('change:maxed_out', this.toggleCompactView, this);

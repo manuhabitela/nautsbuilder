@@ -86,6 +86,13 @@
 		</script>
 
 		<script type="text/template" id="order-tpl">
+			<p class="order-title">
+				<label>
+					<input type="checkbox" <%= active ? 'checked="checked"' : '' %> name="active">
+					Build Order
+					<em>(drag an drop to change)</em>
+				</label>
+			</p>
 			<ul>
 			<% _(items).each(function(item) { %>
 				<li data-cid="<%= item.cid %>" class="<%= item.upgrade ? 'order-item order-item-upgrade' : 'order-item order-item-skill' %>">

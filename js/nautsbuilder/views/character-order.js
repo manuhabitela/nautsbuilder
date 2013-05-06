@@ -8,9 +8,6 @@ leiminauts.OrderView = Backbone.View.extend({
 
 	className: 'order',
 
-	events: {
-	},
-
 	initialize: function() {
 		if (this.options.character) {
 			this.character = this.options.character;
@@ -20,7 +17,11 @@ leiminauts.OrderView = Backbone.View.extend({
 
 		this.active = true;
 
+		this.on('toggled', this.toggleView, this);
+
 		this.collection = new Backbone.Collection(null, { comparator: this.comparator });
+
+		this.collection.on('reset', this.onBuildChange, this);
 
 		this.model.get('skills').each(
 			_.bind(function(skill) {
@@ -28,6 +29,16 @@ leiminauts.OrderView = Backbone.View.extend({
 			}, this)
 		);
 		this.model.get('skills').on('change:active', this.onBuildChange, this);
+	},
+
+	toggle: function() {
+		this.active = !this.active;
+		this.trigger('toggled');
+	},
+
+	toggleView: function() {
+		if (this.$el)
+			this.$el.find('ul').toggleClass('hidden', !this.active);
 	},
 
 	onBuildChange: function(model) {
@@ -40,11 +51,12 @@ leiminauts.OrderView = Backbone.View.extend({
 	},
 
 	render: function() {
-		this.$el.html(this.template( {items: this.collection.toJSON()} ));
+		this.$el.html(this.template({ items: this.collection.toJSON(), active: this.active }));
+		this.$('input[name="active"]').on('change', _.bind(this.toggle, this));
 		this.$list = this.$el.children('ul').first();
 		this.$list.sortable({items: '.order-item'});
 		this.$list.on('sortupdate', _.bind(this.updateOrder, this));
-		this.$el.toggleClass('hidden', !this.active);
+		this.toggleView();
 		return this;
 	},
 
