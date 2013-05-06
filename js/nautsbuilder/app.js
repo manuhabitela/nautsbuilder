@@ -57,9 +57,10 @@ leiminauts.App = Backbone.Router.extend({
 		});
 		this.showView( charView );
 
-		this.updateBuildFromUrl(character);
-		var debouncedUrlUpdate = _.debounce(_.bind(function() { this.updateBuildUrl(character); }, this), 500);
+		this.updateBuildFromUrl(charView);
+		var debouncedUrlUpdate = _.debounce(_.bind(function() { this.updateBuildUrl(charView); }, this), 500);
 		character.get('skills').on('change', debouncedUrlUpdate , this);
+		charView.on('order:changed', debouncedUrlUpdate, this);
 	},
 
 	showView: function(view) {
@@ -70,10 +71,12 @@ leiminauts.App = Backbone.Router.extend({
 		return view;
 	},
 
-	updateBuildFromUrl: function(character) {
+	updateBuildFromUrl: function(charView) {
+		var character = charView.model;
 		var currentUrl = this.getCurrentUrl();
 		var urlParts = currentUrl.split('/');
 		var build = urlParts.length > 1 ? urlParts[1] : null;
+		var order = urlParts.length > 2 ? urlParts[2] : null;
 		if (build === null) {
 			character.reset();
 			return false;
@@ -91,25 +94,53 @@ leiminauts.App = Backbone.Router.extend({
 		}
 	},
 
-	updateBuildUrl: function(character) {
+	updateBuildUrl: function(charView) {
 		if (this.currentView instanceof leiminauts.CharactersView)
 			return false;
+		var character = charView.model;
+		var order = charView.order.active ? charView.order.collection : null;
 		var buildUrl = "";
+		var orderUrlParts = [];
+		var orderUrl = "";
+		var grid = [];
 		character.get('skills').each(function(skill) {
 			buildUrl += skill.get('active') ? "1" : "0";
+			grid.push(skill);
 			skill.get('upgrades').each(function(upgrade) {
+				grid.push(upgrade);
 				buildUrl += upgrade.get('current_step').get('level');
 			});
 		});
+		if (order && order.length > 0) {
+			order.each(function(item) { //item can be a skill or an upgrade step
+				//get the position on the grid
+				if (item instanceof leiminauts.Skill) {
+					orderUrlParts.push(_(grid).indexOf(item)+1);
+				} else if (item instanceof leiminauts.Step) {
+					//get the upgrade tied to the step
+					var upgrade = _(grid).filter(function(up) {
+						return up instanceof leiminauts.Upgrade && up.get('name') == item.get('upgrade').name;
+					});
+					upgrade = upgrade ? upgrade[0] : false;
+					if (upgrade)
+						orderUrlParts.push(_(grid).indexOf(upgrade)+1);
+				}
+			});
+			orderUrl = orderUrlParts.join('-');
+		}
+
+		console.log(orderUrl);
 
 		var currentUrl = this.getCurrentUrl();
 		var newUrl = '';
-		if (currentUrl.indexOf('/') === -1) //if url is like #leon_chameleon
+		if (currentUrl.indexOf('/') === -1) { //if url is like #leon_chameleon
 			newUrl = currentUrl + '/' + buildUrl;
+			if (orderUrl) newUrl += '/' + orderUrl;
+		}
 		else {
 			newUrl = currentUrl.substring(0, currentUrl.indexOf('/') + 1) + buildUrl;
 			if (currentUrl.indexOf('/') !== currentUrl.lastIndexOf('/')) //if like #leon_chameleon/1102032011102/0-2-3-12-7-5
-				newUrl += currentUrl.substring(currentUrl.lastIndexOf('/'));
+				newUrl += '/' + orderUrl;
 		}
 		this.navigate(newUrl);
 	},

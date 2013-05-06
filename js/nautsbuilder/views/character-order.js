@@ -73,14 +73,18 @@ leiminauts.OrderView = Backbone.View.extend({
 				this.collection.remove(steps);
 			}
 		}
+		if (this.active)
+			this.trigger('changed', this.collection);
 	},
 
 	updateOrder: function() {
 		if (!this.$list) return false;
-		this.$list.each(_.bind(function(i, item) {
+		this.$list.children().each(_.bind(function(i, item) {
 			this.collection.get($(item).attr("data-cid")).set('order', i, { silent: true });
 		}, this));
 		this.collection.sort();
+		if (this.active)
+			this.trigger('changed', this.collection);
 		return false;
 	}
 });
