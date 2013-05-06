@@ -18,6 +18,8 @@ leiminauts.OrderView = Backbone.View.extend({
 		}
 		this.template = _.template( $('#order-tpl').html() );
 
+		this.active = true;
+
 		this.collection = new Backbone.Collection(null, { comparator: this.comparator });
 
 		this.model.get('skills').each(
@@ -42,19 +44,32 @@ leiminauts.OrderView = Backbone.View.extend({
 		this.$list = this.$el.children('ul').first();
 		this.$list.sortable({items: '.order-item'});
 		this.$list.on('sortupdate', _.bind(this.updateOrder, this));
+		this.$el.toggleClass('hidden', !this.active);
 		return this;
 	},
 
 	updateCollection: function(model) {
-		if (model instanceof leiminauts.Skill)
-			this.collection[model.get('active') ? 'add' : 'remove'](model);
-		else if (model instanceof leiminauts.Upgrade) {
-			if (model.get('current_step').get('level') !== 0)
-				this.collection.add(model.get('current_step'), { sort: false });
-			else {
-				var steps = this.collection.filter(function(item) {
-					return item instanceof leiminauts.Step && item.get('upgrade').name == model.get('name');
-				});
+		if (model instanceof leiminauts.Skill) {
+			if (model.get('active'))
+				this.collection.add(model, { sort: false });
+			else
+				this.collection.remove(model);
+		} else if (model instanceof leiminauts.Upgrade) {
+			var lvl = model.get('current_step').get('level');
+			var steps = this.collection.filter(function(item) {
+				return item instanceof leiminauts.Step && item.get('upgrade').name == model.get('name');
+			});
+			if (lvl !== 0) {
+				if (lvl > 1 && !steps.length) {
+					var toAdd = [];
+					model.get('steps').each(function(step) {
+						if (step.get('level') < lvl)
+							toAdd.push(step);
+					});
+					this.collection.add(toAdd, { sort: false });
+				} else
+					this.collection.add(model.get('current_step'), { sort: false });
+			} else {
 				this.collection.remove(steps);
 			}
 		}
