@@ -13,7 +13,8 @@
 	text-align: left;
 	border-radius: 50px 0px 0px 50px;
 	padding: 5px 8px 5px 5px;
-	background-color: hsla(197, 70%, 50%, 0.8);
+	// background-color: hsla(197, 70%, 50%, 0.8);
+	background-color: #1E8FBC;
 	position: relative;
 	max-height: $skill-height;
 	overflow: hidden;
@@ -37,7 +38,7 @@
 	//background: rgba(#226E8F, .5);
 	font-size: 13px;
 	line-height: 1.25em;
-	width: $build-width - $skill-width - 4px; //4px is margin between skill and effects
+	width: $build-width - $skill-width; //4px is margin between skill and effects
 	max-height: $skill-height;
 	min-height: $skill-height;
 	overflow: hidden;
@@ -66,6 +67,7 @@
 
 .skill-wrapper:hover > .skill-effects, .skill-effects:hover {
 	background-color: #1E8FBC;
+	// background-color: hsla(197, 70%, 50%, 0.8);
 	max-height: 600px;
 	overflow: visible;
 	z-index: 50;
