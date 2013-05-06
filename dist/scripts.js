@@ -1,4 +1,4 @@
-/* Nautsbuilder - Awesomenauts build calculator v0.6 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.7 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -50,6 +50,10 @@ Backbone.View.prototype.assign = function(view, selector) {
 	view.setElement(this.$(selector)).render();
 };
 
+Backbone.Model.prototype.toJSON = function(options) {
+	return _.extend({}, _.clone(this.attributes), { cid: this.cid });
+};
+
 window.leiminauts = window.leiminauts || {};
 
 leiminauts.utils = {
@@ -87,30 +91,44 @@ leiminauts.utils = {
  */
 leiminauts.Character = Backbone.Model.extend({
 	initialize: function() {
-		this.set('totalCost', 0);
+		this.skills = this.get('skills');
+		this.set('total_cost', 0);
+		this.set('maxed_out', false);
 		this.set('level', 1);
-		this.get('skills').on('change:totalCost', this.onCostChange, this);
+		this.skills.on('change:total_cost', this.onCostChange, this);
+		this.skills.on('change:maxed_out', this.onSkillComplete, this);
 
 		this.on('change:selected', this.onSelectedChange, this);
 	},
 
 	onCostChange: function() {
 		var cost = 0;
-		this.get('skills').each(function(skill) {
-			cost += skill.get('totalCost');
+		this.skills.each(function(skill) {
+			cost += skill.get('total_cost');
 		});
 		this.set('level', Math.floor( (cost-100)/100) <= 1 ? 1 : Math.floor((cost-100)/100));
-		this.set('totalCost', cost);
+		this.set('total_cost', cost);
+	},
+
+	onSkillComplete: function() {
+		var maxed = true;
+		_(this.skills.pluck('maxed_out')).each(function(max) {
+			if (!max) {
+				maxed = false;
+				return false;
+			}
+		});
+		this.set('maxed_out', maxed);
 	},
 
 	onSelectedChange: function() {
-		this.get('skills').each(function(skill) {
+		this.skills.each(function(skill) {
 			skill.set('selected', this.get('selected'));
 		}, this);
 	},
 
 	reset: function() {
-		this.get('skills').each(function(skill) {
+		this.skills.each(function(skill) {
 			skill.setActive(false);
 			if (!skill.get('toggable'))
 				skill.resetUpgradesState(false);
@@ -185,10 +203,11 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		//first initialization of the skill: activating upgrades and shit
 		if (this.get('selected') && this.get('upgrades').length <= 0) {
+			this.set('maxed_out', false);
 			this._originalEffects = this.get('effects');
 			this.prepareBaseEffects();
 			this.initUpgrades();
-			this.set('totalCost', 0);
+			this.set('total_cost', 0);
 			this.set('active', this.get('cost') !== undefined && this.get('cost') <= 0);
 			this.set('toggable', !this.get('active'));
 		}
@@ -237,6 +256,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			upgrade.setStep(0);
 			upgrade.set('locked', active);
 		}, this);
+		this.set('maxed_out', false);
 	},
 
 	getActiveUpgrades: function() {
@@ -260,10 +280,24 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (!this.get('selected')) return false;
 		if (!this.get('active')) {
 			this.set('effects', []);
-			this.set('totalCost', 0);
+			this.set('total_cost', 0);
 			return false;
 		}
 		var activeUpgrades = this.getActiveUpgrades();
+
+		//is the skill maxed out?
+		var maxedOut = true;
+		if (activeUpgrades.length >= 3) {
+			_(activeUpgrades).each(function(upgrade) {
+				if (upgrade.get('current_step').get('level') !== upgrade.get('max_step')) {
+					maxedOut = false;
+					return false;
+				}
+			});
+		} else
+			maxedOut = false;
+		this.set('maxed_out', maxedOut);
+
 		var activeSteps = this.getActiveSteps();
 		this.upgrades.each(function(upgrade) {
 			if (this.get('active'))
@@ -275,7 +309,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		_(activeUpgrades).each(function(upgrade) {
 			cost += upgrade.get('current_step').get('level')*upgrade.get('cost');
 		});
-		this.set('totalCost', cost);
+		this.set('total_cost', cost);
 
 		//combine similar steps: some characters have upgrades that enhance similar things.
 		// Ie Leon has 2 upgrades that add damages to its tong (1: +3/+6/+9 and 2: +9)
@@ -469,10 +503,10 @@ leiminauts.Upgrade = Backbone.Model.extend({
 		var steps = _(this.attributes).filter(function(attr, key) {
 			return (/^step[0-9]$/).test(key) && attr !== "";
 		});
-		var stepsCollection = new leiminauts.Steps([ new leiminauts.Step() ]);
+		var stepsCollection = new leiminauts.Steps([ new leiminauts.Step({ upgrade: this.toJSON() }) ]);
 		_(steps).each(function(step, i)  {
-			stepsCollection.add({ level: i+1, description: step });
-		});
+			stepsCollection.add({ level: i+1, description: step, upgrade: this.toJSON() });
+		}, this);
 		this.set('steps', stepsCollection);
 		this.set('max_step', stepsCollection.size()-1);
 
@@ -523,7 +557,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 	className: 'chars-list-container',
 
 	events: {
-		"click .char": "selectCharacter"
+		"click .char[data-id]": "selectCharacter"
 	},
 
 	initialize: function() {
@@ -551,7 +585,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 
 	showCharInfo: function(e) {
 		if (this.character) return false;
-		var character = $(e.currentTarget).attr('data-id');
+		var character = $(e.currentTarget).find('a').attr('href').substr(1);
 		if (this.currentChar === null || this.currentChar.get('name') !== _.ununderscored(character)) {
 			this.currentChar = this.collection.findWhere({name: _.ununderscored(character)});
 			this.render();
@@ -581,7 +615,17 @@ leiminauts.CharacterView = Backbone.View.extend({
 		this.info = new leiminauts.InfoView({ character: this });
 		this.order = new leiminauts.OrderView({ character: this });
 
+		this.order.on('changed', function(collection) {
+			this.trigger('order:changed', collection);
+		}, this);
+
+		this.order.on('toggled', function() {
+			this.trigger('order:toggled');
+		}, this);
+
 		this.render();
+
+		this.model.on('change:maxed_out', this.toggleCompactView, this);
 	},
 
 	render: function() {
@@ -592,6 +636,10 @@ leiminauts.CharacterView = Backbone.View.extend({
 		this.assign(this.info, '.char-info');
 		this.assign(this.order, '.order');
 		return this;
+	},
+
+	toggleCompactView: function() {
+		this.$el.toggleClass('maxed-out', this.model.get('maxed_out'));
 	}
 });
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -669,20 +717,96 @@ leiminauts.OrderView = Backbone.View.extend({
 
 	className: 'order',
 
-	events: {
-	},
-
 	initialize: function() {
 		if (this.options.character) {
 			this.character = this.options.character;
 			this.model = this.character.model;
 		}
 		this.template = _.template( $('#order-tpl').html() );
+
+		this.active = true;
+
+		this.on('toggled', this.toggleView, this);
+
+		this.collection = new Backbone.Collection(null, { comparator: this.comparator });
+
+		this.collection.on('reset', this.onBuildChange, this);
+
+		this.model.get('skills').each(
+			_.bind(function(skill) {
+				skill.get('upgrades').on('change:current_step', this.onBuildChange, this);
+			}, this)
+		);
+		this.model.get('skills').on('change:active', this.onBuildChange, this);
+	},
+
+	toggle: function() {
+		this.active = !this.active;
+		this.trigger('toggled');
+	},
+
+	toggleView: function() {
+		if (this.$el)
+			this.$el.find('ul').toggleClass('hidden', !this.active);
+	},
+
+	onBuildChange: function(model) {
+		this.updateCollection(model);
+		this.render();
+	},
+
+	comparator: function(model) {
+		return model.get('order') || 0;
 	},
 
 	render: function() {
-		this.$el.html(this.template( this.model.toJSON() ));
+		this.$el.html(this.template({ items: this.collection.toJSON(), active: this.active }));
+		this.$('input[name="active"]').on('change', _.bind(this.toggle, this));
+		this.$list = this.$el.children('ul').first();
+		this.$list.sortable({items: '.order-item'});
+		this.$list.on('sortupdate', _.bind(this.updateOrder, this));
+		this.toggleView();
 		return this;
+	},
+
+	updateCollection: function(model) {
+		if (model instanceof leiminauts.Skill) {
+			if (model.get('active'))
+				this.collection.add(model, { sort: false });
+			else
+				this.collection.remove(model);
+		} else if (model instanceof leiminauts.Upgrade) {
+			var lvl = model.get('current_step').get('level');
+			var steps = this.collection.filter(function(item) {
+				return item instanceof leiminauts.Step && item.get('upgrade').name == model.get('name');
+			});
+			if (lvl !== 0) {
+				if (lvl > 1 && !steps.length) {
+					var toAdd = [];
+					model.get('steps').each(function(step) {
+						if (step.get('level') < lvl)
+							toAdd.push(step);
+					});
+					this.collection.add(toAdd, { sort: false });
+				} else
+					this.collection.add(model.get('current_step'), { sort: false });
+			} else {
+				this.collection.remove(steps);
+			}
+		}
+		if (this.active)
+			this.trigger('changed', this.collection);
+	},
+
+	updateOrder: function() {
+		if (!this.$list) return false;
+		this.$list.children().each(_.bind(function(i, item) {
+			this.collection.get($(item).attr("data-cid")).set('order', i, { silent: true });
+		}, this));
+		this.collection.sort();
+		if (this.active)
+			this.trigger('changed', this.collection);
+		return false;
 	}
 });
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -725,13 +849,23 @@ leiminauts.SkillView = Backbone.View.extend({
 			this.model.resetUpgradesState(false);
 	},
 
+	//that's *really* not good to handle this like that but gah - i'm tired
+	//(I don't want the upgrades to rebuild each time we render, it's useless and doesn't permit to use cool animations on compact/full view toggle
 	render: function() {
-		this.$el.html(this.template( this.model.toJSON() ));
-		_(this.upgrades).each(function(upgrade) {
-			upgrade.delegateEvents();
-			this.$('.skill-upgrades').append(upgrade.render().el);
-		}, this);
-
+		var data = this.model.toJSON();
+		if (!this.$el.html()) {
+			this.$el.html(this.template( data ));
+			_(this.upgrades).each(function(upgrade) {
+				upgrade.delegateEvents();
+				this.$('.skill-upgrades').append(upgrade.render().el);
+			}, this);
+		} else {
+			this.$('.skill').toggleClass('active', data.active);
+			this.$('.skill').toggleClass('skill-maxed-out', data.maxed_out);
+			this.$('.skill-effects').toggleClass('hidden', !data.effects.length);
+			this.$('.skill-cancel').toggleClass('active', (data.toggable && data.active) || (data.upgrades.where({ active: true }).length > 0));
+			_(this.upgrades).invoke('delegateEvents');
+		}
 		this.renderUpgradesInfo();
 		return this;
 	},
@@ -825,6 +959,8 @@ leiminauts.App = Backbone.Router.extend({
 			}, this);
 		}
 		this.$el = $(options.el);
+
+		this.grid = [];
 	},
 
 	list: function() {
@@ -845,7 +981,7 @@ leiminauts.App = Backbone.Router.extend({
 		//check if we're just updating current build (with back button)
 		if (this.currentView && this.currentView instanceof leiminauts.CharacterView &&
 			this.currentView.model && this.currentView.model.get('name').toLowerCase() == naut) {
-			this.updateBuildFromUrl(this.currentView.model);
+			this.updateBuildFromUrl(this.currentView);
 			return true;
 		}
 
@@ -865,9 +1001,13 @@ leiminauts.App = Backbone.Router.extend({
 		});
 		this.showView( charView );
 
-		this.updateBuildFromUrl(character);
-		var debouncedUpdated = _.debounce(_.bind(function() { this.updateBuildUrl(character); }, this), 500);
-		character.get('skills').on('change', debouncedUpdated , this);
+		this._initGrid();
+
+		this.updateBuildFromUrl(charView);
+		var debouncedUrlUpdate = _.debounce(_.bind(function() { this.updateBuildUrl(charView); }, this), 500);
+		character.get('skills').on('change', debouncedUrlUpdate , this);
+		charView.on('order:changed', debouncedUrlUpdate, this);
+		charView.on('order:toggled', debouncedUrlUpdate, this);
 	},
 
 	showView: function(view) {
@@ -878,10 +1018,12 @@ leiminauts.App = Backbone.Router.extend({
 		return view;
 	},
 
-	updateBuildFromUrl: function(character) {
+	updateBuildFromUrl: function(charView) {
+		var character = charView.model;
 		var currentUrl = this.getCurrentUrl();
 		var urlParts = currentUrl.split('/');
 		var build = urlParts.length > 1 ? urlParts[1] : null;
+		var order = urlParts.length > 2 ? urlParts[2] : null;
 		if (build === null) {
 			character.reset();
 			return false;
@@ -897,27 +1039,75 @@ leiminauts.App = Backbone.Router.extend({
 				currentSkill.get('upgrades').at( (i % 7) - 1 ).setStep(build.charAt(i));
 			}
 		}
+
+		if (order) {
+			var grid = this._initGrid();
+			var orderPositions = order.split('-');
+			var count = _(orderPositions).countBy(function(o) { return o; });
+			var doneSteps = {};
+			var items = [];
+			_(orderPositions).each(function(gridPos, i) {
+				var item = grid[gridPos-1];
+				if (item instanceof leiminauts.Skill)
+					items.push(item);
+				if (item instanceof leiminauts.Upgrade) {
+					if ((count[gridPos] > 1 || doneSteps[gridPos]) ) {
+						doneSteps[gridPos] = doneSteps[gridPos] ? doneSteps[gridPos]+1 : 1;
+						count[gridPos] = count[gridPos] - 1;
+						items.push(item.get('steps').at(doneSteps[gridPos]));
+					} else if (!doneSteps[gridPos])
+						items.push(item.get('steps').at(1));
+				}
+			});
+			console.log('rest');
+			charView.order.collection.reset(items, { sort: false });
+		}
 	},
 
-	updateBuildUrl: function(character) {
+	updateBuildUrl: function(charView) {
 		if (this.currentView instanceof leiminauts.CharactersView)
 			return false;
+		var character = charView.model;
+		var order = charView.order.active ? charView.order.collection : null;
 		var buildUrl = "";
+		var orderUrlParts = [];
+		var orderUrl = "";
+		var grid = [];
 		character.get('skills').each(function(skill) {
 			buildUrl += skill.get('active') ? "1" : "0";
+			grid.push(skill);
 			skill.get('upgrades').each(function(upgrade) {
+				grid.push(upgrade);
 				buildUrl += upgrade.get('current_step').get('level');
 			});
 		});
+		if (order && order.length > 0) {
+			order.each(function(item) { //item can be a skill or an upgrade step
+				//get the position on the grid
+				if (item instanceof leiminauts.Skill) {
+					orderUrlParts.push(_(grid).indexOf(item)+1);
+				} else if (item instanceof leiminauts.Step) {
+					//get the upgrade tied to the step
+					var upgrade = _(grid).filter(function(up) {
+						return up instanceof leiminauts.Upgrade && up.get('name') == item.get('upgrade').name;
+					});
+					upgrade = upgrade ? upgrade[0] : false;
+					if (upgrade)
+						orderUrlParts.push(_(grid).indexOf(upgrade)+1);
+				}
+			});
+			orderUrl = '/' + orderUrlParts.join('-');
+		}
 
 		var currentUrl = this.getCurrentUrl();
 		var newUrl = '';
-		if (currentUrl.indexOf('/') === -1) //if url is like #leon_chameleon
-			newUrl = currentUrl + '/' + buildUrl;
+		if (currentUrl.indexOf('/') === -1) { //if url is like #leon_chameleon
+			newUrl = currentUrl + '/' + buildUrl + orderUrl;
+		}
 		else {
-			newUrl = currentUrl.substring(0, currentUrl.indexOf('/') + 1) + buildUrl;
-			if (currentUrl.indexOf('/') !== currentUrl.lastIndexOf('/')) //if like #leon_chameleon/1102032011102/0-2-3-12-7-5
-				newUrl += currentUrl.substring(currentUrl.lastIndexOf('/'));
+			newUrl = currentUrl.substring(0, currentUrl.indexOf('/') + 1) + buildUrl + orderUrl;
+			//if (currentUrl.indexOf('/') !== currentUrl.lastIndexOf('/')) //if like #leon_chameleon/1102032011102/0-2-3-12-7-5
+				//newUrl += '/' + orderUrl;
 		}
 		this.navigate(newUrl);
 	},
@@ -928,6 +1118,20 @@ leiminauts.App = Backbone.Router.extend({
 		//Without any success.
 		//Sadness.
 		return _(window.location.hash.substring(1)).trim('/').replace('ø', 'o'); //no # and trailing slash and no special unicode characters
+	},
+
+	_initGrid: function() {
+		if (this.currentView instanceof leiminauts.CharacterView && this.grid.length > 0 && this.gridChar == this.currentView.model.get('name'))
+			return this.grid;
+		var grid = [];
+		this.currentView.model.get('skills').each(function(skill) {
+			grid.push(skill);
+			skill.get('upgrades').each(function(upgrade) {
+				grid.push(upgrade);
+			});
+		});
+		this.gridChar = this.currentView.model.get('name');
+		this.grid = grid;
 	}
 });
 /* This Source Code Form is subject to the terms of the Mozilla Public

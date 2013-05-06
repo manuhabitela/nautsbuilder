@@ -160,17 +160,18 @@ body.page-red #container, body.page-red .chars-list-container, body.page-red .cu
 
 .char-builder { margin: 0 auto; }
 
-.char-builder, .build, .skill-wrapper { -webkit-transition: width 0.5s; -moz-transition: width 0.5s; -o-transition: width 0.5s; transition: width 0.5s; -webkit-transform: translateZ(0); -moz-transform: translateZ(0); -ms-transform: translateZ(0); -o-transform: translateZ(0); transform: translateZ(0); width: 1104px; margin-bottom: 20px; }
+.char-builder, .build, .skill-wrapper { -webkit-transition: width 0.5s; -moz-transition: width 0.5s; -o-transition: width 0.5s; transition: width 0.5s; width: 1104px; margin-bottom: 20px; }
 .char-builder.maxed-out .char-builder, .char-builder.maxed-out .build, .char-builder.maxed-out .skill-wrapper { width: 834px; }
 
 .char-builder.maxed-out { width: 834px; }
 
-.build, .order, .char-info { position: relative; -webkit-transition-property: width, -webkit-transform; -moz-transition-property: width, -moz-transform; -o-transition-property: width, -o-transform; transition-property: width, transform; -webkit-transition-duration: 0.5s; -moz-transition-duration: 0.5s; -o-transition-duration: 0.5s; transition-duration: 0.5s; -webkit-transition-timing-function: easeout; -moz-transition-timing-function: easeout; -o-transition-timing-function: easeout; transition-timing-function: easeout; -webkit-transform: translateX(-135px); -moz-transform: translateX(-135px); -ms-transform: translateX(-135px); -o-transform: translateX(-135px); transform: translateX(-135px); }
-.char-builder.maxed-out .build, .char-builder.maxed-out .order, .char-builder.maxed-out .char-info { -webkit-transform: translateX(0); -moz-transform: translateX(0); -ms-transform: translateX(0); -o-transform: translateX(0); transform: translateX(0); }
+.build, .order, .char-info { position: relative; -webkit-transition-property: width, -webkit-transform; -moz-transition-property: width, -moz-transform; -o-transition-property: width, -o-transform; transition-property: width, transform; -webkit-transition-duration: 0.5s; -moz-transition-duration: 0.5s; -o-transition-duration: 0.5s; transition-duration: 0.5s; -webkit-transition-timing-function: easeout; -moz-transition-timing-function: easeout; -o-transition-timing-function: easeout; transition-timing-function: easeout; }
+@media only screen and (min-width: 1400px) { .build, .order, .char-info { -webkit-transform: translateX(-135px); -moz-transform: translateX(-135px); -ms-transform: translateX(-135px); -o-transform: translateX(-135px); transform: translateX(-135px); }
+  .char-builder.maxed-out .build, .char-builder.maxed-out .order, .char-builder.maxed-out .char-info { -webkit-transform: translateX(0); -moz-transform: translateX(0); -ms-transform: translateX(0); -o-transform: translateX(0); transform: translateX(0); } }
 
 .char-builder.maxed-out .build, .char-builder.maxed-out .skill-wrapper { width: 834px; }
 
-.skill { -webkit-transition: width 0.5s; -moz-transition: width 0.5s; -o-transition: width 0.5s; transition: width 0.5s; -webkit-transform: translateZ(0); -moz-transform: translateZ(0); -ms-transform: translateZ(0); -o-transform: translateZ(0); transform: translateZ(0); width: 700px; }
+.skill { -webkit-transition: width 0.5s; -moz-transition: width 0.5s; -o-transition: width 0.5s; transition: width 0.5s; width: 700px; }
 .char-builder.maxed-out .skill { width: 430px; }
 
 .order { width: 700px; }
@@ -187,7 +188,7 @@ body.page-red #container, body.page-red .chars-list-container, body.page-red .cu
 .char-builder .chars-list .char.home-button:hover, .char-builder .chars-list .char.home-button.active { border-color: transparent; opacity: 0.8; }
 .char-builder .chars-list .char-icon { width: 26px; }
 
-.char-info { margin-left: 13px; padding-left: 0; padding-top: 0; margin-top: 0; }
+.char-info { margin-left: 8px; padding-left: 0; padding-top: 0; margin-top: 0; }
 .char-info .info { font-size: 1em; }
 
 .char-info, .order { display: inline-block; vertical-align: top; }
@@ -196,12 +197,12 @@ body.page-red #container, body.page-red .chars-list-container, body.page-red .cu
 
 .skill-wrapper > div, .skill > div { display: inline-block; vertical-align: top; }
 
-.skill { display: inline-block; text-align: left; border-radius: 50px 0px 0px 50px; padding: 5px 8px 5px 5px; background-color: rgba(38, 166, 217, 0.8); position: relative; max-height: 100px; overflow: hidden; }
+.skill { display: inline-block; text-align: left; border-radius: 50px 0px 0px 50px; padding: 5px 8px 5px 5px; background-color: #1E8FBC; position: relative; max-height: 100px; overflow: hidden; }
 .skill, .skill * { -webkit-user-select: none; -moz-user-select: none; user-select: none; }
 
 .skill-upgrades { overflow: hidden; }
 
-.skill-effects { padding-top: 7px; position: absolute; top: 0; right: 0; text-align: left; border-radius: 0; font-size: 13px; line-height: 1.25em; width: 400px; max-height: 100px; min-height: 100px; overflow: hidden; -webkit-transition-property: max-height, background, line-height; -moz-transition-property: max-height, background, line-height; -o-transition-property: max-height, background, line-height; transition-property: max-height, background, line-height; -webkit-transition-duration: 0.5s; -moz-transition-duration: 0.5s; -o-transition-duration: 0.5s; transition-duration: 0.5s; -webkit-transition-timing-function: easeout; -moz-transition-timing-function: easeout; -o-transition-timing-function: easeout; transition-timing-function: easeout; z-index: 40; }
+.skill-effects { padding-top: 7px; position: absolute; top: 0; right: 0; text-align: left; border-radius: 0; font-size: 13px; line-height: 1.25em; width: 404px; max-height: 100px; min-height: 100px; overflow: hidden; -webkit-transition-property: max-height, background, line-height; -moz-transition-property: max-height, background, line-height; -o-transition-property: max-height, background, line-height; transition-property: max-height, background, line-height; -webkit-transition-duration: 0.5s; -moz-transition-duration: 0.5s; -o-transition-duration: 0.5s; transition-duration: 0.5s; -webkit-transition-timing-function: easeout; -moz-transition-timing-function: easeout; -o-transition-timing-function: easeout; transition-timing-function: easeout; z-index: 40; }
 .skill-effects dl { margin: 0; display: inline-block; width: 184px; vertical-align: top; }
 .skill-effects dt, .skill-effects dd { display: inline; margin: 0; }
 .skill-effects dt.total_cost span { display: inline-block; line-height: 21px; }
@@ -239,9 +240,12 @@ body.page-red #container, body.page-red .chars-list-container, body.page-red .cu
 .upgrade-step.max { background-color: #07AF26; }
 .upgrade.active .upgrade-step { display: block; }
 
+.order-title { font-size: 1.2em; margin-top: 0; }
+.order-title em { font-size: .8em; }
+
 .order > ul { margin: 0; padding: 0; list-style-type: none; }
 
-.order-item, .sortable-placeholder { cursor: move; display: inline-block; vertical-align: top; position: relative; margin-right: 9px; }
+.order-item, .sortable-placeholder { cursor: move; display: inline-block; vertical-align: top; position: relative; margin-right: 9px; margin-bottom: 9px; }
 .order-item:after, .sortable-placeholder:after { position: absolute; content: ' '; display: block; width: 0; height: 0; border: 5px solid transparent; border-left-color: #fed508; top: 50%; right: -14px; margin-top: -2px; }
 .order-item:last-child:after, .sortable-placeholder:last-child:after { display: none; }
 

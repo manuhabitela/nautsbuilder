@@ -1,6 +1,6 @@
 var nautsbuilder = {
 	"name": "Nautsbuilder - Awesomenauts build calculator",
-	"version": "0.6"
+	"version": "0.7"
 };
 
 module.exports = function(grunt) {
@@ -20,7 +20,7 @@ module.exports = function(grunt) {
 					'js/lib/underscore.js',
 					'js/lib/backbone.js',
 					'js/lib/tabletop.js',
-					'js/lib/mousetooltip.js'
+					'js/lib/mousetooltip.js',
 					'js/lib/jquery.sortable.js'
 				],
 				dest: 'dist/libs.js'
