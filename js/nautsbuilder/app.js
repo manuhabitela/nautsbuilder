@@ -17,6 +17,8 @@ leiminauts.App = Backbone.Router.extend({
 			}, this);
 		}
 		this.$el = $(options.el);
+
+		this.grid = [];
 	},
 
 	list: function() {
@@ -37,7 +39,7 @@ leiminauts.App = Backbone.Router.extend({
 		//check if we're just updating current build (with back button)
 		if (this.currentView && this.currentView instanceof leiminauts.CharacterView &&
 			this.currentView.model && this.currentView.model.get('name').toLowerCase() == naut) {
-			this.updateBuildFromUrl(this.currentView.model);
+			this.updateBuildFromUrl(this.currentView);
 			return true;
 		}
 
@@ -57,10 +59,13 @@ leiminauts.App = Backbone.Router.extend({
 		});
 		this.showView( charView );
 
+		this._initGrid();
+
 		this.updateBuildFromUrl(charView);
 		var debouncedUrlUpdate = _.debounce(_.bind(function() { this.updateBuildUrl(charView); }, this), 500);
 		character.get('skills').on('change', debouncedUrlUpdate , this);
 		charView.on('order:changed', debouncedUrlUpdate, this);
+		charView.on('order:toggled', debouncedUrlUpdate, this);
 	},
 
 	showView: function(view) {
@@ -91,6 +96,29 @@ leiminauts.App = Backbone.Router.extend({
 			} else if (currentSkill) { //it's an upgrade!
 				currentSkill.get('upgrades').at( (i % 7) - 1 ).setStep(build.charAt(i));
 			}
+		}
+
+		if (order) {
+			var grid = this._initGrid();
+			var orderPositions = order.split('-');
+			var count = _(orderPositions).countBy(function(o) { return o; });
+			var doneSteps = {};
+			var items = [];
+			_(orderPositions).each(function(gridPos, i) {
+				var item = grid[gridPos-1];
+				if (item instanceof leiminauts.Skill)
+					items.push(item);
+				if (item instanceof leiminauts.Upgrade) {
+					if ((count[gridPos] > 1 || doneSteps[gridPos]) ) {
+						doneSteps[gridPos] = doneSteps[gridPos] ? doneSteps[gridPos]+1 : 1;
+						count[gridPos] = count[gridPos] - 1;
+						items.push(item.get('steps').at(doneSteps[gridPos]));
+					} else if (!doneSteps[gridPos])
+						items.push(item.get('steps').at(1));
+				}
+			});
+			console.log('rest');
+			charView.order.collection.reset(items, { sort: false });
 		}
 	},
 
@@ -126,21 +154,18 @@ leiminauts.App = Backbone.Router.extend({
 						orderUrlParts.push(_(grid).indexOf(upgrade)+1);
 				}
 			});
-			orderUrl = orderUrlParts.join('-');
+			orderUrl = '/' + orderUrlParts.join('-');
 		}
-
-		console.log(orderUrl);
 
 		var currentUrl = this.getCurrentUrl();
 		var newUrl = '';
 		if (currentUrl.indexOf('/') === -1) { //if url is like #leon_chameleon
-			newUrl = currentUrl + '/' + buildUrl;
-			if (orderUrl) newUrl += '/' + orderUrl;
+			newUrl = currentUrl + '/' + buildUrl + orderUrl;
 		}
 		else {
-			newUrl = currentUrl.substring(0, currentUrl.indexOf('/') + 1) + buildUrl;
-			if (currentUrl.indexOf('/') !== currentUrl.lastIndexOf('/')) //if like #leon_chameleon/1102032011102/0-2-3-12-7-5
-				newUrl += '/' + orderUrl;
+			newUrl = currentUrl.substring(0, currentUrl.indexOf('/') + 1) + buildUrl + orderUrl;
+			//if (currentUrl.indexOf('/') !== currentUrl.lastIndexOf('/')) //if like #leon_chameleon/1102032011102/0-2-3-12-7-5
+				//newUrl += '/' + orderUrl;
 		}
 		this.navigate(newUrl);
 	},
@@ -151,5 +176,19 @@ leiminauts.App = Backbone.Router.extend({
 		//Without any success.
 		//Sadness.
 		return _(window.location.hash.substring(1)).trim('/').replace('ø', 'o'); //no # and trailing slash and no special unicode characters
+	},
+
+	_initGrid: function() {
+		if (this.currentView instanceof leiminauts.CharacterView && this.grid.length > 0 && this.gridChar == this.currentView.model.get('name'))
+			return this.grid;
+		var grid = [];
+		this.currentView.model.get('skills').each(function(skill) {
+			grid.push(skill);
+			skill.get('upgrades').each(function(upgrade) {
+				grid.push(upgrade);
+			});
+		});
+		this.gridChar = this.currentView.model.get('name');
+		this.grid = grid;
 	}
 });
