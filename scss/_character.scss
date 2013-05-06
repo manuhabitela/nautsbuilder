@@ -4,7 +4,6 @@
 
 .char-builder, .build, .skill-wrapper {
 	@include transition(width $compact-transition-time);
-	@include transform(translateZ(0));
 	width: $build-width;
 	margin-bottom: $build-margin;
 	.char-builder.maxed-out & {
@@ -36,7 +35,6 @@
 
 .skill {
 	@include transition(width $compact-transition-time);
-	@include transform(translateZ(0));
 	width: $skill-width;
 	.char-builder.maxed-out & {
 		width: $skill-compact-width;
