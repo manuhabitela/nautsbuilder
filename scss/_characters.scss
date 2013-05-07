@@ -8,7 +8,10 @@ body.page-red {
 .current-char {
 	@extend .clearfix;
 	padding-bottom: 100px;
-	@include background-image(radial-gradient(50% -100px, rgba(#E6CA08, 0.8), transparent 600px));
+	background-image: -webkit-gradient(radial, 50% -100px, 0, 50% -100px, 600, color-stop(0%, rgba(230, 202, 8, 0.8)), color-stop(100%, transparent));
+	background-image: -webkit-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px);
+	background-image: -moz-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px);
+	background-image: -o-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px);
 }
 
 .current-char-box {
@@ -34,13 +37,13 @@ body.page-red {
 	    width: 12px;
 	}
 	&::-webkit-scrollbar-track {
-	    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+	    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
 	    border-radius: 5px;
 	}
 	&::-webkit-scrollbar-thumb {
 	    border-radius: 5px;
 	    background: rgba(black, 0.5);
-	    // -webkit-box-shadow: inset 0 0 12px rgba(0,0,0,0.8); 
+	    // -webkit-box-shadow: inset 0 0 12px rgba(0,0,0,0.8);
 	}
 }
 
