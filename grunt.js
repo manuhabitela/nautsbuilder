@@ -1,6 +1,6 @@
 var nautsbuilder = {
 	"name": "Nautsbuilder - Awesomenauts build calculator",
-	"version": "0.7"
+	"version": "0.7.1"
 };
 
 module.exports = function(grunt) {

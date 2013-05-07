@@ -52,7 +52,15 @@ leiminauts.OrderView = Backbone.View.extend({
 	},
 
 	render: function() {
-		this.$el.html(this.template({ items: this.collection.toJSON(), active: this.active }));
+		var data = this.collection.toJSON();
+		var totalCost = 0;
+		_(data).each(function(item) {
+			totalCost += item.upgrade ? item.upgrade.cost*1 : item.cost*1;
+			item.order_total_cost = totalCost;
+			item.order_req_lvl = Math.floor((totalCost-100)/100) <= 1 ? 1 : Math.floor((totalCost-100)/100);
+		});
+		this.$el.html(this.template({ items: data, active: this.active }));
+		this.$('.order-item').on('mouseover mouseout click dragstart', this.handleTooltip);
 		this.$('input[name="active"]').on('change', _.bind(this.toggle, this));
 		this.$list = this.$el.children('ul').first();
 		this.$list.sortable({items: '.order-item'});
@@ -99,5 +107,12 @@ leiminauts.OrderView = Backbone.View.extend({
 		if (this.active)
 			this.trigger('changed', this.collection);
 		return false;
+	},
+
+	handleTooltip: function(e) {
+		if (e.type == "mouseover")
+			MouseTooltip.show($(e.currentTarget).find('.order-popup').html());
+		else
+			MouseTooltip.hide();
 	}
 });

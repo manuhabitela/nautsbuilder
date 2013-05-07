@@ -10,7 +10,7 @@
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
 		<!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'> -->
-		<link rel="stylesheet" href="css/style.css?v=0710">
+		<link rel="stylesheet" href="css/style.css?v=0711">
 		<!-- <link rel="stylesheet" href="dist/styles.min.css"> -->
 		<script src="js/lib/modernizr.custom.js"></script>
 	</head>
@@ -99,7 +99,13 @@
 					<div>
 						<div class="order-icon"><img src="<%= item.upgrade ? item.upgrade.icon : item.icon %>" alt=""></div>
 						<div class="order-popup hidden">
-							<p><strong><%= item.upgrade ? item.upgrade.name + " stage " + item.level : item.name %></strong></p>
+							<p><strong><%= item.upgrade ? item.upgrade.name + ' (stage ' + item.level + ')' : item.name %></strong></p>
+							<p class="cost">Cost: <span class="info"><%= item.upgrade ? item.upgrade.cost : item.cost %></span></p>
+							<p class="cost"><strong>Total cost</strong> at this time: <span class="info"><%= item.order_total_cost %></span></p>
+							<p><strong>Required level</strong> at this time: <span class="info"><%= item.order_req_lvl %></span></p>
+							<% if (item.upgrade) { %>
+							<p>Stage <%= item.level %>: <%= item.description %></p>
+							<% } %>
 						</div>
 					</div>
 				</li>
@@ -167,20 +173,20 @@
 		<script src="js/lib/tabletop.js"></script>
 		<script src="js/lib/mousetooltip.js"></script>
 		<script src="js/lib/jquery.sortable.js"></script>
-		<script src="js/nautsbuilder/utils.js?v=0710"></script>
-		<script src="js/nautsbuilder/data/character.js?v=0710"></script>
-		<script src="js/nautsbuilder/data/skill.js?v=0710"></script>
-		<script src="js/nautsbuilder/data/upgrade.js?v=0710"></script>
-		<script src="js/nautsbuilder/data/step.js?v=0710"></script>
-		<script src="js/nautsbuilder/views/characters.js?v=0710"></script>
-		<script src="js/nautsbuilder/views/character.js?v=0710"></script>
-		<script src="js/nautsbuilder/views/character-build.js?v=0710"></script>
-		<script src="js/nautsbuilder/views/character-order.js?v=0710"></script>
-		<script src="js/nautsbuilder/views/character-info.js?v=0710"></script>
-		<script src="js/nautsbuilder/views/skill.js?v=0710"></script>
-		<script src="js/nautsbuilder/views/upgrade.js?v=0710"></script>
-		<script src="js/nautsbuilder/app.js?v=0710"></script>
-		<script src="js/main.js?v=0710"></script>
+		<script src="js/nautsbuilder/utils.js?v=0711"></script>
+		<script src="js/nautsbuilder/data/character.js?v=0711"></script>
+		<script src="js/nautsbuilder/data/skill.js?v=0711"></script>
+		<script src="js/nautsbuilder/data/upgrade.js?v=0711"></script>
+		<script src="js/nautsbuilder/data/step.js?v=0711"></script>
+		<script src="js/nautsbuilder/views/characters.js?v=0711"></script>
+		<script src="js/nautsbuilder/views/character.js?v=0711"></script>
+		<script src="js/nautsbuilder/views/character-build.js?v=0711"></script>
+		<script src="js/nautsbuilder/views/character-order.js?v=0711"></script>
+		<script src="js/nautsbuilder/views/character-info.js?v=0711"></script>
+		<script src="js/nautsbuilder/views/skill.js?v=0711"></script>
+		<script src="js/nautsbuilder/views/upgrade.js?v=0711"></script>
+		<script src="js/nautsbuilder/app.js?v=0711"></script>
+		<script src="js/main.js?v=0711"></script>
 
 		<!--<script src="dist/libs.min.js"></script>
 		<script src="dist/scripts.min.js"></script>-->

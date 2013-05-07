@@ -1,4 +1,4 @@
-/* Nautsbuilder - Awesomenauts build calculator v0.7 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.7.1 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -761,7 +761,15 @@ leiminauts.OrderView = Backbone.View.extend({
 	},
 
 	render: function() {
-		this.$el.html(this.template({ items: this.collection.toJSON(), active: this.active }));
+		var data = this.collection.toJSON();
+		var totalCost = 0;
+		_(data).each(function(item) {
+			totalCost += item.upgrade ? item.upgrade.cost*1 : item.cost*1;
+			item.order_total_cost = totalCost;
+			item.order_req_lvl = Math.floor((totalCost-100)/100) <= 1 ? 1 : Math.floor((totalCost-100)/100);
+		});
+		this.$el.html(this.template({ items: data, active: this.active }));
+		this.$('.order-item').on('mouseover mouseout click dragstart', this.handleTooltip);
 		this.$('input[name="active"]').on('change', _.bind(this.toggle, this));
 		this.$list = this.$el.children('ul').first();
 		this.$list.sortable({items: '.order-item'});
@@ -808,6 +816,13 @@ leiminauts.OrderView = Backbone.View.extend({
 		if (this.active)
 			this.trigger('changed', this.collection);
 		return false;
+	},
+
+	handleTooltip: function(e) {
+		if (e.type == "mouseover")
+			MouseTooltip.show($(e.currentTarget).find('.order-popup').html());
+		else
+			MouseTooltip.hide();
 	}
 });
 /* This Source Code Form is subject to the terms of the Mozilla Public
