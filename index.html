@@ -9,8 +9,7 @@
 		<title>Nautsbuilder - Awesomenauts builder: skills calculator, skills simulator - Make and share your Awesomenauts builds!</title>
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
-		<!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'> -->
-		<link rel="stylesheet" href="css/style.css?v=0711">
+		<link rel="stylesheet" href="css/style.css?v=0713">
 		<!-- <link rel="stylesheet" href="dist/styles.min.css"> -->
 		<script src="js/lib/modernizr.custom.js"></script>
 	</head>
@@ -23,9 +22,22 @@
 
 		</div>
 
-		<p id="warning">Warning: this is a work-in-progress. Bugs are not intended but certainly here! <a style="color: #ccc" href="http://www.awesomenauts.com/forum/viewtopic.php?f=14&amp;t=13663" target="_blank">Feedback appreciated</a> - v0.7: <a style="color: #ccc" href="http://www.awesomenauts.com/forum/viewtopic.php?f=14&amp;t=13663" target="_blank">see what's new</a>.</p>
-
-
+		<div id="footer">
+			<p>Like what you see?
+				<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+					<input type="hidden" name="cmd" value="_donations">
+					<input type="hidden" name="business" value="pelletier.emmanuel@gmail.com">
+					<input type="hidden" name="lc" value="FR">
+					<input type="hidden" name="item_name" value="A beer for Leimi">
+					<input type="hidden" name="no_note" value="0">
+					<input type="hidden" name="currency_code" value="EUR">
+					<input type="hidden" name="bn" value="PP-DonationsBF:btn_donate_SM.gif:NonHostedGuest">
+					<button>Buy me a beer! Or a pizza. Whatever.</button>
+				</form>
+				<a href="https://github.com/Leimi/awesomenauts-build-maker" target="_blank">v0.7</a> - <a style="color: #ccc" href="http://www.awesomenauts.com/forum/viewtopic.php?f=14&amp;t=13663" target="_blank">Forum post for feedback and bug reports</a> -
+				Data gathered from the <a href="http://www.awesomenauts.com" target="_blank">Awesomenauts game</a> and the <a href="http://awesomenauts.wikia.com/wiki/Awesomenauts_Wiki" target="_blank">Wiki</a> by the community.
+			</p>
+		</div>
 		<script type="text/template" id="chars-tpl">
 			<div class="current-char">
 				<% if (currentChar) { %>
