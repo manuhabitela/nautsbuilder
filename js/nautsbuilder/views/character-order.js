@@ -29,6 +29,8 @@ leiminauts.OrderView = Backbone.View.extend({
 			}, this)
 		);
 		this.model.get('skills').on('change:active', this.onBuildChange, this);
+
+		this.on('sorted', this.render, this);
 	},
 
 	toggle: function() {
@@ -104,8 +106,10 @@ leiminauts.OrderView = Backbone.View.extend({
 			this.collection.get($(item).attr("data-cid")).set('order', i, { silent: true });
 		}, this));
 		this.collection.sort();
-		if (this.active)
+		if (this.active) {
 			this.trigger('changed', this.collection);
+			this.trigger('sorted', this.collection);
+		}
 		return false;
 	},
 
