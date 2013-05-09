@@ -18,6 +18,7 @@ The spreadsheet is available here https://docs.google.com/spreadsheet/ccc?key=0A
 
 It is pretty simple to fill but there are a few things to know.
 
+* If you change anything in the spreadsheet, **let me know in the [forum](http://www.awesomenauts.com/forum/viewtopic.php?f=14&t=13663)**. A manual update of the Nautsbuilder is required to reflect new data changes.
 * There are 3 different sheets: Characters, Skills, and Upgrades. You can switch sheets at the bottom of the screen.
 * For every sheet, please **don't put any empty rows or columns**: any row/column after a completely empty row/column would become unavailable by the Nautsbuilder.
 * Every `description` field will translate \*sentences like this\* as *sentences in italics like this*.
