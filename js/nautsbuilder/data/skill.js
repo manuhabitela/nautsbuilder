@@ -278,11 +278,23 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 
 		if (this.get('name') == "Spike Dive") {
-			var seahorse = _(this.getActiveUpgrades()).filter(function(upg) { return upg.get('name') == "Dead Seahorse Head"; });
-			if (seahorse.length) seahorse = seahorse[0]; else return false;
-			var extraSpikeDmg = effects.findWhere({key: "damage"}).value/2;
-			effects.push({key: "Extra Spike", value: leiminauts.utils.number(extraSpikeDmg)});
-			effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "extra spike" }) ), 1 );
+			var dmg = effects.findWhere({key: "damage"}).value;
+			var seahorse = this.getActiveUpgrade("dead seahorse head");
+			var seahorseEffect = null;
+			if (seahorse) {
+				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "extra spike" }) ), 1 );
+				var seahorseEffect = {key: "Extra Spike", value: dmg/2};
+				effects.push(seahorseEffect);
+			}
+
+			var goldfish = this.getActiveUpgrade("bag full of gold fish");
+			var goldfishEffect = effects.findWhere({key: "damage with 100 solar"});
+			if (goldfish && goldfishEffect) {
+				goldfishEffect.value = goldfishEffect.value*1 + dmg;
+				if (seahorseEffect) {
+					effects.push({key: "Extra Spike With 100 Solar", value: Math.floor(goldfishEffect.value/2)});
+				}
+			}
 		}
 	},
 
@@ -300,6 +312,11 @@ leiminauts.Skill = Backbone.Model.extend({
 			if (dps) dps.value = dpsVal;
 			else effects.push({key: "DPS", value: dpsVal});
 		}
+	},
+
+	getActiveUpgrade: function(name) {
+		var upgrade = _(this.getActiveUpgrades()).filter(function(upg) { return upg.get('name').toLowerCase() == name.toLowerCase(); });
+		if (upgrade.length) return upgrade[0]; else return false;
 	}
 });
 
