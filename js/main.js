@@ -4,6 +4,11 @@
  * copyright (c) 2013, Emmanuel Pelletier
  */
 ;(function() {
+	//dev 0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE
+	//prod 0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE
+	//opened 0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc	
+	var spreadsheetKey = "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc";
+
 	MouseTooltip.init({ "3d": true });
 
 	//small "hack" to set the page to red background directly if we're on root
@@ -13,26 +18,42 @@
 		opts = opts || {};
 		_.defaults(opts, { el: "#container", spreadsheet: false });
 		window.nautsbuilder = new leiminauts.App(opts);
-		Backbone.history.start({pushState: false, root: "/nautsbuilder/"});
+		Backbone.history.start({pushState: false});
 	};
 
-	leiminauts.lastDataUpdate = new Date("April 30, 2013 09:00:00 GMT+0200");
-	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') || 0;
-	leiminauts.localDate = 0; //while dev
-
-	if (leiminauts.lastDataUpdate.getTime() > leiminauts.localDate) {
-		//dev 0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE
-		//prod 0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE
-		//opened 0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc
+	leiminauts.lastDataUpdate = leiminauts.lastDataUpdate || 0;
+	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') ? localStorage.getItem('nautsbuilder.date') : 0;
+		
+	if (leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate) {
 		Tabletop.init({
-			key: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc",
-			wait: false,
-			debug: false,
+			key: spreadsheetKey,
 			callback: function(data, tabletop) {
 				leiminauts.init({ spreadsheet: tabletop });
 			}
 		});
 	} else {
-		leiminauts.init({});
+		var dataOk = true;
+		if (Modernizr.localstorage) {
+			var characters = localStorage.getItem('nautsbuilder.characters');
+			var skills = localStorage.getItem('nautsbuilder.skills');
+			var upgrades = localStorage.getItem('nautsbuilder.upgrades');
+			_([characters, skills, upgrades]).each(function(data) {
+				if (!data || data === "undefined") {
+					dataOk = false;
+					return false;
+				}
+			});
+			if (dataOk) {
+				leiminauts.init({});
+			}
+		}
+		if (!Modernizr.localstorage || !dataOk) {
+			Tabletop.init({
+				key: spreadsheetKey,
+				callback: function(data, tabletop) {
+					leiminauts.init({ spreadsheet: tabletop });
+				}
+			});
+		}
 	}
 }());

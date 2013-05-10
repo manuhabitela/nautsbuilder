@@ -73,9 +73,9 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 				leiminauts.upgrades = this.spreadsheet.sheets('Upgrades').all();
 
 				if (Modernizr.localstorage) {
-					localStorage.setItem('nautsbuilder.characters', JSON.stringify(characters));
-					localStorage.setItem('nautsbuilder.skills', JSON.stringify(skills));
-					localStorage.setItem('nautsbuilder.upgrades', JSON.stringify(upgrades));
+					localStorage.setItem('nautsbuilder.characters', JSON.stringify(leiminauts.characters));
+					localStorage.setItem('nautsbuilder.skills', JSON.stringify(leiminauts.skills));
+					localStorage.setItem('nautsbuilder.upgrades', JSON.stringify(leiminauts.upgrades));
 					localStorage.setItem('nautsbuilder.date', new Date().getTime());
 				}
 			} else {
