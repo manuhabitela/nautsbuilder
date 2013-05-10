@@ -159,9 +159,9 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 				leiminauts.upgrades = this.spreadsheet.sheets('Upgrades').all();
 
 				if (Modernizr.localstorage) {
-					localStorage.setItem('nautsbuilder.characters', JSON.stringify(characters));
-					localStorage.setItem('nautsbuilder.skills', JSON.stringify(skills));
-					localStorage.setItem('nautsbuilder.upgrades', JSON.stringify(upgrades));
+					localStorage.setItem('nautsbuilder.characters', JSON.stringify(leiminauts.characters));
+					localStorage.setItem('nautsbuilder.skills', JSON.stringify(leiminauts.skills));
+					localStorage.setItem('nautsbuilder.upgrades', JSON.stringify(leiminauts.upgrades));
 					localStorage.setItem('nautsbuilder.date', new Date().getTime());
 				}
 			} else {
@@ -629,7 +629,6 @@ leiminauts.CharacterView = Backbone.View.extend({
 	},
 
 	render: function() {
-		$('body').attr('data-page', 'char');
 		this.$el.html(this.template( this.model.toJSON() ));
 		this.assign(this.characters, '.chars');
 		this.assign(this.build, '.build');
@@ -738,6 +737,8 @@ leiminauts.OrderView = Backbone.View.extend({
 			}, this)
 		);
 		this.model.get('skills').on('change:active', this.onBuildChange, this);
+
+		this.on('sorted', this.render, this);
 	},
 
 	toggle: function() {
@@ -813,8 +814,10 @@ leiminauts.OrderView = Backbone.View.extend({
 			this.collection.get($(item).attr("data-cid")).set('order', i, { silent: true });
 		}, this));
 		this.collection.sort();
-		if (this.active)
+		if (this.active) {
 			this.trigger('changed', this.collection);
+			this.trigger('sorted', this.collection);
+		}
 		return false;
 	},
 
@@ -1156,6 +1159,11 @@ leiminauts.App = Backbone.Router.extend({
  * copyright (c) 2013, Emmanuel Pelletier
  */
 ;(function() {
+	//dev 0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE
+	//prod 0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE
+	//opened 0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc	
+	var spreadsheetKey = "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc";
+
 	MouseTooltip.init({ "3d": true });
 
 	//small "hack" to set the page to red background directly if we're on root
@@ -1165,26 +1173,42 @@ leiminauts.App = Backbone.Router.extend({
 		opts = opts || {};
 		_.defaults(opts, { el: "#container", spreadsheet: false });
 		window.nautsbuilder = new leiminauts.App(opts);
-		Backbone.history.start({pushState: false, root: "/nautsbuilder/"});
+		Backbone.history.start({pushState: false});
 	};
 
-	leiminauts.lastDataUpdate = new Date("April 30, 2013 09:00:00 GMT+0200");
-	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') || 0;
-	leiminauts.localDate = 0; //while dev
-
-	if (leiminauts.lastDataUpdate.getTime() > leiminauts.localDate) {
-		//dev 0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE
-		//prod 0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE
-		//opened 0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc
+	leiminauts.lastDataUpdate = leiminauts.lastDataUpdate || 0;
+	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') ? localStorage.getItem('nautsbuilder.date') : 0;
+		
+	if (leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate) {
 		Tabletop.init({
-			key: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc",
-			wait: false,
-			debug: false,
+			key: spreadsheetKey,
 			callback: function(data, tabletop) {
 				leiminauts.init({ spreadsheet: tabletop });
 			}
 		});
 	} else {
-		leiminauts.init({});
+		var dataOk = true;
+		if (Modernizr.localstorage) {
+			var characters = localStorage.getItem('nautsbuilder.characters');
+			var skills = localStorage.getItem('nautsbuilder.skills');
+			var upgrades = localStorage.getItem('nautsbuilder.upgrades');
+			_([characters, skills, upgrades]).each(function(data) {
+				if (!data || data === "undefined") {
+					dataOk = false;
+					return false;
+				}
+			});
+			if (dataOk) {
+				leiminauts.init({});
+			}
+		}
+		if (!Modernizr.localstorage || !dataOk) {
+			Tabletop.init({
+				key: spreadsheetKey,
+				callback: function(data, tabletop) {
+					leiminauts.init({ spreadsheet: tabletop });
+				}
+			});
+		}
 	}
 }());

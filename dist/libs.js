@@ -3215,66 +3215,54 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 (function(){
 	window.MouseTooltip = {
 		init: function(opts) {
-			// opts["3d"] = opts["3d"] !== undefined ? opts["3d"] : false;
+			opts = opts || {};
+			opts["3d"] = opts["3d"] !== undefined ? opts["3d"] : false;
 			opts["offset"] = opts["offset"] !== undefined ? opts["offset"] : { x: 10, y: 10 };
 			self.opts = opts;
 			$('#mouse-tooltip').remove();
 			self.$tooltip = $('body').append('<div id="mouse-tooltip"></div>').find('#mouse-tooltip').first();
 			self.hide();
 		},
-		show: function(html, opts) {
-			opts = opts || {};
-			if (opts["avoid"] !== undefined) self.opts["avoid"] = opts["avoid"];
+		show: function(html) {
 			self.$tooltip.html(html);
 			self.$tooltip.removeClass('mouse-tooltip-hidden');
-			$(document).on('mousemove.tooltip', function(e) { self._stickToMouse(e); });
+			$(document).on('mousemove.tooltip', self._stickToMouse);
 		},
 		hide: function() {
 			self.$tooltip.addClass('mouse-tooltip-hidden');
 			$(document).off('mousemove.tooltip');
 		},
 		_stickToMouse: function(e) {
-			var $win = $(window),
-				viewport = self._viewport(),
-				$tt = self.$tooltip,
-				tt = $tt.get(0),
-				top =  e.pageY + self.opts.offset.y,
-				left = e.pageX + self.opts.offset.x,
-				$avoid = self.opts.avoid ? $(self.opts.avoid) : null;
-			self._setPos({top: top, left: left});
-			if (viewport.x + viewport.w < tt.offsetLeft + tt.offsetWidth) {
-				left -= tt.offsetWidth + self.opts.offset.x;
-				self._setPos({left: left});
+			xOffset = self.opts.offset.x;
+			yOffset = self.opts.offset.y;
+			var win = $(window),
+				ttWidth = self.$tooltip.outerWidth(),
+				ttHeight = self.$tooltip.outerHeight(),
+				mouseX = e.pageX,
+				mouseY = e.pageY,
+				ttLeft = mouseX,
+				ttTop = mouseY;
+			if ((mouseX + ttWidth + xOffset) > win.width()) {
+				ttLeft = mouseX - ttWidth;
+				xOffset = xOffset * -1;
 			}
-			if ( (viewport.y + viewport.h < tt.offsetTop + tt.offsetHeight) &&
-				viewport.h - tt.offsetTop < tt.offsetTop) { //check if there is more place at top than bottom
-				top -= tt.offsetHeight + self.opts.offset.y;
-				self._setPos({top: top});
+			if ((mouseY + ttHeight + yOffset) > win.height()) {
+				ttTop = mouseY - ttHeight;
+				yOffset = yOffset * -1;
 			}
-			if (viewport.h < tt.offsetHeight)
-				self._setPos({top: 0});
-		},
-		_setPos: function(p) {
+			ttLeft = ttLeft + xOffset + "px";
+			ttTop = ttTop + yOffset + "px";
 			var pos = {};
-			//if (window.Modernizr !== undefined && (Modernizr.csstransforms3d || Modernizr.csstransforms)) {
-			//	var translate = (p.left ? "translateX(" + p.left + "px) " : "") + (p.top ? "translateY(" + p.top + "px)" : "");
-			//	if (Modernizr.csstransforms3d && self.opts["3d"]) translate += " translateZ(0)";
-			//	pos[Modernizr.prefixed('transform')] = translate;
-			//	pos['transform'] = translate;
-			//} else {
-				if (p.top !== undefined) pos.top = p.top + 'px';
-				if (p.left !== undefined) pos.left = p.left + 'px';
-			// }
+			if (window.Modernizr !== undefined && (Modernizr.csstransforms3d || Modernizr.csstransforms)) {
+				pos[Modernizr.prefixed('transform')] = "translateX(" + ttLeft + ") translateY(" + ttTop + ")";
+				pos['transform'] = "translateX(" + ttLeft + ") translateY(" + ttTop + ")";
+				if (Modernizr.csstransforms3d && self.opts["3d"]) {
+					pos[Modernizr.prefixed('transform')] += " translateZ(0)";
+					pos['transform'] += " translateZ(0)";
+				}
+			} else
+				pos = { left: ttLeft, top: ttTop };
 			self.$tooltip.css(pos);
-		},
-		_viewport: function() {
-			var $win = $(window);
-			return {
-				x: $win.scrollLeft(),
-				y: $win.scrollTop(),
-				w: $win.width(),
-				h: $win.height()
-			};
 		}
 	};
 	var self = window.MouseTooltip;

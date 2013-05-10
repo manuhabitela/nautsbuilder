@@ -13,15 +13,20 @@
 }
 
 #footer {
-	position: fixed;
-	bottom: 10px;
-	left: 0;
-	right: 0;
+	margin: 0;
+	.page-blue & {
+		margin: 50px 0 0;
+		@media only screen and (min-height: 900px) {
+			position: fixed;
+			bottom: 10px;
+			left: 0;
+			right: 0;
+		}
+	}
 	text-align: center;
 	font-size: 12px;
 	font-family: verdana;
 	line-height: 13px;
-	margin: 0;
 	p {
 		margin: 0 5px 0 0;
 		display: inline-block;

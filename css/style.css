@@ -119,7 +119,9 @@ body, button, select, input, textarea, label { color: whitesmoke; font-family: Z
 
 #mouse-tooltip { position: absolute; top: 0; left: 0; pointer-events: none; }
 
-#footer { position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; font-size: 12px; font-family: verdana; line-height: 13px; margin: 0; }
+#footer { margin: 0; text-align: center; font-size: 12px; font-family: verdana; line-height: 13px; }
+.page-blue #footer { margin: 50px 0 0; }
+@media only screen and (min-height: 900px) { .page-blue #footer { position: fixed; bottom: 10px; left: 0; right: 0; } }
 #footer p { margin: 0 5px 0 0; display: inline-block; }
 #footer a { color: #ccc; }
 #footer a:hover, #footer a:focus { text-decoration: none; }
@@ -131,7 +133,7 @@ body, button, select, input, textarea, label { color: whitesmoke; font-family: Z
 
 body.page-red #container, body.page-red .chars-list-container, body.page-red .current-char { height: 100%; }
 
-.current-char { padding-bottom: 100px; background-image: -webkit-gradient(radial, 50% -100px, 0, 50% -100px, 600, color-stop(0%, rgba(230, 202, 8, 0.8)), color-stop(100%, transparent)); background-image: -webkit-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px); background-image: -moz-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px); background-image: -o-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px); background-image: radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px); }
+.current-char { padding-bottom: 100px; background-image: -webkit-gradient(radial, 50% -100px, 0, 50% -100px, 600, color-stop(0%, rgba(230, 202, 8, 0.8)), color-stop(100%, transparent)); background-image: -webkit-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px); background-image: -moz-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px); background-image: -o-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px); }
 
 .current-char-box { padding: 10px; border-radius: 5px; background: rgba(0, 0, 0, 0.5); font-size: small; margin: 5px; }
 .current-char-box p:first-child { margin-top: 0; }
