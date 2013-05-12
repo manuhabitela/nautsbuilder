@@ -10,7 +10,7 @@
 		display: none;
 	}
 	cursor: pointer;
-	&.locked {
+	.skill.active &.locked {
 		cursor: not-allowed;
 	}
 
