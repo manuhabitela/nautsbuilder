@@ -240,10 +240,10 @@ leiminauts.Skill = Backbone.Model.extend({
 			});
 		} else {
 			skillUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
+			_(skillUpgrades).each(function(upgrade) {
+				upgrade.skill = this;
+			}, this);
 		}
-		_(skillUpgrades).each(function(upgrade) {
-			upgrade.skill = this;
-		}, this);
 		this.get('upgrades').reset(skillUpgrades);
 		this.resetUpgradesState();
 	},
@@ -971,9 +971,10 @@ leiminauts.UpgradeView = Backbone.View.extend({
 
 	updateStep: function() {
 		if (this.model.get('locked')) {
-			if (this.model.get('skill').get('active'))
+			var skill = this.model.get('skill');
+			if (skill && skill.get('active'))
 				return false;
-			this.model.get('skill').setActive(true);
+			if (skill) skill.setActive(true);
 		}
 		var currentStep = this.model.get('current_step') ? this.model.get('current_step').get('level') : 0;
 		if (currentStep >= this.model.get('max_step'))
