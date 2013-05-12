@@ -1,4 +1,4 @@
-/* Nautsbuilder - Awesomenauts build calculator v0.7.1 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.7.2 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -241,6 +241,9 @@ leiminauts.Skill = Backbone.Model.extend({
 		} else {
 			skillUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
 		}
+		_(skillUpgrades).each(function(upgrade) {
+			upgrade.skill = this;
+		}, this);
 		this.get('upgrades').reset(skillUpgrades);
 		this.resetUpgradesState();
 	},
@@ -967,8 +970,11 @@ leiminauts.UpgradeView = Backbone.View.extend({
 	},
 
 	updateStep: function() {
-		if (this.model.get('locked'))
-			return false;
+		if (this.model.get('locked')) {
+			if (this.model.get('skill').get('active'))
+				return false;
+			this.model.get('skill').setActive(true);
+		}
 		var currentStep = this.model.get('current_step') ? this.model.get('current_step').get('level') : 0;
 		if (currentStep >= this.model.get('max_step'))
 			this.model.setStep(0);
@@ -1000,7 +1006,7 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	list: function() {
-		$('body').removeClass('page-blue').addClass('page-red');
+		$('html').removeClass('page-blue').addClass('page-red');
 
 		var charsView = new leiminauts.CharactersView({
 			collection: this.data
@@ -1021,7 +1027,7 @@ leiminauts.App = Backbone.Router.extend({
 			return true;
 		}
 
-		$('body').addClass('page-blue').removeClass('page-red');
+		$('html').addClass('page-blue').removeClass('page-red');
 
 		var character = this.data.filter(function(character) {
 			var selected = character.get('name').toLowerCase() == naut;
@@ -1184,7 +1190,7 @@ leiminauts.App = Backbone.Router.extend({
 	MouseTooltip.init({ "3d": true });
 
 	//small "hack" to set the page to red background directly if we're on root
-	$('body').toggleClass('page-red', !window.location.hash.length);
+	$('html').toggleClass('page-red', !window.location.hash.length);
 
 	leiminauts.init = function(opts) {
 		opts = opts || {};

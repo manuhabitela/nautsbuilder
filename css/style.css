@@ -26,11 +26,12 @@ audio:not([controls]) { display: none; height: 0; }
 
 [hidden] { display: none; }
 
-html { font-family: sans-serif; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; height: 100%; }
+html { font-family: sans-serif; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; min-height: 100%; }
+html.page-red { height: 100%; min-height: 0; }
 
-body { margin: 0; padding: 10px; padding-bottom: 30px; height: 100%; }
-body, body.page-blue { background-color: #001D2F; background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(800px 800px, #02526d, #001322); background-image: -moz-radial-gradient(800px 800px, #02526d, #001322); background-image: -o-radial-gradient(800px 800px, #02526d, #001322); background-image: radial-gradient(800px 800px, #02526d, #001322); background-image: -webkit-gradient(radial, 90% 90%, 0, 90% 90%, 100, color-stop(0%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(90% 90%, #02526d, #001322); background-image: -moz-radial-gradient(90% 90%, #02526d, #001322); background-image: -o-radial-gradient(90% 90%, #02526d, #001322); background-image: radial-gradient(90% 90%, #02526d, #001322); }
-body.page-red { background-color: #6D0206; background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(800px 800px, #6d0206, #220000); background-image: -moz-radial-gradient(800px 800px, #6d0206, #220000); background-image: -o-radial-gradient(800px 800px, #6d0206, #220000); background-image: radial-gradient(800px 800px, #6d0206, #220000); background-image: -webkit-gradient(radial, 90% 90%, 0, 90% 90%, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(90% 90%, #6d0206, #220000); background-image: -moz-radial-gradient(90% 90%, #6d0206, #220000); background-image: -o-radial-gradient(90% 90%, #6d0206, #220000); background-image: radial-gradient(90% 90%, #6d0206, #220000); }
+body { margin: 0; padding: 10px; padding-bottom: 30px; height: 100%; background-position: top left; }
+body, .page-blue body { background-color: #001D2F; background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(800px 800px, #02526d, #001322); background-image: -moz-radial-gradient(800px 800px, #02526d, #001322); background-image: -o-radial-gradient(800px 800px, #02526d, #001322); background-image: radial-gradient(800px 800px, #02526d, #001322); background-image: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 100, color-stop(50%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(50% 50%, #02526d 50%, #001322); background-image: -moz-radial-gradient(50% 50%, #02526d 50%, #001322); background-image: -o-radial-gradient(50% 50%, #02526d 50%, #001322); background-image: radial-gradient(50% 50%, #02526d 50%, #001322); }
+.page-red body { background-color: #6D0206; background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(800px 800px, #6d0206, #220000); background-image: -moz-radial-gradient(800px 800px, #6d0206, #220000); background-image: -o-radial-gradient(800px 800px, #6d0206, #220000); background-image: radial-gradient(800px 800px, #6d0206, #220000); background-image: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 100, color-stop(50%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(50% 50%, #6d0206 50%, #220000); background-image: -moz-radial-gradient(50% 50%, #6d0206 50%, #220000); background-image: -o-radial-gradient(50% 50%, #6d0206 50%, #220000); background-image: radial-gradient(50% 50%, #6d0206 50%, #220000); }
 
 a:focus { outline: thin dotted; }
 
@@ -60,7 +61,7 @@ img { border: 0; }
 
 svg:not(:root) { overflow: hidden; }
 
-fieldset { border: 1px solid silver; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
+fieldset { border: 1px solid #c0c0c0; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
 
 legend { border: 0; padding: 0; }
 
@@ -131,7 +132,7 @@ body, button, select, input, textarea, label { color: whitesmoke; font-family: Z
 
 .icon-details { position: absolute; bottom: 0; }
 
-body.page-red #container, body.page-red .chars-list-container, body.page-red .current-char { height: 100%; }
+.page-red #container, .page-red .chars-list-container, .page-red .current-char { height: 100%; }
 
 .current-char { padding-bottom: 100px; background-image: -webkit-gradient(radial, 50% -100px, 0, 50% -100px, 600, color-stop(0%, rgba(230, 202, 8, 0.8)), color-stop(100%, transparent)); background-image: -webkit-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px); background-image: -moz-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px); background-image: -o-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px); }
 
@@ -237,16 +238,18 @@ body.page-red #container, body.page-red .chars-list-container, body.page-red .cu
 .upgrade { display: inline-block; vertical-align: top; margin: 0 2px; cursor: pointer; -webkit-transition-property: width, opacity; -moz-transition-property: width, opacity; -o-transition-property: width, opacity; transition-property: width, opacity; -webkit-transition-duration: 0.3s, 1s; -moz-transition-duration: 0.3s, 1s; -o-transition-duration: 0.3s, 1s; transition-duration: 0.3s, 1s; -webkit-transition-timing-function: easeout; -moz-transition-timing-function: easeout; -o-transition-timing-function: easeout; transition-timing-function: easeout; width: 90px; opacity: 1; }
 .skill.jump .upgrade:after { border-radius: 8px 8px 25px 0.27778 90px 20px 20px; }
 .upgrade.active:after { display: none; }
-.upgrade.locked { cursor: not-allowed; }
+.skill.active .upgrade.locked { cursor: not-allowed; }
 .char-builder.maxed-out .build .upgrade:not(.active) { width: 0; margin: 0 1px; opacity: 0; overflow: hidden; }
 
 .upgrade-icon { max-width: 100%; }
 
 .upgrade-cost { right: 0; }
+.char-builder.maxed-out .upgrade-cost { display: none; }
 
 .upgrade-step { left: 0; display: none; background-color: #B07C06; }
 .upgrade-step.max { background-color: #07AF26; }
 .upgrade.active .upgrade-step { display: block; }
+.char-builder.maxed-out .upgrade-step { display: none; }
 
 .order-title { font-size: 1.2em; margin-top: 0; }
 .order-title em { font-size: .8em; }
