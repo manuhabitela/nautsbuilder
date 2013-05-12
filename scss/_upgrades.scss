@@ -34,6 +34,9 @@
 
 .upgrade-cost {
 	right: 0;
+	.char-builder.maxed-out & {
+		display: none;
+	}
 }
 
 .upgrade-step {
@@ -45,6 +48,9 @@
 	}
 	.upgrade.active & {
 		display: block;
+	}
+	.char-builder.maxed-out & {
+		display: none;
 	}
 }
 
