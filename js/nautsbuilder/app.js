@@ -22,7 +22,7 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	list: function() {
-		$('body').removeClass('page-blue').addClass('page-red');
+		$('html').removeClass('page-blue').addClass('page-red');
 
 		var charsView = new leiminauts.CharactersView({
 			collection: this.data
@@ -43,7 +43,7 @@ leiminauts.App = Backbone.Router.extend({
 			return true;
 		}
 
-		$('body').addClass('page-blue').removeClass('page-red');
+		$('html').addClass('page-blue').removeClass('page-red');
 
 		var character = this.data.filter(function(character) {
 			var selected = character.get('name').toLowerCase() == naut;

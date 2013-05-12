@@ -22,8 +22,11 @@ html {
 	font-family: sans-serif;
 	-webkit-text-size-adjust: 100%;
 	-ms-text-size-adjust: 100%;
-
-	height: 100%;
+	min-height: 100%;
+	&.page-red {
+		height: 100%;
+		min-height: 0;
+	}
 }
 
 body {
@@ -31,16 +34,16 @@ body {
 	padding: 10px;
 	padding-bottom: 30px;
 	height: 100%;
-
-	&, &.page-blue {
+	background-position: top left;
+	&, .page-blue & {
 		background-color: #001D2F;
 		@include background-image(radial-gradient(800px 800px, #02526D, #001322));
-		@include background-image(radial-gradient(90% 90%, #02526D, #001322));
+		@include background-image(radial-gradient(50% 50%, #02526D 50%, #001322));
 	}
-	&.page-red {
+	.page-red & {
 		background-color: #6D0206;
 		@include background-image(radial-gradient(800px 800px, #6D0206, #220000));
-		@include background-image(radial-gradient(90% 90%, #6D0206, #220000));
+		@include background-image(radial-gradient(50% 50%, #6D0206 50%, #220000));
 	}
 }
 

@@ -12,7 +12,7 @@
 	MouseTooltip.init({ "3d": true });
 
 	//small "hack" to set the page to red background directly if we're on root
-	$('body').toggleClass('page-red', !window.location.hash.length);
+	$('html').toggleClass('page-red', !window.location.hash.length);
 
 	leiminauts.init = function(opts) {
 		opts = opts || {};
