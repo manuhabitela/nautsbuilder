@@ -3,6 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * copyright (c) 2013, Emmanuel Pelletier
  */
+$(function() {
+	FastClick.attach(document.body);
+});
 ;(function() {
 	//dev 0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE
 	//prod 0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE

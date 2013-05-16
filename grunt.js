@@ -21,6 +21,7 @@ module.exports = function(grunt) {
 					'js/lib/backbone.js',
 					'js/lib/tabletop.js',
 					'js/lib/mousetooltip.js',
+					'js/lib/fastclick.js',
 					'js/lib/jquery.sortable.js'
 				],
 				dest: 'dist/libs.js'
