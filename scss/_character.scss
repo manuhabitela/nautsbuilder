@@ -18,7 +18,6 @@
 	position: relative;
 	@include transition-property(width, transform);
 	@include transition-duration($compact-transition-time);
-	@include transition-timing-function(easeout);
 	@include respond-to(xlarge) {
 		@include transform(translateX(-($build-width - ($build-width - ($skill-width - $skill-compact-width)))/2));
 		.char-builder.maxed-out & {

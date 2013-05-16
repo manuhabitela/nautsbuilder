@@ -26,7 +26,7 @@ $(function() {
 
 	leiminauts.lastDataUpdate = leiminauts.lastDataUpdate || 0;
 	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') ? localStorage.getItem('nautsbuilder.date') : 0;
-		
+
 	if (leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate) {
 		Tabletop.init({
 			key: spreadsheetKey,

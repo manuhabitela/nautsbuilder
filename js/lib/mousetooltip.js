@@ -10,8 +10,12 @@
 			self.$tooltip = $('body').append('<div id="mouse-tooltip"></div>').find('#mouse-tooltip').first();
 			self.hide();
 		},
-		show: function(html) {
+		html: function(html) {
 			self.$tooltip.html(html);
+		},
+		show: function(html) {
+			if (html !== undefined)
+				self.html(html);
 			self.$tooltip.removeClass('mouse-tooltip-hidden');
 			$(document).on('mousemove.tooltip', self._stickToMouse);
 		},

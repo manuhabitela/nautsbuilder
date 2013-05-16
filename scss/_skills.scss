@@ -21,6 +21,7 @@
 	&, & * {
 		@include user-select(none);
 	}
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 .skill-upgrades {
@@ -44,7 +45,6 @@
 	overflow: hidden;
 	@include transition-property(max-height, background, line-height);
 	@include transition-duration($compact-transition-time);
-	@include transition-timing-function(easeout);
 	z-index: 40;
 	dl { margin: 0; display: inline-block; width: 184px; vertical-align: top; }
 	//http://lea.verou.me/2012/02/flexible-multiline-definition-lists-with-2-lines-of-css/

@@ -31,6 +31,7 @@ leiminauts.CharacterView = Backbone.View.extend({
 
 		this.render();
 
+		this.toggleTimeout = null;
 		this.model.on('change:maxed_out', this.toggleCompactView, this);
 	},
 
@@ -44,6 +45,18 @@ leiminauts.CharacterView = Backbone.View.extend({
 	},
 
 	toggleCompactView: function() {
-		this.$el.toggleClass('maxed-out', this.model.get('maxed_out'));
+		//transitionend doesn't seem to fire reliably oO going with nasty timeouts that kinda match transition duration
+		var timeOutTime = Modernizr.csstransitions ? 500 : 0;
+		if (this.model.get('maxed_out')) {
+			this.toggleTimeout = setTimeout(_.bind(function() {
+				this.$('.upgrade:not(.active)').addClass('hidden');
+			}, this), timeOutTime);
+		} else{
+			clearTimeout(this.toggleTimeout);
+			this.$('.upgrade:not(.active)').removeClass('hidden');
+		}
+		setTimeout(_.bind(function() {
+			this.$el.toggleClass('maxed-out', this.model.get('maxed_out'));
+		}, this), 0);
 	}
 });

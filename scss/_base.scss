@@ -38,12 +38,12 @@ body {
 	&, .page-blue & {
 		background-color: #001D2F;
 		@include background-image(radial-gradient(800px 800px, #02526D, #001322));
-		@include background-image(radial-gradient(50% 50%, #02526D 50%, #001322));
+		@include background-image(radial-gradient(50% 50%, #02526D, #001322));
 	}
 	.page-red & {
 		background-color: #6D0206;
 		@include background-image(radial-gradient(800px 800px, #6D0206, #220000));
-		@include background-image(radial-gradient(50% 50%, #6D0206 50%, #220000));
+		@include background-image(radial-gradient(50% 50%, #6D0206, #220000));
 	}
 }
 

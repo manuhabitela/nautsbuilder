@@ -30,8 +30,8 @@ html { font-family: sans-serif; -webkit-text-size-adjust: 100%; -ms-text-size-ad
 html.page-red { height: 100%; min-height: 0; }
 
 body { margin: 0; padding: 10px; padding-bottom: 30px; height: 100%; background-position: top left; }
-body, .page-blue body { background-color: #001D2F; background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(800px 800px, #02526d, #001322); background-image: -moz-radial-gradient(800px 800px, #02526d, #001322); background-image: -o-radial-gradient(800px 800px, #02526d, #001322); background-image: radial-gradient(800px 800px, #02526d, #001322); background-image: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 100, color-stop(50%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(50% 50%, #02526d 50%, #001322); background-image: -moz-radial-gradient(50% 50%, #02526d 50%, #001322); background-image: -o-radial-gradient(50% 50%, #02526d 50%, #001322); background-image: radial-gradient(50% 50%, #02526d 50%, #001322); }
-.page-red body { background-color: #6D0206; background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(800px 800px, #6d0206, #220000); background-image: -moz-radial-gradient(800px 800px, #6d0206, #220000); background-image: -o-radial-gradient(800px 800px, #6d0206, #220000); background-image: radial-gradient(800px 800px, #6d0206, #220000); background-image: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 100, color-stop(50%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(50% 50%, #6d0206 50%, #220000); background-image: -moz-radial-gradient(50% 50%, #6d0206 50%, #220000); background-image: -o-radial-gradient(50% 50%, #6d0206 50%, #220000); background-image: radial-gradient(50% 50%, #6d0206 50%, #220000); }
+body, .page-blue body { background-color: #001D2F; background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(800px 800px, #02526d, #001322); background-image: -moz-radial-gradient(800px 800px, #02526d, #001322); background-image: -o-radial-gradient(800px 800px, #02526d, #001322); background-image: radial-gradient(800px 800px, #02526d, #001322); background-image: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 100, color-stop(0%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(50% 50%, #02526d, #001322); background-image: -moz-radial-gradient(50% 50%, #02526d, #001322); background-image: -o-radial-gradient(50% 50%, #02526d, #001322); background-image: radial-gradient(50% 50%, #02526d, #001322); }
+.page-red body { background-color: #6D0206; background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(800px 800px, #6d0206, #220000); background-image: -moz-radial-gradient(800px 800px, #6d0206, #220000); background-image: -o-radial-gradient(800px 800px, #6d0206, #220000); background-image: radial-gradient(800px 800px, #6d0206, #220000); background-image: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(50% 50%, #6d0206, #220000); background-image: -moz-radial-gradient(50% 50%, #6d0206, #220000); background-image: -o-radial-gradient(50% 50%, #6d0206, #220000); background-image: radial-gradient(50% 50%, #6d0206, #220000); }
 
 a:focus { outline: thin dotted; }
 
@@ -174,7 +174,7 @@ body, button, select, input, textarea, label { color: whitesmoke; font-family: Z
 
 .char-builder.maxed-out { width: 834px; }
 
-.build, .order, .char-info { position: relative; -webkit-transition-property: width, -webkit-transform; -moz-transition-property: width, -moz-transform; -o-transition-property: width, -o-transform; transition-property: width, transform; -webkit-transition-duration: 0.5s; -moz-transition-duration: 0.5s; -o-transition-duration: 0.5s; transition-duration: 0.5s; -webkit-transition-timing-function: easeout; -moz-transition-timing-function: easeout; -o-transition-timing-function: easeout; transition-timing-function: easeout; }
+.build, .order, .char-info { position: relative; -webkit-transition-property: width, -webkit-transform; -moz-transition-property: width, -moz-transform; -o-transition-property: width, -o-transform; transition-property: width, transform; -webkit-transition-duration: 0.5s; -moz-transition-duration: 0.5s; -o-transition-duration: 0.5s; transition-duration: 0.5s; }
 @media only screen and (min-width: 1400px) { .build, .order, .char-info { -webkit-transform: translateX(-135px); -moz-transform: translateX(-135px); -ms-transform: translateX(-135px); -o-transform: translateX(-135px); transform: translateX(-135px); }
   .char-builder.maxed-out .build, .char-builder.maxed-out .order, .char-builder.maxed-out .char-info { -webkit-transform: translateX(0); -moz-transform: translateX(0); -ms-transform: translateX(0); -o-transform: translateX(0); transform: translateX(0); } }
 
@@ -206,12 +206,12 @@ body, button, select, input, textarea, label { color: whitesmoke; font-family: Z
 
 .skill-wrapper > div, .skill > div { display: inline-block; vertical-align: top; }
 
-.skill { display: inline-block; text-align: left; border-radius: 50px 0px 0px 50px; padding: 5px 8px 5px 5px; background-color: #1E8FBC; position: relative; max-height: 100px; overflow: hidden; }
+.skill { display: inline-block; text-align: left; border-radius: 50px 0px 0px 50px; padding: 5px 8px 5px 5px; background-color: #1E8FBC; position: relative; max-height: 100px; overflow: hidden; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 .skill, .skill * { -webkit-user-select: none; -moz-user-select: none; user-select: none; }
 
 .skill-upgrades { overflow: hidden; }
 
-.skill-effects { padding-top: 7px; position: absolute; top: 0; right: 0; text-align: left; border-radius: 0; font-size: 13px; line-height: 1.25em; width: 404px; max-height: 100px; min-height: 100px; overflow: hidden; -webkit-transition-property: max-height, background, line-height; -moz-transition-property: max-height, background, line-height; -o-transition-property: max-height, background, line-height; transition-property: max-height, background, line-height; -webkit-transition-duration: 0.5s; -moz-transition-duration: 0.5s; -o-transition-duration: 0.5s; transition-duration: 0.5s; -webkit-transition-timing-function: easeout; -moz-transition-timing-function: easeout; -o-transition-timing-function: easeout; transition-timing-function: easeout; z-index: 40; }
+.skill-effects { padding-top: 7px; position: absolute; top: 0; right: 0; text-align: left; border-radius: 0; font-size: 13px; line-height: 1.25em; width: 404px; max-height: 100px; min-height: 100px; overflow: hidden; -webkit-transition-property: max-height, background, line-height; -moz-transition-property: max-height, background, line-height; -o-transition-property: max-height, background, line-height; transition-property: max-height, background, line-height; -webkit-transition-duration: 0.5s; -moz-transition-duration: 0.5s; -o-transition-duration: 0.5s; transition-duration: 0.5s; z-index: 40; }
 .skill-effects dl { margin: 0; display: inline-block; width: 184px; vertical-align: top; }
 .skill-effects dt, .skill-effects dd { display: inline; margin: 0; }
 .skill-effects dt.total_cost span { display: inline-block; line-height: 21px; }
@@ -235,21 +235,24 @@ body, button, select, input, textarea, label { color: whitesmoke; font-family: Z
 .skill-cancel.active { opacity: 1; }
 .skill-cancel.active:hover { opacity: 0.9; }
 
-.upgrade { display: inline-block; vertical-align: top; margin: 0 2px; cursor: pointer; -webkit-transition-property: width, opacity; -moz-transition-property: width, opacity; -o-transition-property: width, opacity; transition-property: width, opacity; -webkit-transition-duration: 0.3s, 1s; -moz-transition-duration: 0.3s, 1s; -o-transition-duration: 0.3s, 1s; transition-duration: 0.3s, 1s; -webkit-transition-timing-function: easeout; -moz-transition-timing-function: easeout; -o-transition-timing-function: easeout; transition-timing-function: easeout; width: 90px; opacity: 1; }
+.upgrade { display: inline-block; vertical-align: top; margin: 0 2px; cursor: pointer; -webkit-transition-property: width, opacity, margin; -moz-transition-property: width, opacity, margin; -o-transition-property: width, opacity, margin; transition-property: width, opacity, margin; -webkit-transition-duration: 0.5s; -moz-transition-duration: 0.5s; -o-transition-duration: 0.5s; transition-duration: 0.5s; width: 90px; opacity: 1; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 .skill.jump .upgrade:after { border-radius: 8px 8px 25px 0.27778 90px 20px 20px; }
 .upgrade.active:after { display: none; }
 .skill.active .upgrade.locked { cursor: not-allowed; }
-.char-builder.maxed-out .build .upgrade:not(.active) { width: 0; margin: 0 1px; opacity: 0; overflow: hidden; }
+html.csstransitions .char-builder.maxed-out .build .upgrade:not(.active) { width: 0; margin: 0; opacity: 0; overflow: hidden; }
+html.nocsstransitions .char-builder.maxed-out .build .upgrade:not(.active) { display: none; }
 
 .upgrade-icon { max-width: 100%; }
 
-.upgrade-cost { right: 0; }
-.char-builder.maxed-out .upgrade-cost { display: none; }
+.upgrade-cost, .upgrade-step { opacity: 1; -webkit-transition: opacity 0.5s; -moz-transition: opacity 0.5s; -o-transition: opacity 0.5s; transition: opacity 0.5s; }
 
-.upgrade-step { left: 0; display: none; background-color: #B07C06; }
+.upgrade-cost { right: 0; }
+.char-builder.maxed-out .upgrade-cost { opacity: 0; }
+
+.upgrade-step { left: 0; opacity: 0; background-color: #B07C06; }
 .upgrade-step.max { background-color: #07AF26; }
-.upgrade.active .upgrade-step { display: block; }
-.char-builder.maxed-out .upgrade-step { display: none; }
+.upgrade.active .upgrade-step { opacity: 1; }
+.char-builder.maxed-out .upgrade-step { opacity: 0; }
 
 .order-title { font-size: 1.2em; margin-top: 0; }
 .order-title em { font-size: .8em; }

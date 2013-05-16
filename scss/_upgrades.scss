@@ -14,17 +14,22 @@
 		cursor: not-allowed;
 	}
 
-	@include transition-property(width, opacity);
-	@include transition-duration(0.3s, 1s);
-	@include transition-timing-function(easeout);
+	@include transition-property(width, opacity, margin);
+	@include transition-duration($compact-transition-time);
 	width: $icon-width;
 	opacity: 1;
 	.char-builder.maxed-out .build &:not(.active) {
-		width: 0;
-		margin: 0 1px;
-		opacity: 0;
-		overflow: hidden;
+		html.csstransitions & {
+			width: 0;
+			margin: 0;
+			opacity: 0;
+			overflow: hidden;
+		}
+		html.nocsstransitions & {
+			display: none;
+		}
 	}
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 .upgrade-icon {
@@ -32,25 +37,30 @@
 	max-width: 100%;
 }
 
+.upgrade-cost, .upgrade-step {
+	opacity: 1;
+	@include transition(opacity $compact-transition-time);
+}
+
 .upgrade-cost {
 	right: 0;
 	.char-builder.maxed-out & {
-		display: none;
+		opacity: 0;
 	}
 }
 
 .upgrade-step {
 	left: 0;
-	display: none;
+	opacity: 0;
 	background-color: #B07C06;
 	&.max {
 		background-color: #07AF26;
 	}
 	.upgrade.active & {
-		display: block;
+		opacity: 1;
 	}
 	.char-builder.maxed-out & {
-		display: none;
+		opacity: 0;
 	}
 }
 

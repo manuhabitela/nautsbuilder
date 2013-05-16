@@ -1,4 +1,4 @@
-/* Nautsbuilder - Awesomenauts build calculator v0.7.2 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.7.3 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -645,6 +645,7 @@ leiminauts.CharacterView = Backbone.View.extend({
 
 		this.render();
 
+		this.toggleTimeout = null;
 		this.model.on('change:maxed_out', this.toggleCompactView, this);
 	},
 
@@ -658,7 +659,19 @@ leiminauts.CharacterView = Backbone.View.extend({
 	},
 
 	toggleCompactView: function() {
-		this.$el.toggleClass('maxed-out', this.model.get('maxed_out'));
+		//transitionend doesn't seem to fire reliably oO going with nasty timeouts that kinda match transition duration
+		var timeOutTime = Modernizr.csstransitions ? 500 : 0;
+		if (this.model.get('maxed_out')) {
+			this.toggleTimeout = setTimeout(_.bind(function() {
+				this.$('.upgrade:not(.active)').addClass('hidden');
+			}, this), timeOutTime);
+		} else{
+			clearTimeout(this.toggleTimeout);
+			this.$('.upgrade:not(.active)').removeClass('hidden');
+		}
+		setTimeout(_.bind(function() {
+			this.$el.toggleClass('maxed-out', this.model.get('maxed_out'));
+		}, this), 0);
 	}
 });
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -963,8 +976,10 @@ leiminauts.UpgradeView = Backbone.View.extend({
 	},
 
 	handleTooltip: function(e) {
-		if (e.type != "mouseout")
+		if (e.type == "mouseover")
 			MouseTooltip.show(this.$('.upgrade-popup').html());
+		else if (e.type == "click")
+			MouseTooltip.html(this.$('.upgrade-popup').html());
 		else
 			MouseTooltip.hide();
 	},
@@ -1182,6 +1197,9 @@ leiminauts.App = Backbone.Router.extend({
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * copyright (c) 2013, Emmanuel Pelletier
  */
+$(function() {
+	FastClick.attach(document.body);
+});
 ;(function() {
 	//dev 0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE
 	//prod 0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE
@@ -1202,7 +1220,7 @@ leiminauts.App = Backbone.Router.extend({
 
 	leiminauts.lastDataUpdate = leiminauts.lastDataUpdate || 0;
 	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') ? localStorage.getItem('nautsbuilder.date') : 0;
-		
+
 	if (leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate) {
 		Tabletop.init({
 			key: spreadsheetKey,
