@@ -18,14 +18,14 @@
 	@include transition-duration($compact-transition-time);
 	width: $icon-width;
 	opacity: 1;
-	html:not(.forum) .char-builder.maxed-out .build &:not(.active) {
-		html.csstransitions & {
+	.char-builder.maxed-out .build &:not(.active) {
+		html.csstransitions:not(.forum) & {
 			width: 0;
 			margin: 0;
 			opacity: 0;
 			overflow: hidden;
 		}
-		html.nocsstransitions & {
+		html.nocsstransitions:not(.forum) & {
 			display: none;
 		}
 	}
