@@ -41,9 +41,14 @@ leiminauts.App = Backbone.Router.extend({
 			$('html').toggleClass('forum', this.forum);
 	},
 
-	updateConsoleLinkUrl: function() {
+	updateSpecificLinks: function() {
 		var url = this.getCurrentUrl();
 		$('.console-button a').attr('href', "/#" + (url.indexOf('console') !== -1 ? url.replace('console', '') : url + '/console'));
+
+		var snippet = "[build]" + window.location.hash.substr(1) + "[/build]";
+		$('.forum-snippet').val(snippet);
+
+		$('.website-url').attr('href', window.location.href.replace('/forum', ''));
 	},
 
 	list: function() {
@@ -55,7 +60,7 @@ leiminauts.App = Backbone.Router.extend({
 			console: this.console
 		});
 		this.showView( charsView );
-		this.updateConsoleLinkUrl();
+		this.updateSpecificLinks();
 	},
 
 	buildMaker: function(naut, build, order) {
@@ -69,7 +74,7 @@ leiminauts.App = Backbone.Router.extend({
 		if (this.currentView && this.currentView instanceof leiminauts.CharacterView &&
 			this.currentView.model && this.currentView.model.get('name').toLowerCase() == naut) {
 			this.updateBuildFromUrl(this.currentView);
-			this.updateConsoleLinkUrl();
+			this.updateSpecificLinks();
 			return true;
 		}
 
@@ -98,7 +103,7 @@ leiminauts.App = Backbone.Router.extend({
 		character.get('skills').on('change', debouncedUrlUpdate , this);
 		charView.on('order:changed', debouncedUrlUpdate, this);
 		charView.on('order:toggled', debouncedUrlUpdate, this);
-		this.updateConsoleLinkUrl();
+		this.updateSpecificLinks();
 	},
 
 	showView: function(view) {
@@ -202,7 +207,7 @@ leiminauts.App = Backbone.Router.extend({
 			_(optionalUrlParts).each(function(part) { if (currentUrl.indexOf(part) !== -1) newUrl += part; });
 		}
 		this.navigate(newUrl);
-		this.updateConsoleLinkUrl();
+		this.updateSpecificLinks();
 	},
 
 	getCurrentUrl: function() {

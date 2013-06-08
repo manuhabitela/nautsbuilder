@@ -68,6 +68,7 @@ leiminauts.CharacterView = Backbone.View.extend({
 		}
 		setTimeout(_.bind(function() {
 			this.$el.toggleClass('maxed-out', this.model.get('maxed_out'));
+			this.$('.forum-snippet').attr('rows', this.model.get('maxed_out') ? 6 : 1);
 		}, this), 0);
 	},
 

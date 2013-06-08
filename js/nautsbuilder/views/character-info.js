@@ -8,6 +8,10 @@ leiminauts.InfoView = Backbone.View.extend({
 
 	className: 'char-info',
 
+	events: {
+		"click .forum-snippet": "focusForumSnippet"
+	},
+
 	initialize: function() {
 		if (this.options.character) {
 			this.character = this.options.character;
@@ -25,5 +29,9 @@ leiminauts.InfoView = Backbone.View.extend({
 		data.forum = this.forum;
 		this.$el.html(this.template( data ));
 		return this;
+	},
+
+	focusForumSnippet: function() {
+		this.$('.forum-snippet').select();
 	}
 });

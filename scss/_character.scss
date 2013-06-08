@@ -120,6 +120,10 @@ html:not(.forum) .char-builder.maxed-out {
 	padding-left: 0;
 	padding-top: 0;
 	margin-top: 0;
+	max-width: 380px;
+	html:not(.forum) .char-builder.maxed-out & {
+		max-width: 170px;
+	}
 	.char-total-cost .cost {
 		@extend %cost;
 	}
@@ -177,4 +181,25 @@ html:not(.forum) .char-builder.maxed-out {
 
 .forum-hidden {
 	@extend .hidden;
+}
+
+.forum-snippet {
+	width: 100%;
+	border: 0;
+	resize: none;
+	background: transparent;
+	background: rgba(white, 0.2);
+	font-family: verdana;
+	font-size: small;
+}
+
+.forum .website-url {
+	display: block;
+	float: left;
+	margin: 15px 0 0;
+	cursor: pointer;
+	color: #222;
+	&:hover {
+		text-decoration: none;
+	}
 }

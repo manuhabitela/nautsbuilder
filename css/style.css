@@ -212,7 +212,8 @@ html:not(.forum) .char-builder.maxed-out .order { width: 614px; }
 .char-builder .chars-list .char.home-button:hover, .char-builder .chars-list .char.home-button.active, .char-builder .chars-list .char.console-button:hover, .char-builder .chars-list .char.console-button.active { border-color: transparent; opacity: 0.8; }
 .char-builder .chars-list .char-icon { height: 26px; width: auto; }
 
-.char-info { margin-left: 8px; padding-left: 0; padding-top: 0; margin-top: 0; }
+.char-info { margin-left: 8px; padding-left: 0; padding-top: 0; margin-top: 0; max-width: 380px; }
+html:not(.forum) .char-builder.maxed-out .char-info { max-width: 170px; }
 .char-info .info { font-size: 1em; }
 .forum .char-info { margin: 15px 0 0; padding: 0; display: block; float: right; }
 .forum .char-info > p { display: inline-block; margin-top: 0; }
@@ -226,6 +227,11 @@ html:not(.forum) .char-builder.maxed-out .order { width: 614px; }
 .forum .char-forum-switch button:hover, .forum .char-forum-switch button:focus { background: rgba(30, 143, 188, 0.8); text-decoration: none; }
 .forum .char-forum-switch button:active { background: rgba(30, 143, 188, 0.4); }
 .forum .char-forum-switch button.switch-active { background: #176e90; }
+
+.forum-snippet { width: 100%; border: 0; resize: none; background: transparent; background: rgba(255, 255, 255, 0.2); font-family: verdana; font-size: small; }
+
+.forum .website-url { display: block; float: left; margin: 15px 0 0; cursor: pointer; color: #222; }
+.forum .website-url:hover { text-decoration: none; }
 
 .skill-wrapper { margin: 3px auto; position: relative; }
 
@@ -265,8 +271,8 @@ html:not(.forum) .char-builder.maxed-out .order { width: 614px; }
 .skill.jump .upgrade:after { border-radius: 8px 8px 25px 0.27778 90px 20px 20px; }
 .upgrade.active:after { display: none; }
 .skill.active .upgrade.locked { cursor: not-allowed; }
-html.csstransitions html:not(.forum) .char-builder.maxed-out .build .upgrade:not(.active) { width: 0; margin: 0; opacity: 0; overflow: hidden; }
-html.nocsstransitions html:not(.forum) .char-builder.maxed-out .build .upgrade:not(.active) { display: none; }
+html.csstransitions:not(.forum) .char-builder.maxed-out .build .upgrade:not(.active) { width: 0; margin: 0; opacity: 0; overflow: hidden; }
+html.nocsstransitions:not(.forum) .char-builder.maxed-out .build .upgrade:not(.active) { display: none; }
 
 .upgrade-icon { max-width: 100%; }
 
