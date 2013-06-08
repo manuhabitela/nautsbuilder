@@ -14,7 +14,7 @@
 	border-radius: 50px 0px 0px 50px;
 	padding: 5px 8px 5px 5px;
 	// background-color: hsla(197, 70%, 50%, 0.8);
-	background-color: #1E8FBC;
+	background-color: $blue;
 	position: relative;
 	max-height: $skill-height;
 	overflow: hidden;
@@ -29,6 +29,9 @@
 }
 
 .skill-effects {
+	.forum & {
+		@extend .hidden;
+	}
 	@extend %box;
 	padding-top: 7px;
 	position: absolute;
@@ -66,7 +69,7 @@
 }
 
 .skill-wrapper:hover > .skill-effects, .skill-effects:hover {
-	background-color: #1E8FBC;
+	background-color: $blue;
 	// background-color: hsla(197, 70%, 50%, 0.8);
 	max-height: 600px;
 	overflow: visible;
@@ -84,6 +87,9 @@
 
 .skill-cost {
 	left: 20px;
+	.char-builder.maxed-out & {
+		opacity: 0;
+	}
 }
 
 .skill-icon {
@@ -99,6 +105,9 @@
 }
 
 .skill-cancel {
+	.forum & {
+		@extend .hidden;
+	}
 	@extend %cancel;
 	.skill-maxed-out & {
 		background-image: image-url("done.png");

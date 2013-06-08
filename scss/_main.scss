@@ -13,6 +13,9 @@
 }
 
 #footer {
+	.forum & {
+		@extend .hidden;
+	}
 	margin: 0;
 	.page-blue & {
 		margin: 50px 0 0;
@@ -54,9 +57,18 @@
 
 #container {
 	padding-top: 10px;
+	.forum & {
+		padding-top: 0;
+		overflow: hidden;
+		width: 700px;
+		height: 500px;
+	}
 }
 
 .console-info {
+	.forum & {
+		@extend .hidden;
+	}
 	position: absolute;
 	top: 10px;
 	right: 10px;
@@ -67,4 +79,8 @@
 	.console & {
 		background: image-url('gamepad_white_transparent.png') no-repeat 99% 1%;
 	}
+}
+
+.forum * {
+	cursor: default;
 }

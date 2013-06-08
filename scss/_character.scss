@@ -1,16 +1,29 @@
 .char-builder {
 	margin: 0 auto;
+	.forum & {
+		margin: 0;
+	}
 }
 
 .char-builder, .build, .skill-wrapper {
 	@include transition(width $compact-transition-time);
 	width: $build-width;
 	margin-bottom: $build-margin;
-	.char-builder.maxed-out & {
+	.forum & {
+		margin-bottom: 0;
+	}
+	html:not(.forum) .char-builder.maxed-out & {
 		width: $build-width - ($skill-width - $skill-compact-width);
 	}
 }
-.char-builder.maxed-out {
+
+.char-builder, .build, .skill-wrapper, .skill, .order {
+	.forum & {
+		max-width: $skill-width - 25px;
+	}
+}
+
+html:not(.forum) .char-builder.maxed-out {
 	width: $build-width - ($skill-width - $skill-compact-width);
 }
 
@@ -18,16 +31,18 @@
 	position: relative;
 	@include transition-property(width, transform);
 	@include transition-duration($compact-transition-time);
-	@include respond-to(xlarge) {
-		@include transform(translateX(-($build-width - ($build-width - ($skill-width - $skill-compact-width)))/2));
-		.char-builder.maxed-out & {
-			@include transform(translateX(0));
+	html:not(.forum) & {
+		@include respond-to(xlarge) {
+			@include transform(translateX(-($build-width - ($build-width - ($skill-width - $skill-compact-width)))/2));
+			.char-builder.maxed-out & {
+				@include transform(translateX(0));
+			}
 		}
 	}
 }
 
 .build, .skill-wrapper {
-	.char-builder.maxed-out & {
+	html:not(.forum) .char-builder.maxed-out & {
 		width: $build-width - ($skill-width - $skill-compact-width);
 	}
 }
@@ -35,19 +50,22 @@
 .skill {
 	@include transition(width $compact-transition-time);
 	width: $skill-width;
-	.char-builder.maxed-out & {
+	html:not(.forum) .char-builder.maxed-out & {
 		width: $skill-compact-width;
 	}
 }
 
 .order {
 	width: $skill-width;
-	.char-builder.maxed-out & {
+	html:not(.forum) .char-builder.maxed-out & {
 		width: $skill-compact-width + 200px - 4px - 12px;
 	}
 }
 
 .build-cancel {
+	.forum & {
+		@extend .hidden;
+	}
 	@extend %cancel;
 	background-size: 32px 32px;
 	width: 28px;
@@ -73,6 +91,9 @@
 		@extend .hidden;
 	}
 	.chars-list {
+		.forum & {
+			@extend .hidden;
+		}
 		margin-bottom: $build-margin;
 		text-align: center;
 		.char {
@@ -99,10 +120,6 @@
 	padding-left: 0;
 	padding-top: 0;
 	margin-top: 0;
-	// .char-icon {
-	// 	float: left;
-	// 	margin-right: 20px;
-	// }
 	.char-total-cost .cost {
 		@extend %cost;
 	}
@@ -110,9 +127,54 @@
 		@extend %info;
 		font-size: $base-font-size;
 	}
+	.forum & {
+		margin: 15px 0 0;
+		padding: 0;
+		display: block;
+		float: right;
+		> p {
+			display: inline-block;
+			margin-top: 0;
+			&.char-total-cost {
+				margin-right: 15px;
+			}
+		}
+	}
 }
 
 .char-info, .order {
 	display: inline-block;
 	vertical-align: top;
+}
+
+.forum .char-forum-switch {
+	margin: 0 0 5px;
+	padding: 0;
+	text-align: center;
+	li {
+		display: inline;
+	}
+	button {
+		@extend %light-button;
+		background: $blue;
+		color: white;
+		display: inline-block;
+		min-width: 120px;
+		font-family: $base-font-family;
+		cursor: pointer;
+		&:hover, &:focus {
+			background: rgba($blue, 0.8);
+			text-decoration: none;
+		}
+		&:active {
+			background: rgba($blue, 0.4);
+		}
+		&.switch-active {
+			background: darken($blue, 10%);
+		}
+	}
+}
+
+.forum-hidden {
+	@extend .hidden;
 }

@@ -8,11 +8,6 @@ leiminauts.InfoView = Backbone.View.extend({
 
 	className: 'char-info',
 
-	events: {
-		//'mouseover .char-icon': 'handleTooltip',
-		//'mouseout .char-icon': 'handleTooltip'
-	},
-
 	initialize: function() {
 		if (this.options.character) {
 			this.character = this.options.character;
@@ -20,18 +15,15 @@ leiminauts.InfoView = Backbone.View.extend({
 		}
 		this.template = _.template( $('#info-tpl').html() );
 
+		this.forum = this.options.forum || false;
+
 		this.model.on('change:total_cost', this.render, this);
 	},
 
 	render: function() {
-		this.$el.html(this.template( this.model.toJSON() ));
+		var data = this.model.toJSON();
+		data.forum = this.forum;
+		this.$el.html(this.template( data ));
 		return this;
-	}//,
-
-	//handleTooltip: function(e) {
-	//	if (e.type != "mouseout")
-	//		MouseTooltip.show(this.$('.char-popup').html());
-	//	else
-	//		MouseTooltip.hide();
-	//}
+	}
 });

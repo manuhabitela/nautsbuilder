@@ -6,7 +6,7 @@
 leiminauts.App = Backbone.Router.extend({
 	routes: {
 		"(console)": "list",
-		":naut(/:build)(/:order)(/compact)(/console)(/)": "buildMaker"
+		":naut(/:build)(/:order)(/console)(/forum)(/)": "buildMaker"
 	},
 
 	initialize: function(options) {
@@ -24,20 +24,21 @@ leiminauts.App = Backbone.Router.extend({
 		this._beforeRoute();
 
 		this.grid = [];
+
+		this.forum = options.forum;
 	},
 
 	_beforeRoute: function() {
 		var url = this.getCurrentUrl();
 		var oldConsole = this.console !== undefined ? this.console : undefined;
-		var oldCompact = this.compact !== undefined ? this.compact : undefined;
+		var oldCompact = this.forum !== undefined ? this.forum : undefined;
 		this.console = url.indexOf('console') !== -1;
-		this.compact = url.indexOf('/compact') !== -1;
-		console.log("_beforeRoute", "oldConsole: ", oldConsole, "this.console:", this.console);
+		this.forum = url.indexOf('/forum') !== -1;
 		if (oldConsole !== this.console) {
 			window.location.reload();
 		}
-		if (oldCompact !== this.compact)
-			$('html').toggleClass('compact', this.compact);
+		if (oldCompact !== this.forum)
+			$('html').toggleClass('forum', this.forum);
 	},
 
 	updateConsoleLinkUrl: function() {
@@ -85,7 +86,8 @@ leiminauts.App = Backbone.Router.extend({
 		var charView = new leiminauts.CharacterView({
 			collection: this.data,
 			model: character,
-			console: this.console
+			console: this.console,
+			forum: this.forum
 		});
 		this.showView( charView );
 
@@ -196,7 +198,7 @@ leiminauts.App = Backbone.Router.extend({
 		else {
 			newUrl = currentUrl.substring(0, currentUrl.indexOf('/') + 1) + buildUrl + orderUrl;
 			//well that's ugly
-			var optionalUrlParts = ['/compact', '/console'];
+			var optionalUrlParts = ['/forum', '/console'];
 			_(optionalUrlParts).each(function(part) { if (currentUrl.indexOf(part) !== -1) newUrl += part; });
 		}
 		this.navigate(newUrl);

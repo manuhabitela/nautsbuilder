@@ -8,6 +8,7 @@ $(function() {
 });
 ;(function() {
 	var console = window.location.hash.indexOf('console') !== -1;
+	var forum = window.location.hash.indexOf('forum') !== -1;
 
 	//steam 0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc
 	//console 0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE
@@ -22,7 +23,7 @@ $(function() {
 
 	leiminauts.init = function(opts) {
 		opts = opts || {};
-		_.defaults(opts, { el: "#container", spreadsheet: false, console: console });
+		_.defaults(opts, { el: "#container", spreadsheet: false, console: console, forum: forum });
 		window.nautsbuilder = new leiminauts.App(opts);
 		Backbone.history.start({pushState: false});
 	};

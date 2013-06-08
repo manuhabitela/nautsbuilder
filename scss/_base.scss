@@ -29,23 +29,6 @@ html {
 	}
 }
 
-body {
-	margin: 0;
-	padding-bottom: 30px;
-	height: 100%;
-	background-position: top left;
-	&, .page-blue & {
-		background-color: #001D2F;
-		@include background-image(radial-gradient(800px 800px, #02526D, #001322));
-		@include background-image(radial-gradient(50% 50%, #02526D, #001322));
-	}
-	.page-red & {
-		background-color: #6D0206;
-		@include background-image(radial-gradient(800px 800px, #6D0206, #220000));
-		@include background-image(radial-gradient(50% 50%, #6D0206, #220000));
-	}
-}
-
 a:focus {
 	outline: thin dotted;
 }
@@ -176,4 +159,27 @@ body, button, select, input, textarea, label {
 	color: $base-color;
 	font-family: $base-font-family;
 	line-height: $base-line-height;
+	.forum & {
+		color: #222;
+	}
+}
+
+body {
+	margin: 0;
+	padding-bottom: 30px;
+	height: 100%;
+	background-position: top left;
+	&, .page-blue & {
+		background-color: #001D2F;
+		@include background-image(radial-gradient(800px 800px, #02526D, #001322));
+		@include background-image(radial-gradient(50% 50%, #02526D, #001322));
+	}
+	.page-red & {
+		background-color: #6D0206;
+		@include background-image(radial-gradient(800px 800px, #6D0206, #220000));
+		@include background-image(radial-gradient(50% 50%, #6D0206, #220000));
+	}
+	.forum & {
+		background: transparent;
+	}
 }

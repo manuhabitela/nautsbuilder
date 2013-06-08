@@ -17,6 +17,7 @@ leiminauts.UpgradeView = Backbone.View.extend({
 	initialize: function() {
 		this.template = _.template( $('#build-upgrade-tpl').html() );
 
+		this.forum = this.options.forum || false;
 
 		this.model.on('change', this.render, this);
 	},
@@ -30,6 +31,7 @@ leiminauts.UpgradeView = Backbone.View.extend({
 	},
 
 	onClick: function(e) {
+		if (this.forum) return false;
 		this.updateStep();
 		//update the tooltip immediatly so the user don't have to move its mouse to see the current step's description
 		this.handleTooltip(e);

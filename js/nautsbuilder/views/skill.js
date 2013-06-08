@@ -16,9 +16,11 @@ leiminauts.SkillView = Backbone.View.extend({
 	},
 
 	initialize: function() {
+		this.forum = this.options.forum || false;
+
 		this.upgrades = [];
 		this.model.get('upgrades').each(function(upgrade) {
-			this.upgrades.push(new leiminauts.UpgradeView({ model: upgrade }));
+			this.upgrades.push(new leiminauts.UpgradeView({ model: upgrade, forum: this.forum }));
 		}, this);
 
 		this.template = _.template( $('#build-skill-tpl').html() );
@@ -29,6 +31,7 @@ leiminauts.SkillView = Backbone.View.extend({
 	},
 
 	toggleState: function() {
+		if (this.forum) return false;
 		this.model.setActive(!this.model.get('active'));
 	},
 

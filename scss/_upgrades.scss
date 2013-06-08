@@ -18,7 +18,7 @@
 	@include transition-duration($compact-transition-time);
 	width: $icon-width;
 	opacity: 1;
-	.char-builder.maxed-out .build &:not(.active) {
+	html:not(.forum) .char-builder.maxed-out .build &:not(.active) {
 		html.csstransitions & {
 			width: 0;
 			margin: 0;

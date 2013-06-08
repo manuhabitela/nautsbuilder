@@ -10,10 +10,19 @@
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
+	.forum & {
+		background-color: lighten(#001D2F, 10%);
+		@include background-image(radial-gradient(800px 800px, #02526D, lighten(#001322, 10%)));
+		@include background-image(radial-gradient(50% 50%, #02526D, lighten(#001322, 10%)));
+		padding: 10px;
+		border-radius: 7px;
+	}
 }
 
 .order-item, .sortable-placeholder {
-	cursor: move;
+	html:not(.forum) & {
+		cursor: move;
+	}
 	display: inline-block;
 	vertical-align: top;
 	position: relative;

@@ -18,9 +18,11 @@ leiminauts.BuildView = Backbone.View.extend({
 			this.model = this.character.model;
 		}
 
+		this.forum = this.options.forum || false;
+
 		this.skills = [];
 		this.model.get('skills').each(function(skill) {
-			this.skills.push(new leiminauts.SkillView({ model: skill }));
+			this.skills.push(new leiminauts.SkillView({ model: skill, forum: this.forum }));
 		}, this);
 
 		this.template = _.template( $('#build-tpl').html() );

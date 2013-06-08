@@ -17,6 +17,8 @@ leiminauts.OrderView = Backbone.View.extend({
 
 		this.active = true;
 
+		this.forum = this.options.forum;
+
 		this.on('toggled', this.toggleView, this);
 
 		this.collection = new Backbone.Collection(null, { comparator: this.comparator });
@@ -61,12 +63,15 @@ leiminauts.OrderView = Backbone.View.extend({
 			item.order_total_cost = totalCost;
 			item.order_req_lvl = Math.floor((totalCost-100)/100) <= 1 ? 1 : Math.floor((totalCost-100)/100);
 		});
-		this.$el.html(this.template({ items: data, active: this.active }));
+		this.$el.html(this.template({ items: data, active: this.active, forum: this.forum }));
+
 		this.$('.order-item').on('mouseover mouseout click dragstart', this.handleTooltip);
-		this.$('input[name="active"]').on('change', _.bind(this.toggle, this));
-		this.$list = this.$el.children('ul').first();
-		this.$list.sortable({items: '.order-item'});
-		this.$list.on('sortupdate', _.bind(this.updateOrder, this));
+		if (!this.forum) {
+			this.$('input[name="active"]').on('change', _.bind(this.toggle, this));
+			this.$list = this.$el.children('ul').first();
+			this.$list.sortable({items: '.order-item'});
+			this.$list.on('sortupdate', _.bind(this.updateOrder, this));
+		}
 		this.toggleView();
 		return this;
 	},
