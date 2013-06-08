@@ -1,4 +1,4 @@
-/* Nautsbuilder - Awesomenauts build calculator v0.8.1 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.8.2 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -941,6 +941,7 @@ leiminauts.SkillView = Backbone.View.extend({
 	//(I don't want the upgrades to rebuild each time we render, it's useless and doesn't permit to use cool animations on compact/full view toggle
 	render: function() {
 		var data = this.model.toJSON();
+		data.forum = this.forum;
 		if (!this.$el.html()) {
 			this.$el.html(this.template( data ));
 			_(this.upgrades).each(function(upgrade) {
@@ -959,10 +960,12 @@ leiminauts.SkillView = Backbone.View.extend({
 	},
 
 	renderUpgradesInfo: function() {
+		var data = this.model.toJSON();
+		data.forum = this.forum;
 		this.$(".skill-effects").html(
 			_.template(
 				$('#build-skill-effects-tpl').html(),
-				this.model.toJSON()
+				data
 			)
 		);
 	},

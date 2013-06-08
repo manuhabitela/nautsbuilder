@@ -1,6 +1,10 @@
 .skill-wrapper {
 	margin: 3px auto;
 	position: relative;
+	.forum & {
+		max-width: 570px;
+		margin: 3px 0;
+	}
 }
 
 .skill-wrapper > div, .skill > div {
@@ -15,6 +19,9 @@
 	padding: 5px 8px 5px 5px;
 	// background-color: hsla(197, 70%, 50%, 0.8);
 	background-color: $blue;
+	.forum & {
+		background-color: rgba($blue, 0.5);
+	}
 	position: relative;
 	max-height: $skill-height;
 	overflow: hidden;
@@ -29,26 +36,28 @@
 }
 
 .skill-effects {
-	.forum & {
-		@extend .hidden;
+	.skill-wrapper > & {
+		.forum & {
+			@extend .hidden;
+		}
+		@extend %box;
+		padding-top: 7px;
+		position: absolute;
+		top: 0;
+		right: 0;
+		text-align: left;
+		border-radius: 0;
+		//background: rgba(#226E8F, .5);
+		font-size: 13px;
+		line-height: 1.25em;
+		width: $build-width - $skill-width; //4px is margin between skill and effects
+		max-height: $skill-height;
+		min-height: $skill-height;
+		overflow: hidden;
+		@include transition-property(max-height, background, line-height);
+		@include transition-duration($compact-transition-time);
+		z-index: 40;
 	}
-	@extend %box;
-	padding-top: 7px;
-	position: absolute;
-	top: 0;
-	right: 0;
-	text-align: left;
-	border-radius: 0;
-	//background: rgba(#226E8F, .5);
-	font-size: 13px;
-	line-height: 1.25em;
-	width: $build-width - $skill-width; //4px is margin between skill and effects
-	max-height: $skill-height;
-	min-height: $skill-height;
-	overflow: hidden;
-	@include transition-property(max-height, background, line-height);
-	@include transition-duration($compact-transition-time);
-	z-index: 40;
 	dl { margin: 0; display: inline-block; width: 184px; vertical-align: top; }
 	//http://lea.verou.me/2012/02/flexible-multiline-definition-lists-with-2-lines-of-css/
 	dt, dd {

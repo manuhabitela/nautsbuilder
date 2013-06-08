@@ -4,7 +4,10 @@
 	@extend %dark-box;
 	margin: 0 2px;
 	.skill.jump &:after {
-		border-radius: 8px 8px 25px 25px / $icon-width $icon-width 20px 20px;
+		border-radius: 8px 8px 25px 25px / #{$icon-width} $icon-width 20px 20px;
+	}
+	.forum .skill.jump &:after {
+		border-radius: 8px 8px 25px 25px / #{$forum-icon-width} $forum-icon-width 20px 20px;
 	}
 	&.active:after {
 		display: none;
@@ -17,6 +20,9 @@
 	@include transition-property(width, opacity, margin);
 	@include transition-duration($compact-transition-time);
 	width: $icon-width;
+	.forum & {
+		width: $forum-icon-width;
+	}
 	opacity: 1;
 	.char-builder.maxed-out .build &:not(.active) {
 		html.csstransitions:not(.forum) & {

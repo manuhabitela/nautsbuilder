@@ -19,7 +19,7 @@
 
 .char-builder, .build, .skill-wrapper, .skill, .order {
 	.forum & {
-		max-width: $skill-width - 25px;
+		max-width: 100%;
 	}
 }
 
@@ -60,6 +60,9 @@ html:not(.forum) .char-builder.maxed-out {
 	html:not(.forum) .char-builder.maxed-out & {
 		width: $skill-compact-width + 200px - 4px - 12px;
 	}
+	.forum & {
+		width: auto;
+	}
 }
 
 .build-cancel {
@@ -75,6 +78,7 @@ html:not(.forum) .char-builder.maxed-out {
 	top: -17px;
 	z-index: 100;
 	opacity: 0.3;
+	@include transition(left $compact-transition-time);
 	&.active {
 		opacity: 1;
 		&:hover {
@@ -132,13 +136,13 @@ html:not(.forum) .char-builder.maxed-out {
 		font-size: $base-font-size;
 	}
 	.forum & {
-		margin: 15px 0 0;
+		margin: 0;
 		padding: 0;
 		display: block;
 		float: right;
 		> p {
 			display: inline-block;
-			margin-top: 0;
+			margin: 0;
 			&.char-total-cost {
 				margin-right: 15px;
 			}
@@ -152,7 +156,8 @@ html:not(.forum) .char-builder.maxed-out {
 }
 
 .forum .char-forum-switch {
-	margin: 0 0 5px;
+	margin: 0 15px 0 0;
+	float: left;
 	padding: 0;
 	text-align: center;
 	li {
@@ -160,7 +165,7 @@ html:not(.forum) .char-builder.maxed-out {
 	}
 	button {
 		@extend %light-button;
-		background: $blue;
+		background-color: rgba($blue, 0.5);
 		color: white;
 		display: inline-block;
 		min-width: 120px;
@@ -196,10 +201,19 @@ html:not(.forum) .char-builder.maxed-out {
 .forum .website-url {
 	display: block;
 	float: left;
-	margin: 15px 0 0;
+	margin: 0;
 	cursor: pointer;
 	color: #222;
 	&:hover {
 		text-decoration: none;
+	}
+}
+
+.forum {
+	.forum-info {
+		@extend .clearfix;
+	}
+	.forum-info, .char-info {
+		margin: 5px 0;
 	}
 }

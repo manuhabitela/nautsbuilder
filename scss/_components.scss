@@ -1,6 +1,10 @@
 %icon {
 	width: $icon-width;
 	height: $icon-width;
+	.forum & {
+		width: $forum-icon-width;
+		height: $forum-icon-width;
+	}
 	img {
 		max-width: 100%;
 		width: auto;

@@ -9,7 +9,7 @@
 		<title>Nautsbuilder - Awesomenauts builder: skills calculator, skills simulator - Make and share your Awesomenauts builds!</title>
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
-		<link rel="stylesheet" href="css/style.css?v=0810">
+		<link rel="stylesheet" href="css/style.css?v=0820">
 		<!-- <link rel="stylesheet" href="dist/styles.min.css"> -->
 		<script src="js/lib/modernizr.custom.js"></script>
 	</head>
@@ -92,21 +92,21 @@
 			<% if (!forum) { %>
 			<div class="console-info" title="Currently viewing <%= console ? 'Console Nautsbuilder' : 'PC Nautsbuilder' %>"></div>
 			<div class="chars"></div>
+			<% } else { %>
+				<div class="char-info"></div>
+				<div class="forum-info">
+					<ul class="char-forum-switch">
+						<li><button data-item="build">Build</button></li>
+						<li><button data-item="order">Build order</button></li>
+					</ul>
+					<a href="" target="_blank" class="website-url">View in detail</a>
+				</div>
 			<% } %>
-
-			<% if (forum) { %>
-				<ul class="char-forum-switch">
-					<li><button data-item="build">Build</button></li>
-					<li><button data-item="order">Build order</button></li>
-				</ul>
-			<% } %>
-
 			<div class="build"></div>
 			<div class="order"></div>
 
-			<div class="char-info"></div>
-			<% if (forum) { %>
-				<div class="clearfix"><a href="" target="_blank" class="website-url">View in detail</a></div>
+			<% if (!forum) { %>
+				<div class="char-info"></div>
 			<% } %>
 		</script>
 
@@ -221,20 +221,20 @@
 		<script src="js/lib/mousetooltip.js"></script>
 		<script src="js/lib/fastclick.js"></script>
 		<script src="js/lib/jquery.sortable.js"></script>
-		<script src="js/nautsbuilder/utils.js?v=0810"></script>
-		<script src="js/nautsbuilder/data/character.js?v=0810"></script>
-		<script src="js/nautsbuilder/data/skill.js?v=0810"></script>
-		<script src="js/nautsbuilder/data/upgrade.js?v=0810"></script>
-		<script src="js/nautsbuilder/data/step.js?v=0810"></script>
-		<script src="js/nautsbuilder/views/characters.js?v=0810"></script>
-		<script src="js/nautsbuilder/views/character.js?v=0810"></script>
-		<script src="js/nautsbuilder/views/character-build.js?v=0810"></script>
-		<script src="js/nautsbuilder/views/character-order.js?v=0810"></script>
-		<script src="js/nautsbuilder/views/character-info.js?v=0810"></script>
-		<script src="js/nautsbuilder/views/skill.js?v=0810"></script>
-		<script src="js/nautsbuilder/views/upgrade.js?v=0810"></script>
-		<script src="js/nautsbuilder/app.js?v=0810"></script>
-		<script src="js/main.js?v=0810"></script>
+		<script src="js/nautsbuilder/utils.js?v=0820"></script>
+		<script src="js/nautsbuilder/data/character.js?v=0820"></script>
+		<script src="js/nautsbuilder/data/skill.js?v=0820"></script>
+		<script src="js/nautsbuilder/data/upgrade.js?v=0820"></script>
+		<script src="js/nautsbuilder/data/step.js?v=0820"></script>
+		<script src="js/nautsbuilder/views/characters.js?v=0820"></script>
+		<script src="js/nautsbuilder/views/character.js?v=0820"></script>
+		<script src="js/nautsbuilder/views/character-build.js?v=0820"></script>
+		<script src="js/nautsbuilder/views/character-order.js?v=0820"></script>
+		<script src="js/nautsbuilder/views/character-info.js?v=0820"></script>
+		<script src="js/nautsbuilder/views/skill.js?v=0820"></script>
+		<script src="js/nautsbuilder/views/upgrade.js?v=0820"></script>
+		<script src="js/nautsbuilder/app.js?v=0820"></script>
+		<script src="js/main.js?v=0820"></script>
 
 		<!--<script src="dist/libs.min.js"></script>
 		<script src="dist/scripts.min.js"></script>-->
