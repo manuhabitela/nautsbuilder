@@ -176,7 +176,7 @@ html:not(.forum) .char-builder.maxed-out {
 			text-decoration: none;
 		}
 		&:active {
-			background: rgba($blue, 0.4);
+			background: darken($blue, 5%);
 		}
 		&.switch-active {
 			background: darken($blue, 10%);

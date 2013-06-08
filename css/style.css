@@ -227,7 +227,7 @@ html:not(.forum) .char-builder.maxed-out .char-info { max-width: 170px; }
 .forum .char-forum-switch li { display: inline; }
 .forum .char-forum-switch button { background-color: rgba(30, 143, 188, 0.5); color: white; display: inline-block; min-width: 120px; font-family: Zekton, Verdana, Helvetica, Arial, 'Liberation Sans', FreeSans, sans-serif; cursor: pointer; }
 .forum .char-forum-switch button:hover, .forum .char-forum-switch button:focus { background: rgba(30, 143, 188, 0.8); text-decoration: none; }
-.forum .char-forum-switch button:active { background: rgba(30, 143, 188, 0.4); }
+.forum .char-forum-switch button:active { background: #1a7ea6; }
 .forum .char-forum-switch button.switch-active { background: #176e90; }
 
 .forum-snippet { width: 100%; border: 0; resize: none; background: transparent; background: rgba(255, 255, 255, 0.2); font-family: verdana; font-size: small; }
