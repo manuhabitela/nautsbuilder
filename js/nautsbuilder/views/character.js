@@ -12,11 +12,13 @@ leiminauts.CharacterView = Backbone.View.extend({
 	},
 
 	initialize: function(opts) {
-		_.defaults(opts, { build: null, order: null, info: null });
+		_.defaults(opts, { build: null, order: null, info: null, console: false });
 
 		this.template = _.template( $('#char-tpl').html() );
 
-		this.characters = new leiminauts.CharactersView({ character: this, collection: this.collection });
+		this.console = opts.console;
+
+		this.characters = new leiminauts.CharactersView({ character: this, collection: this.collection, console: this.console });
 		this.build = new leiminauts.BuildView({ character: this });
 		this.info = new leiminauts.InfoView({ character: this });
 		this.order = new leiminauts.OrderView({ character: this });
@@ -32,11 +34,13 @@ leiminauts.CharacterView = Backbone.View.extend({
 		this.render();
 
 		this.toggleTimeout = null;
-		this.model.on('change:maxed_out', this.toggleCompactView, this);
+		this.model.on('change:maxed_out', this.toggleMaxedOutView, this);
 	},
 
 	render: function() {
-		this.$el.html(this.template( this.model.toJSON() ));
+		var data = this.model.toJSON();
+		data.console = this.console;
+		this.$el.html(this.template( data ));
 		this.assign(this.characters, '.chars');
 		this.assign(this.build, '.build');
 		this.assign(this.info, '.char-info');
@@ -44,7 +48,7 @@ leiminauts.CharacterView = Backbone.View.extend({
 		return this;
 	},
 
-	toggleCompactView: function() {
+	toggleMaxedOutView: function() {
 		//transitionend doesn't seem to fire reliably oO going with nasty timeouts that kinda match transition duration
 		var timeOutTime = Modernizr.csstransitions ? 500 : 0;
 		if (this.model.get('maxed_out')) {
@@ -58,5 +62,12 @@ leiminauts.CharacterView = Backbone.View.extend({
 		setTimeout(_.bind(function() {
 			this.$el.toggleClass('maxed-out', this.model.get('maxed_out'));
 		}, this), 0);
+	},
+
+	toggleCompactView: function(toggle) {
+		if (toggle !== undefined)
+			this.$el.toggleClass('compact', !!toggle);
+		else
+			this.$el.toggleClass('compact', toggle);
 	}
 });

@@ -72,3 +72,19 @@
 	font-size: 24px;
 	cursor: pointer;
 }
+
+%light-button {
+	display: inline-block;
+	font-family: verdana;
+	background: rgba(255, 255, 255, 0.2);
+	border: none;
+	border-radius: 3px;
+	padding: 2px 4px;
+	margin: 0;
+	color: #ccc;
+	text-decoration: none;
+	&:hover, &:focus {
+		background: none;
+		text-decoration: underline;
+	}
+}

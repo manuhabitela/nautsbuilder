@@ -38,7 +38,11 @@
 				Data gathered from the <a href="http://www.awesomenauts.com" target="_blank">Awesomenauts game</a> and the <a href="http://awesomenauts.wikia.com/wiki/Awesomenauts_Wiki" target="_blank">Wiki</a> by the community.
 			</p>
 		</div>
+
 		<script type="text/template" id="chars-tpl">
+			<% if (!character) { %>
+				<div class="console-info" title="Currently viewing <%= console ? 'Console Nautsbuilder' : 'PC Nautsbuilder' %>"></div>
+			<% } %>
 			<div class="current-char">
 				<% if (currentChar) { %>
 					<div class="current-char-left">
@@ -67,17 +71,25 @@
 			</div>
 			<ul class="chars-list">
 			<% if (character) { %>
-				<li title="Back to home" class="char home-button"><a href="#"><img class="char-icon" src="img/home.png" alt="Home"></a></li>
+				<li title="Back to home" class="char home-button"><a href="#<%= console ? 'console' : '' %>"><img class="char-icon" src="img/home.png" alt="Home"></a></li>
 			<% } %>
 			<% _.each(characters, function(charac) { %>
 				<li title="<%= charac.name %>" class="char <%= character && character.name == charac.name ? 'active' : '' %> <%= !character && currentChar && currentChar.get('name') == charac.name ? 'active' : '' %>">
-					<a href="#<%= _.underscored(charac.name) %>"><img class="char-icon" src="<%= charac.icon %>" alt=""></a>
+					<a href="#<%= _.underscored(charac.name) %><%= console ? '/console' : '' %>"><img class="char-icon" src="<%= charac.icon %>" alt=""></a>
 				</li>
 			<% }); %>
+			<% if (character) { %>
+				<!-- <li title="Switch to <%= console ? 'PC build' : 'Console build' %>" class="char console-button <%= console ? 'pc' : 'gamepad' %>">
+					<a href="#<%= console ? '' : 'console' %>">
+						<img class="char-icon" src="img/<%= console ? 'pc_blue.png' : 'gamepad_blue.png' %>" alt="">
+					</a>
+				</li> -->
+			<% } %>
 			</ul>
 		</script>
 
 		<script type="text/template" id="char-tpl">
+			<div class="console-info" title="Currently viewing <%= console ? 'Console Nautsbuilder' : 'PC Nautsbuilder' %>"></div>
 			<div class="chars"></div>
 			<div class="build"></div>
 			<div class="order"></div>

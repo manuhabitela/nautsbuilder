@@ -18,6 +18,9 @@
 
 .build-cancel, .skill-cancel { background: transparent url('../img/cancel.png?1367501974') no-repeat top left; color: rgba(217, 89, 38, 0.8); font-family: verdana; font-size: 24px; cursor: pointer; }
 
+#footer button { display: inline-block; font-family: verdana; background: rgba(255, 255, 255, 0.2); border: none; border-radius: 3px; padding: 2px 4px; margin: 0; color: #ccc; text-decoration: none; }
+#footer button:hover, #footer button:focus { background: none; text-decoration: underline; }
+
 * { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
 
 audio, canvas, video { display: inline-block; }
@@ -29,7 +32,7 @@ audio:not([controls]) { display: none; height: 0; }
 html { font-family: sans-serif; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; min-height: 100%; }
 html.page-red { height: 100%; min-height: 0; }
 
-body { margin: 0; padding: 10px; padding-bottom: 30px; height: 100%; background-position: top left; }
+body { margin: 0; padding-bottom: 30px; height: 100%; background-position: top left; }
 body, .page-blue body { background-color: #001D2F; background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(800px 800px, #02526d, #001322); background-image: -moz-radial-gradient(800px 800px, #02526d, #001322); background-image: -o-radial-gradient(800px 800px, #02526d, #001322); background-image: radial-gradient(800px 800px, #02526d, #001322); background-image: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 100, color-stop(0%, #02526d), color-stop(100%, #001322)); background-image: -webkit-radial-gradient(50% 50%, #02526d, #001322); background-image: -moz-radial-gradient(50% 50%, #02526d, #001322); background-image: -o-radial-gradient(50% 50%, #02526d, #001322); background-image: radial-gradient(50% 50%, #02526d, #001322); }
 .page-red body { background-color: #6D0206; background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(800px 800px, #6d0206, #220000); background-image: -moz-radial-gradient(800px 800px, #6d0206, #220000); background-image: -o-radial-gradient(800px 800px, #6d0206, #220000); background-image: radial-gradient(800px 800px, #6d0206, #220000); background-image: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(50% 50%, #6d0206, #220000); background-image: -moz-radial-gradient(50% 50%, #6d0206, #220000); background-image: -o-radial-gradient(50% 50%, #6d0206, #220000); background-image: radial-gradient(50% 50%, #6d0206, #220000); }
 
@@ -127,10 +130,13 @@ body, button, select, input, textarea, label { color: whitesmoke; font-family: Z
 #footer a { color: #ccc; }
 #footer a:hover, #footer a:focus { text-decoration: none; }
 #footer form { display: inline; margin-left: -4px; }
-#footer button { display: inline-block; font-family: verdana; background: rgba(255, 255, 255, 0.2); border: none; border-radius: 3px; padding: 2px 4px; margin: 0; color: #ccc; text-decoration: none; }
-#footer button:hover, #footer button:focus { background: none; text-decoration: underline; }
 
 .icon-details { position: absolute; bottom: 0; }
+
+#container { padding-top: 10px; }
+
+.console-info { position: absolute; top: 10px; right: 10px; display: block; height: 26px; width: 40px; background: url('../img/pc_white_transparent.png?1370697227') no-repeat 99% 1%; }
+.console .console-info { background: url('../img/gamepad_white_transparent.png?1370697259') no-repeat 99% 1%; }
 
 .page-red #container, .page-red .chars-list-container, .page-red .current-char { height: 100%; }
 
@@ -194,8 +200,8 @@ body, button, select, input, textarea, label { color: whitesmoke; font-family: Z
 .char-builder .chars-list { margin-bottom: 20px; text-align: center; }
 .char-builder .chars-list .char { border-width: 1px; margin: 2px 0 2px -4px; }
 .char-builder .chars-list .char:hover, .char-builder .chars-list .char.active { border-radius: 0; }
-.char-builder .chars-list .char.home-button:hover, .char-builder .chars-list .char.home-button.active { border-color: transparent; opacity: 0.8; }
-.char-builder .chars-list .char-icon { width: 26px; }
+.char-builder .chars-list .char.home-button:hover, .char-builder .chars-list .char.home-button.active, .char-builder .chars-list .char.console-button:hover, .char-builder .chars-list .char.console-button.active { border-color: transparent; opacity: 0.8; }
+.char-builder .chars-list .char-icon { height: 26px; width: auto; }
 
 .char-info { margin-left: 8px; padding-left: 0; padding-top: 0; margin-top: 0; }
 .char-info .info { font-size: 1em; }

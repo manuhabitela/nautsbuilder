@@ -42,19 +42,7 @@
 		margin-left: -4px;
 	}
 	button {
-		display: inline-block;
-		font-family: verdana;
-		background: rgba(255, 255, 255, 0.2);
-		border: none;
-		border-radius: 3px;
-		padding: 2px 4px;
-		margin: 0;
-		color: #ccc;
-		text-decoration: none;
-		&:hover, &:focus {
-			background: none;
-			text-decoration: underline;
-		}
+		@extend %light-button;
 	}
 }
 
@@ -62,4 +50,21 @@
 	@extend %info;
 	position: absolute;
 	bottom: 0;
+}
+
+#container {
+	padding-top: 10px;
+}
+
+.console-info {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	display: block;
+	height: 26px;
+	width: 40px;
+	background: image-url('pc_white_transparent.png') no-repeat 99% 1%;
+	.console & {
+		background: image-url('gamepad_white_transparent.png') no-repeat 99% 1%;
+	}
 }

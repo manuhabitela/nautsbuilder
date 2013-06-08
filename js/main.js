@@ -7,10 +7,13 @@ $(function() {
 	FastClick.attach(document.body);
 });
 ;(function() {
-	//dev 0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE
-	//prod 0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE
-	//opened 0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc	
+	var console = window.location.hash.indexOf('console') !== -1;
+
+	//steam 0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc
+	//console 0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE
 	var spreadsheetKey = "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc";
+	if (console)
+		spreadsheetKey = "0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE";
 
 	MouseTooltip.init({ "3d": true });
 
@@ -19,7 +22,7 @@ $(function() {
 
 	leiminauts.init = function(opts) {
 		opts = opts || {};
-		_.defaults(opts, { el: "#container", spreadsheet: false });
+		_.defaults(opts, { el: "#container", spreadsheet: false, console: console });
 		window.nautsbuilder = new leiminauts.App(opts);
 		Backbone.history.start({pushState: false});
 	};
@@ -27,11 +30,11 @@ $(function() {
 	leiminauts.lastDataUpdate = leiminauts.lastDataUpdate || 0;
 	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') ? localStorage.getItem('nautsbuilder.date') : 0;
 
-	if (leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate) {
+	if (console || (leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate)) {
 		Tabletop.init({
 			key: spreadsheetKey,
 			callback: function(data, tabletop) {
-				leiminauts.init({ spreadsheet: tabletop });
+				leiminauts.init({ spreadsheet: tabletop, console: console });
 			}
 		});
 	} else {
@@ -54,7 +57,7 @@ $(function() {
 			Tabletop.init({
 				key: spreadsheetKey,
 				callback: function(data, tabletop) {
-					leiminauts.init({ spreadsheet: tabletop });
+					leiminauts.init({ spreadsheet: tabletop, console: false });
 				}
 			});
 		}

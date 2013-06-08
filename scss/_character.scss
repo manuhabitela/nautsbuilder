@@ -81,12 +81,13 @@
 			&:hover, &.active {
 				border-radius: 0;
 			}
-			&.home-button {
+			&.home-button, &.console-button {
 				&:hover, &.active { border-color: transparent; opacity: 0.8; }
 			}
 		}
 		.char-icon {
-			width: 26px;
+			height: 26px;
+			width: auto;
 		}
 	}
 }

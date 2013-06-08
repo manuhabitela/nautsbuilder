@@ -65,6 +65,7 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 		//each skills has upgrades
 		if (opts.spreadsheet !== undefined) {
 			this.spreadsheet = opts.spreadsheet;
+			this.console = opts.console || false;
 
 			var characters, skills, upgrades;
 			if (this.spreadsheet) {
@@ -72,7 +73,7 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 				leiminauts.skills = this.spreadsheet.sheets('Skills').all();
 				leiminauts.upgrades = this.spreadsheet.sheets('Upgrades').all();
 
-				if (Modernizr.localstorage) {
+				if (!this.console && Modernizr.localstorage) {
 					localStorage.setItem('nautsbuilder.characters', JSON.stringify(leiminauts.characters));
 					localStorage.setItem('nautsbuilder.skills', JSON.stringify(leiminauts.skills));
 					localStorage.setItem('nautsbuilder.upgrades', JSON.stringify(leiminauts.upgrades));

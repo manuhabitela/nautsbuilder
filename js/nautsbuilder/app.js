@@ -5,34 +5,62 @@
  */
 leiminauts.App = Backbone.Router.extend({
 	routes: {
-		"": "list",
-		":naut(/:build)(/:order)": "buildMaker"
+		"(console)": "list",
+		":naut(/:build)(/:order)(/compact)(/console)(/)": "buildMaker"
 	},
 
 	initialize: function(options) {
 		if (options.spreadsheet !== undefined) {
-			this.data = new leiminauts.CharactersData(null, { spreadsheet: options.spreadsheet });
+			this.data = new leiminauts.CharactersData(null, { spreadsheet: options.spreadsheet, console: options.console });
 			this.data.on('selected', function(naut) {
 				this.navigate(naut, { trigger: true });
 			}, this);
 		}
 		this.$el = $(options.el);
 
+		this.console = options.console;
+		$('html').toggleClass('console', this.console);
+
+		this._beforeRoute();
+
 		this.grid = [];
 	},
 
+	_beforeRoute: function() {
+		var url = this.getCurrentUrl();
+		var oldConsole = this.console !== undefined ? this.console : undefined;
+		var oldCompact = this.compact !== undefined ? this.compact : undefined;
+		this.console = url.indexOf('console') !== -1;
+		this.compact = url.indexOf('/compact') !== -1;
+		console.log("_beforeRoute", "oldConsole: ", oldConsole, "this.console:", this.console);
+		if (oldConsole !== this.console) {
+			window.location.reload();
+		}
+		if (oldCompact !== this.compact)
+			$('html').toggleClass('compact', this.compact);
+	},
+
+	updateConsoleLinkUrl: function() {
+		var url = this.getCurrentUrl();
+		$('.console-button a').attr('href', "/#" + (url.indexOf('console') !== -1 ? url.replace('console', '') : url + '/console'));
+	},
+
 	list: function() {
+		this._beforeRoute();
 		$('html').removeClass('page-blue').addClass('page-red');
 
 		var charsView = new leiminauts.CharactersView({
-			collection: this.data
+			collection: this.data,
+			console: this.console
 		});
 		this.showView( charsView );
+		this.updateConsoleLinkUrl();
 	},
 
 	buildMaker: function(naut, build, order) {
 		if (!_.isNaN(parseInt(naut, 10)))
 			return false;
+		this._beforeRoute();
 		if (naut == "Skolldir") naut = "Skølldir"; //to deal with encoding issues in Firefox, ø is replaced by "o" in the URL. Putting back correct name.
 		naut = _.ununderscored(naut).toLowerCase();
 
@@ -40,6 +68,7 @@ leiminauts.App = Backbone.Router.extend({
 		if (this.currentView && this.currentView instanceof leiminauts.CharacterView &&
 			this.currentView.model && this.currentView.model.get('name').toLowerCase() == naut) {
 			this.updateBuildFromUrl(this.currentView);
+			this.updateConsoleLinkUrl();
 			return true;
 		}
 
@@ -55,7 +84,8 @@ leiminauts.App = Backbone.Router.extend({
 		character.reset();
 		var charView = new leiminauts.CharacterView({
 			collection: this.data,
-			model: character
+			model: character,
+			console: this.console
 		});
 		this.showView( charView );
 
@@ -66,6 +96,7 @@ leiminauts.App = Backbone.Router.extend({
 		character.get('skills').on('change', debouncedUrlUpdate , this);
 		charView.on('order:changed', debouncedUrlUpdate, this);
 		charView.on('order:toggled', debouncedUrlUpdate, this);
+		this.updateConsoleLinkUrl();
 	},
 
 	showView: function(view) {
@@ -164,10 +195,12 @@ leiminauts.App = Backbone.Router.extend({
 		}
 		else {
 			newUrl = currentUrl.substring(0, currentUrl.indexOf('/') + 1) + buildUrl + orderUrl;
-			//if (currentUrl.indexOf('/') !== currentUrl.lastIndexOf('/')) //if like #leon_chameleon/1102032011102/0-2-3-12-7-5
-				//newUrl += '/' + orderUrl;
+			//well that's ugly
+			var optionalUrlParts = ['/compact', '/console'];
+			_(optionalUrlParts).each(function(part) { if (currentUrl.indexOf(part) !== -1) newUrl += part; });
 		}
 		this.navigate(newUrl);
+		this.updateConsoleLinkUrl();
 	},
 
 	getCurrentUrl: function() {

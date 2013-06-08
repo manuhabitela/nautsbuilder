@@ -1,5 +1,3 @@
-# This is a work in progress!
-
 # Nautsbuilder
 
 You play Awesomenauts and are tired to navigate on the wiki to try new builds? **Things have changed**. The Nautsbuilder allows you to create and share builds easily, on the web.
@@ -14,11 +12,15 @@ And thanks to the community, all characters/skills/upgrades data is now in the s
 
 # Filling the spreadsheet correctly
 
-The spreadsheet is available here https://docs.google.com/spreadsheet/ccc?key=0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc
+There are two spreadsheets: one for PC data, one for console data.
+
+PC data is available here https://docs.google.com/spreadsheet/ccc?key=0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc
+
+Console data is available here https://docs.google.com/spreadsheet/ccc?key=0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE
 
 It is pretty simple to fill but there are a few things to know.
 
-* If you change anything in the spreadsheet, **let me know in the [forum](http://www.awesomenauts.com/forum/viewtopic.php?f=14&t=13663)**. A manual update of the Nautsbuilder is required to reflect new data changes.
+* **If you change anything in the spreadsheet, let me know in the [forum](http://www.awesomenauts.com/forum/viewtopic.php?f=14&t=13663)**. A manual update of the Nautsbuilder is required to reflect new data changes.
 * There are 3 different sheets: Characters, Skills, and Upgrades. You can switch sheets at the bottom of the screen.
 * For every sheet, please **don't put any empty rows or columns**: any row/column after a completely empty row/column would become unavailable by the Nautsbuilder.
 * Every `description` field will translate \*sentences like this\* as *sentences in italics like this*.
@@ -52,6 +54,23 @@ Characters should be listed in the same order as they are in the character selec
 Licensed under MPL v2 http://mozilla.org/MPL/2.0/
 
 That pretty much means you can take the code and integrate it in your app (open-sourced or not). Remember you must open-source the changes you make to the Nautsbuilder code.
+
+# Third party stuff used
+Code:
+
+* [Underscore & Backbone.js](http://backbonejs.org/)
+* [jQuery](jquery.com)
+* [Sass](http://sass-lang.com/) & [Compass](http://compass-style.org/)
+* [Tabletop](https://github.com/jsoma/tabletop)
+* [Fastclick](https://github.com/ftlabs/fastclick)
+* [HTML5 Sortable](http://farhadi.ir/projects/html5sortable/)
+
+Icons:
+
+* blue tick and red cancel buttons from the Awesomenauts Game,
+* [Home](http://thenounproject.com/noun/home/#icon-No293) from The Noun Project
+* [Gamepad menu icon](http://thenounproject.com/noun/video-game-controller/#icon-No17531) by [Vardan Stepanian](http://thenounproject.com/vardst)
+* [Keyboard](http://thenounproject.com/noun/keyboard/#icon-No783) by [Paul te Kortschot](http://thenounproject.com/Kortschot)
 
 # Credits
 

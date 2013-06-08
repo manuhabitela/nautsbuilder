@@ -16,6 +16,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 
 		if (this.options.character !== undefined)
 			this.character = this.options.character.model.toJSON();
+		this.console = this.options.console !== undefined ? this.options.console : false;
 
 		this.currentChar = null;
 
@@ -25,7 +26,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 	},
 
 	render: function() {
-		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar, character: this.character }));
+		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar, character: this.character, console: this.options.console }));
 		return this;
 	},
 
@@ -35,9 +36,9 @@ leiminauts.CharactersView = Backbone.View.extend({
 
 	showCharInfo: function(e) {
 		if (this.character) return false;
-		var character = $(e.currentTarget).find('a').attr('href').substr(1);
-		if (this.currentChar === null || this.currentChar.get('name') !== _.ununderscored(character)) {
-			this.currentChar = this.collection.findWhere({name: _.ununderscored(character)});
+		var character = $(e.currentTarget).attr('title');
+		if (this.currentChar === null || this.currentChar.get('name') !== character) {
+			this.currentChar = this.collection.findWhere({name: character});
 			this.render();
 		}
 	}
