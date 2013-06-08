@@ -1,4 +1,4 @@
-/* Nautsbuilder - Awesomenauts build calculator v0.7.3 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.8.0 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -151,6 +151,7 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 		//each skills has upgrades
 		if (opts.spreadsheet !== undefined) {
 			this.spreadsheet = opts.spreadsheet;
+			this.console = opts.console || false;
 
 			var characters, skills, upgrades;
 			if (this.spreadsheet) {
@@ -158,7 +159,7 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 				leiminauts.skills = this.spreadsheet.sheets('Skills').all();
 				leiminauts.upgrades = this.spreadsheet.sheets('Upgrades').all();
 
-				if (Modernizr.localstorage) {
+				if (!this.console && Modernizr.localstorage) {
 					localStorage.setItem('nautsbuilder.characters', JSON.stringify(leiminauts.characters));
 					localStorage.setItem('nautsbuilder.skills', JSON.stringify(leiminauts.skills));
 					localStorage.setItem('nautsbuilder.upgrades', JSON.stringify(leiminauts.upgrades));
@@ -586,6 +587,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 
 		if (this.options.character !== undefined)
 			this.character = this.options.character.model.toJSON();
+		this.console = this.options.console !== undefined ? this.options.console : false;
 
 		this.currentChar = null;
 
@@ -595,7 +597,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 	},
 
 	render: function() {
-		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar, character: this.character }));
+		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar, character: this.character, console: this.options.console }));
 		return this;
 	},
 
@@ -605,9 +607,9 @@ leiminauts.CharactersView = Backbone.View.extend({
 
 	showCharInfo: function(e) {
 		if (this.character) return false;
-		var character = $(e.currentTarget).find('a').attr('href').substr(1);
-		if (this.currentChar === null || this.currentChar.get('name') !== _.ununderscored(character)) {
-			this.currentChar = this.collection.findWhere({name: _.ununderscored(character)});
+		var character = $(e.currentTarget).attr('title');
+		if (this.currentChar === null || this.currentChar.get('name') !== character) {
+			this.currentChar = this.collection.findWhere({name: character});
 			this.render();
 		}
 	}
@@ -623,17 +625,21 @@ leiminauts.CharacterView = Backbone.View.extend({
 	className: 'char-builder',
 
 	events: {
+		"click .char-forum-switch button": "toggleForumViews"
 	},
 
 	initialize: function(opts) {
-		_.defaults(opts, { build: null, order: null, info: null });
+		_.defaults(opts, { build: null, order: null, info: null, console: false, forum: false });
 
 		this.template = _.template( $('#char-tpl').html() );
 
-		this.characters = new leiminauts.CharactersView({ character: this, collection: this.collection });
-		this.build = new leiminauts.BuildView({ character: this });
-		this.info = new leiminauts.InfoView({ character: this });
-		this.order = new leiminauts.OrderView({ character: this });
+		this.console = opts.console;
+		this.forum = opts.forum;
+
+		this.characters = new leiminauts.CharactersView({ character: this, collection: this.collection, console: this.console });
+		this.build = new leiminauts.BuildView({ character: this, forum: this.forum });
+		this.info = new leiminauts.InfoView({ character: this, forum: this.forum });
+		this.order = new leiminauts.OrderView({ character: this, forum: this.forum });
 
 		this.order.on('changed', function(collection) {
 			this.trigger('order:changed', collection);
@@ -646,32 +652,51 @@ leiminauts.CharacterView = Backbone.View.extend({
 		this.render();
 
 		this.toggleTimeout = null;
-		this.model.on('change:maxed_out', this.toggleCompactView, this);
+		this.model.on('change:maxed_out', this.toggleMaxedOutView, this);
 	},
 
 	render: function() {
-		this.$el.html(this.template( this.model.toJSON() ));
+		var data = this.model.toJSON();
+		data.console = this.console;
+		data.forum = this.forum;
+		this.$el.html(this.template( data ));
 		this.assign(this.characters, '.chars');
 		this.assign(this.build, '.build');
 		this.assign(this.info, '.char-info');
 		this.assign(this.order, '.order');
+		if (this.forum)
+			this.toggleForumViews(null, 'build');
 		return this;
 	},
 
-	toggleCompactView: function() {
+	toggleMaxedOutView: function() {
 		//transitionend doesn't seem to fire reliably oO going with nasty timeouts that kinda match transition duration
-		var timeOutTime = Modernizr.csstransitions ? 500 : 0;
-		if (this.model.get('maxed_out')) {
-			this.toggleTimeout = setTimeout(_.bind(function() {
-				this.$('.upgrade:not(.active)').addClass('hidden');
-			}, this), timeOutTime);
-		} else{
-			clearTimeout(this.toggleTimeout);
-			this.$('.upgrade:not(.active)').removeClass('hidden');
+		if (!this.forum) {
+			var timeOutTime = Modernizr.csstransitions ? 500 : 0;
+			if (this.model.get('maxed_out')) {
+				this.toggleTimeout = setTimeout(_.bind(function() {
+					this.$('.upgrade:not(.active)').addClass('hidden');
+				}, this), timeOutTime);
+			} else{
+				clearTimeout(this.toggleTimeout);
+				this.$('.upgrade:not(.active)').removeClass('hidden');
+			}
 		}
 		setTimeout(_.bind(function() {
 			this.$el.toggleClass('maxed-out', this.model.get('maxed_out'));
 		}, this), 0);
+	},
+
+	toggleForumViews: function(e, forcedClass) {
+		forcedClass = forcedClass || null;
+		itemClass = forcedClass ? forcedClass : $(e.currentTarget).attr('data-item');
+		this.$('.char-forum-switch button').removeClass('switch-active');
+		if (e)
+			$(e.currentTarget).addClass('switch-active');
+		if (forcedClass)
+			this.$('.char-forum-switch button[data-item="' + forcedClass + '"]').addClass('switch-active');
+		this.$('.build').toggleClass('forum-hidden', itemClass != 'build');
+		this.$('.order').toggleClass('forum-hidden', itemClass != 'order');
 	}
 });
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -694,9 +719,11 @@ leiminauts.BuildView = Backbone.View.extend({
 			this.model = this.character.model;
 		}
 
+		this.forum = this.options.forum || false;
+
 		this.skills = [];
 		this.model.get('skills').each(function(skill) {
-			this.skills.push(new leiminauts.SkillView({ model: skill }));
+			this.skills.push(new leiminauts.SkillView({ model: skill, forum: this.forum }));
 		}, this);
 
 		this.template = _.template( $('#build-tpl').html() );
@@ -758,6 +785,8 @@ leiminauts.OrderView = Backbone.View.extend({
 
 		this.active = true;
 
+		this.forum = this.options.forum;
+
 		this.on('toggled', this.toggleView, this);
 
 		this.collection = new Backbone.Collection(null, { comparator: this.comparator });
@@ -802,12 +831,15 @@ leiminauts.OrderView = Backbone.View.extend({
 			item.order_total_cost = totalCost;
 			item.order_req_lvl = Math.floor((totalCost-100)/100) <= 1 ? 1 : Math.floor((totalCost-100)/100);
 		});
-		this.$el.html(this.template({ items: data, active: this.active }));
+		this.$el.html(this.template({ items: data, active: this.active, forum: this.forum }));
+
 		this.$('.order-item').on('mouseover mouseout click dragstart', this.handleTooltip);
-		this.$('input[name="active"]').on('change', _.bind(this.toggle, this));
-		this.$list = this.$el.children('ul').first();
-		this.$list.sortable({items: '.order-item'});
-		this.$list.on('sortupdate', _.bind(this.updateOrder, this));
+		if (!this.forum) {
+			this.$('input[name="active"]').on('change', _.bind(this.toggle, this));
+			this.$list = this.$el.children('ul').first();
+			this.$list.sortable({items: '.order-item'});
+			this.$list.on('sortupdate', _.bind(this.updateOrder, this));
+		}
 		this.toggleView();
 		return this;
 	},
@@ -879,9 +911,11 @@ leiminauts.SkillView = Backbone.View.extend({
 	},
 
 	initialize: function() {
+		this.forum = this.options.forum || false;
+
 		this.upgrades = [];
 		this.model.get('upgrades').each(function(upgrade) {
-			this.upgrades.push(new leiminauts.UpgradeView({ model: upgrade }));
+			this.upgrades.push(new leiminauts.UpgradeView({ model: upgrade, forum: this.forum }));
 		}, this);
 
 		this.template = _.template( $('#build-skill-tpl').html() );
@@ -892,6 +926,7 @@ leiminauts.SkillView = Backbone.View.extend({
 	},
 
 	toggleState: function() {
+		if (this.forum) return false;
 		this.model.setActive(!this.model.get('active'));
 	},
 
@@ -957,6 +992,7 @@ leiminauts.UpgradeView = Backbone.View.extend({
 	initialize: function() {
 		this.template = _.template( $('#build-upgrade-tpl').html() );
 
+		this.forum = this.options.forum || false;
 
 		this.model.on('change', this.render, this);
 	},
@@ -970,6 +1006,7 @@ leiminauts.UpgradeView = Backbone.View.extend({
 	},
 
 	onClick: function(e) {
+		if (this.forum) return false;
 		this.updateStep();
 		//update the tooltip immediatly so the user don't have to move its mouse to see the current step's description
 		this.handleTooltip(e);
@@ -1005,34 +1042,63 @@ leiminauts.UpgradeView = Backbone.View.extend({
  */
 leiminauts.App = Backbone.Router.extend({
 	routes: {
-		"": "list",
-		":naut(/:build)(/:order)": "buildMaker"
+		"(console)": "list",
+		":naut(/:build)(/:order)(/console)(/forum)(/)": "buildMaker"
 	},
 
 	initialize: function(options) {
 		if (options.spreadsheet !== undefined) {
-			this.data = new leiminauts.CharactersData(null, { spreadsheet: options.spreadsheet });
+			this.data = new leiminauts.CharactersData(null, { spreadsheet: options.spreadsheet, console: options.console });
 			this.data.on('selected', function(naut) {
 				this.navigate(naut, { trigger: true });
 			}, this);
 		}
 		this.$el = $(options.el);
 
+		this.console = options.console;
+		$('html').toggleClass('console', this.console);
+
+		this._beforeRoute();
+
 		this.grid = [];
+
+		this.forum = options.forum;
+	},
+
+	_beforeRoute: function() {
+		var url = this.getCurrentUrl();
+		var oldConsole = this.console !== undefined ? this.console : undefined;
+		var oldCompact = this.forum !== undefined ? this.forum : undefined;
+		this.console = url.indexOf('console') !== -1;
+		this.forum = url.indexOf('/forum') !== -1;
+		if (oldConsole !== this.console) {
+			window.location.reload();
+		}
+		if (oldCompact !== this.forum)
+			$('html').toggleClass('forum', this.forum);
+	},
+
+	updateConsoleLinkUrl: function() {
+		var url = this.getCurrentUrl();
+		$('.console-button a').attr('href', "/#" + (url.indexOf('console') !== -1 ? url.replace('console', '') : url + '/console'));
 	},
 
 	list: function() {
+		this._beforeRoute();
 		$('html').removeClass('page-blue').addClass('page-red');
 
 		var charsView = new leiminauts.CharactersView({
-			collection: this.data
+			collection: this.data,
+			console: this.console
 		});
 		this.showView( charsView );
+		this.updateConsoleLinkUrl();
 	},
 
 	buildMaker: function(naut, build, order) {
 		if (!_.isNaN(parseInt(naut, 10)))
 			return false;
+		this._beforeRoute();
 		if (naut == "Skolldir") naut = "Skølldir"; //to deal with encoding issues in Firefox, ø is replaced by "o" in the URL. Putting back correct name.
 		naut = _.ununderscored(naut).toLowerCase();
 
@@ -1040,6 +1106,7 @@ leiminauts.App = Backbone.Router.extend({
 		if (this.currentView && this.currentView instanceof leiminauts.CharacterView &&
 			this.currentView.model && this.currentView.model.get('name').toLowerCase() == naut) {
 			this.updateBuildFromUrl(this.currentView);
+			this.updateConsoleLinkUrl();
 			return true;
 		}
 
@@ -1055,7 +1122,9 @@ leiminauts.App = Backbone.Router.extend({
 		character.reset();
 		var charView = new leiminauts.CharacterView({
 			collection: this.data,
-			model: character
+			model: character,
+			console: this.console,
+			forum: this.forum
 		});
 		this.showView( charView );
 
@@ -1066,6 +1135,7 @@ leiminauts.App = Backbone.Router.extend({
 		character.get('skills').on('change', debouncedUrlUpdate , this);
 		charView.on('order:changed', debouncedUrlUpdate, this);
 		charView.on('order:toggled', debouncedUrlUpdate, this);
+		this.updateConsoleLinkUrl();
 	},
 
 	showView: function(view) {
@@ -1164,10 +1234,12 @@ leiminauts.App = Backbone.Router.extend({
 		}
 		else {
 			newUrl = currentUrl.substring(0, currentUrl.indexOf('/') + 1) + buildUrl + orderUrl;
-			//if (currentUrl.indexOf('/') !== currentUrl.lastIndexOf('/')) //if like #leon_chameleon/1102032011102/0-2-3-12-7-5
-				//newUrl += '/' + orderUrl;
+			//well that's ugly
+			var optionalUrlParts = ['/forum', '/console'];
+			_(optionalUrlParts).each(function(part) { if (currentUrl.indexOf(part) !== -1) newUrl += part; });
 		}
 		this.navigate(newUrl);
+		this.updateConsoleLinkUrl();
 	},
 
 	getCurrentUrl: function() {
@@ -1201,10 +1273,14 @@ $(function() {
 	FastClick.attach(document.body);
 });
 ;(function() {
-	//dev 0AuPP-DBESPOedHpYZUNPa1BSaEFVVnRoa1dTNkhCMEE
-	//prod 0AuPP-DBESPOedDl3UmM1bHpYdDNXaVRyTTVTQlZQWVE
-	//opened 0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc	
+	var console = window.location.hash.indexOf('console') !== -1;
+	var forum = window.location.hash.indexOf('forum') !== -1;
+
+	//steam 0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc
+	//console 0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE
 	var spreadsheetKey = "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc";
+	if (console)
+		spreadsheetKey = "0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE";
 
 	MouseTooltip.init({ "3d": true });
 
@@ -1213,7 +1289,7 @@ $(function() {
 
 	leiminauts.init = function(opts) {
 		opts = opts || {};
-		_.defaults(opts, { el: "#container", spreadsheet: false });
+		_.defaults(opts, { el: "#container", spreadsheet: false, console: console, forum: forum });
 		window.nautsbuilder = new leiminauts.App(opts);
 		Backbone.history.start({pushState: false});
 	};
@@ -1221,11 +1297,11 @@ $(function() {
 	leiminauts.lastDataUpdate = leiminauts.lastDataUpdate || 0;
 	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') ? localStorage.getItem('nautsbuilder.date') : 0;
 
-	if (leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate) {
+	if (console || (leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate)) {
 		Tabletop.init({
 			key: spreadsheetKey,
 			callback: function(data, tabletop) {
-				leiminauts.init({ spreadsheet: tabletop });
+				leiminauts.init({ spreadsheet: tabletop, console: console });
 			}
 		});
 	} else {
@@ -1248,7 +1324,7 @@ $(function() {
 			Tabletop.init({
 				key: spreadsheetKey,
 				callback: function(data, tabletop) {
-					leiminauts.init({ spreadsheet: tabletop });
+					leiminauts.init({ spreadsheet: tabletop, console: false });
 				}
 			});
 		}
