@@ -74,7 +74,7 @@
 				<li title="Back to home" class="char home-button"><a href="#<%= console ? 'console' : '' %>"><img class="char-icon" src="img/home.png" alt="Home"></a></li>
 			<% } %>
 			<% _.each(characters, function(charac) { %>
-				<li title="<%= charac.name %>" class="char <%= character && character.name == charac.name ? 'active' : '' %> <%= !character && currentChar && currentChar.get('name') == charac.name ? 'active' : '' %>">
+				<li title="<%= charac.name %>" class="char <%= charac.beta && charac.beta == "1" ? 'beta' : '' %> <%= character && character.name == charac.name ? 'active' : '' %> <%= !character && currentChar && currentChar.get('name') == charac.name ? 'active' : '' %>">
 					<a href="#<%= _.underscored(charac.name) %><%= console ? '/console' : '' %>"><img class="char-icon" src="<%= charac.icon %>" alt=""></a>
 				</li>
 			<% }); %>

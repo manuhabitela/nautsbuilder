@@ -61,7 +61,7 @@ img { border: 0; }
 
 svg:not(:root) { overflow: hidden; }
 
-fieldset { border: 1px solid #c0c0c0; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
+fieldset { border: 1px solid silver; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
 
 legend { border: 0; padding: 0; }
 
@@ -173,11 +173,19 @@ body, .page-blue body { background-color: #001D2F; background-image: -webkit-gra
 @media only screen and (max-height: 780px) { .current-char-skill-icon img { width: 40px; } }
 
 .chars-list { list-style-type: none; margin: 0; padding: 0; }
-.chars-list-container .chars-list { position: fixed; left: 0; right: 0; bottom: 30px; height: 100px; text-align: center; }
+.chars-list-container .chars-list { position: fixed; left: 0; right: 0; bottom: 30px; height: 90px; text-align: center; }
 .chars-list .char { display: inline-block; cursor: pointer; padding: 0; margin: 3px 0; border: 5px solid transparent; }
 .chars-list .char:hover, .chars-list .char.active { border-color: #FFF292; border-radius: 5px; }
-.chars-list .char.active { border-color: #ffec5f; }
-.chars-list .char-icon { vertical-align: middle; width: 80px; }
+.chars-list .char.active, .chars-list .char.beta.active { border-color: #ffec5f; }
+.chars-list .char.beta { border-color: rgba(255, 0, 0, 0.6); }
+.chars-list .char.beta:after { content: 'beta'; display: block; background: rgba(255, 0, 0, 0.6); }
+.chars-list-container .chars-list .char.beta { position: relative; border-radius: 5px; }
+.chars-list-container .chars-list .char.beta:after { position: absolute; bottom: 0; left: 0; right: 0; }
+.char-builder .chars-list .char.beta { position: relative; }
+.char-builder .chars-list .char.beta:after { display: none; content: 'currently in beta'; overflow: hidden; position: absolute; top: 120%; left: -56px; padding: 2px 4px; width: 120px; z-index: 200; border-radius: 5px; text-shadow: none; background: rgba(255, 0, 0, 0.6); font-size: 0.7em; pointer-events: none; }
+.char-builder .chars-list .char.beta:hover:after { display: block; }
+.char-builder .chars-list .char.active.beta:after { display: block; }
+.chars-list .char-icon { vertical-align: middle; width: 70px; }
 
 .char-builder { margin: 0 auto; }
 .forum .char-builder { margin: 0; }
