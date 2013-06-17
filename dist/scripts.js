@@ -1,4 +1,4 @@
-/* Nautsbuilder - Awesomenauts build calculator v0.8.2 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.8.3 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -476,6 +476,22 @@ leiminauts.Skill = Backbone.Model.extend({
 				goldfishEffect.value = goldfishEffect.value*1 + dmg;
 				if (seahorseEffect) {
 					effects.push({key: "Extra Spike With 100 Solar", value: Math.floor(goldfishEffect.value/2)});
+				}
+			}
+		}
+
+		if (this.get('name') == "Evil Eye") {
+			var toothbrush = this.getActiveUpgrade("toothbrush shank");
+			if (toothbrush) {
+				var dmg = _(this.get('baseEffects')).findWhere({key:"damage"}).value.split(' > ');
+				toothbrushVal = toothbrush.get('current_step').get('level') > 0 ? toothbrush.get('current_step').get('attrs') : null;
+				if (toothbrushVal) {
+					var percentToAdd = parseInt(_(toothbrushVal).findWhere({key: "damage"}).value, 10);
+					var newDmg = [];
+					_(dmg).each(function(val) {
+						newDmg.push(((val*1)/100*(percentToAdd*1))+val*1);
+					});
+					effects.findWhere({key: "damage"}).value = newDmg.join(' > ');
 				}
 			}
 		}
