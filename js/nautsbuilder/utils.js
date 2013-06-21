@@ -78,5 +78,9 @@ leiminauts.utils = {
 		if (_(number).isNaN()) return number;
 		decimals = decimals || 2;
 		return number % 1 !== 0 ? number.toFixed(decimals) : number;
+	},
+
+	dps: function(damage, speed) {
+		return leiminauts.utils.number( (parseFloat(speed)/60*parseFloat(damage)).toFixed(2) );
 	}
 };

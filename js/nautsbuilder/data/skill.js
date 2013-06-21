@@ -320,17 +320,24 @@ leiminauts.Skill = Backbone.Model.extend({
 	setDPS: function() {
 		if (!this.get('selected')) return false;
 		if (this.get('name') == "Laser") return false; //dps is set in specifics for the laser
+
 		var effects = _(this.get('effects'));
 		var attackSpeed = effects.findWhere({key: "attack speed"});
 		var damage = effects.findWhere({key: "avg damage"});
 		if (!damage) damage = effects.findWhere({key: "damage"});
 		var dps = effects.findWhere({key: "dps"});
 		if (attackSpeed && damage) {
-			var dpsVal = (parseFloat(attackSpeed.value, 10)/60*parseFloat(damage.value, 10)).toFixed(2);
-			dpsVal = leiminauts.utils.number(dpsVal);
+			dpsVal = leiminauts.utils.dps(damage.value, attackSpeed.value);
 			if (dps) dps.value = dpsVal;
 			else effects.push({key: "DPS", value: dpsVal});
 		}
+
+		// var specificVals = effects.filter(function(e) {
+		// 	return (/.+ damage/i).test(e.key) || (/.+ attack speed/i).test(e.key);
+		// });
+		// if (specificVals.length) {
+			
+		// }
 	},
 
 	getActiveUpgrade: function(name) {
