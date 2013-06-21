@@ -69,9 +69,9 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 
 			var characters, skills, upgrades;
 			if (this.spreadsheet) {
-				leiminauts.characters = this.spreadsheet.sheets('Characters').all();
-				leiminauts.skills = this.spreadsheet.sheets('Skills').all();
-				leiminauts.upgrades = this.spreadsheet.sheets('Upgrades').all();
+				leiminauts.characters = this.spreadsheet.characters;
+				leiminauts.skills = this.spreadsheet.skills;
+				leiminauts.upgrades = this.spreadsheet.upgrades;
 
 				if (!this.console && Modernizr.localstorage) {
 					localStorage.setItem('nautsbuilder.characters', JSON.stringify(leiminauts.characters));

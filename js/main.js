@@ -7,14 +7,19 @@ $(function() {
 	FastClick.attach(document.body);
 });
 ;(function() {
-	var console = window.location.hash.indexOf('console') !== -1;
+	var consolenauts = window.location.hash.indexOf('console') !== -1;
 	var forum = window.location.hash.indexOf('forum') !== -1;
 
+	var dev = window.location.hostname === "localhost";
 	//steam 0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc
-	//console 0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE
-	var spreadsheetKey = "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc";
-	if (console)
+	//dev   0AuPP-DBESPOedGZHb1Ata1hKdFhSRHVzamN0WVUwMWc
+	//conso 0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE
+	var spreadsheetKey = !dev ? "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc" : "0AuPP-DBESPOedGZHb1Ata1hKdFhSRHVzamN0WVUwMWc";
+	var spreadsheetType = !dev ? "steam" : "dev";
+	if (!dev && consolenauts) {
 		spreadsheetKey = "0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE";
+		spreadsheetType = 'conso';
+	}
 
 	MouseTooltip.init({ "3d": true });
 
@@ -23,7 +28,7 @@ $(function() {
 
 	leiminauts.init = function(opts) {
 		opts = opts || {};
-		_.defaults(opts, { el: "#container", spreadsheet: false, console: console, forum: forum });
+		_.defaults(opts, { el: "#container", spreadsheet: false, console: consolenauts, forum: forum });
 		window.nautsbuilder = new leiminauts.App(opts);
 		Backbone.history.start({pushState: false});
 	};
@@ -31,12 +36,10 @@ $(function() {
 	leiminauts.lastDataUpdate = leiminauts.lastDataUpdate || 0;
 	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') ? localStorage.getItem('nautsbuilder.date') : 0;
 
-	if (console || (leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate)) {
-		Tabletop.init({
-			key: spreadsheetKey,
-			callback: function(data, tabletop) {
-				leiminauts.init({ spreadsheet: tabletop, console: console });
-			}
+	var dataUrl = function(type) { return './json/' + spreadsheetType + '-' + type + '.json'; };
+	if (consolenauts || (leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate)) {
+		$.when($.get(dataUrl('characters')), $.get(dataUrl('upgrades')), $.get(dataUrl('skills'))).done(function(chars, ups, sks) {
+			leiminauts.init({ spreadsheet: {characters: chars[0], skills: sks[0], upgrades: ups[0]}, console: consolenauts });
 		});
 	} else {
 		var dataOk = true;
@@ -55,11 +58,8 @@ $(function() {
 			}
 		}
 		if (!Modernizr.localstorage || !dataOk) {
-			Tabletop.init({
-				key: spreadsheetKey,
-				callback: function(data, tabletop) {
-					leiminauts.init({ spreadsheet: tabletop, console: false });
-				}
+			$.when($.get(dataUrl('characters')), $.get(dataUrl('upgrades')), $.get(dataUrl('skills'))).done(function(chars, ups, sks) {
+				leiminauts.init({ spreadsheet: {characters: chars[0], skills: sks[0], upgrades: ups[0]}, console: false });
 			});
 		}
 	}
