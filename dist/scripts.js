@@ -1,4 +1,4 @@
-/* Nautsbuilder - Awesomenauts build calculator v0.8.3 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build calculator v0.8.4 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -82,6 +82,10 @@ leiminauts.utils = {
 		if (_(number).isNaN()) return number;
 		decimals = decimals || 2;
 		return number % 1 !== 0 ? number.toFixed(decimals) : number;
+	},
+
+	dps: function(damage, speed) {
+		return leiminauts.utils.number( (parseFloat(speed)/60*parseFloat(damage)).toFixed(2) );
 	}
 };
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -155,9 +159,9 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 
 			var characters, skills, upgrades;
 			if (this.spreadsheet) {
-				leiminauts.characters = this.spreadsheet.sheets('Characters').all();
-				leiminauts.skills = this.spreadsheet.sheets('Skills').all();
-				leiminauts.upgrades = this.spreadsheet.sheets('Upgrades').all();
+				leiminauts.characters = this.spreadsheet.characters;
+				leiminauts.skills = this.spreadsheet.skills;
+				leiminauts.upgrades = this.spreadsheet.upgrades;
 
 				if (!this.console && Modernizr.localstorage) {
 					localStorage.setItem('nautsbuilder.characters', JSON.stringify(leiminauts.characters));
@@ -500,17 +504,24 @@ leiminauts.Skill = Backbone.Model.extend({
 	setDPS: function() {
 		if (!this.get('selected')) return false;
 		if (this.get('name') == "Laser") return false; //dps is set in specifics for the laser
+
 		var effects = _(this.get('effects'));
 		var attackSpeed = effects.findWhere({key: "attack speed"});
 		var damage = effects.findWhere({key: "avg damage"});
 		if (!damage) damage = effects.findWhere({key: "damage"});
 		var dps = effects.findWhere({key: "dps"});
 		if (attackSpeed && damage) {
-			var dpsVal = (parseFloat(attackSpeed.value, 10)/60*parseFloat(damage.value, 10)).toFixed(2);
-			dpsVal = leiminauts.utils.number(dpsVal);
+			dpsVal = leiminauts.utils.dps(damage.value, attackSpeed.value);
 			if (dps) dps.value = dpsVal;
 			else effects.push({key: "DPS", value: dpsVal});
 		}
+
+		// var specificVals = effects.filter(function(e) {
+		// 	return (/.+ damage/i).test(e.key) || (/.+ attack speed/i).test(e.key);
+		// });
+		// if (specificVals.length) {
+			
+		// }
 	},
 
 	getActiveUpgrade: function(name) {
@@ -915,6 +926,43 @@ leiminauts.OrderView = Backbone.View.extend({
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * copyright (c) 2013, Emmanuel Pelletier
  */
+leiminauts.InfoView = Backbone.View.extend({
+	tagName: 'div',
+
+	className: 'char-info',
+
+	events: {
+		"click .forum-snippet": "focusForumSnippet"
+	},
+
+	initialize: function() {
+		if (this.options.character) {
+			this.character = this.options.character;
+			this.model = this.character.model;
+		}
+		this.template = _.template( $('#info-tpl').html() );
+
+		this.forum = this.options.forum || false;
+
+		this.model.on('change:total_cost', this.render, this);
+	},
+
+	render: function() {
+		var data = this.model.toJSON();
+		data.forum = this.forum;
+		this.$el.html(this.template( data ));
+		return this;
+	},
+
+	focusForumSnippet: function() {
+		this.$('.forum-snippet').select();
+	}
+});
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 leiminauts.SkillView = Backbone.View.extend({
 	tagName: 'div',
 
@@ -1298,14 +1346,19 @@ $(function() {
 	FastClick.attach(document.body);
 });
 ;(function() {
-	var console = window.location.hash.indexOf('console') !== -1;
+	var consolenauts = window.location.hash.indexOf('console') !== -1;
 	var forum = window.location.hash.indexOf('forum') !== -1;
 
+	var dev = window.location.hostname === "localhost";
 	//steam 0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc
-	//console 0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE
-	var spreadsheetKey = "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc";
-	if (console)
+	//dev   0AuPP-DBESPOedGZHb1Ata1hKdFhSRHVzamN0WVUwMWc
+	//conso 0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE
+	var spreadsheetKey = !dev ? "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc" : "0AuPP-DBESPOedGZHb1Ata1hKdFhSRHVzamN0WVUwMWc";
+	var spreadsheetType = !dev ? "steam" : "dev";
+	if (!dev && consolenauts) {
 		spreadsheetKey = "0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE";
+		spreadsheetType = 'conso';
+	}
 
 	MouseTooltip.init({ "3d": true });
 
@@ -1314,7 +1367,7 @@ $(function() {
 
 	leiminauts.init = function(opts) {
 		opts = opts || {};
-		_.defaults(opts, { el: "#container", spreadsheet: false, console: console, forum: forum });
+		_.defaults(opts, { el: "#container", spreadsheet: false, console: consolenauts, forum: forum });
 		window.nautsbuilder = new leiminauts.App(opts);
 		Backbone.history.start({pushState: false});
 	};
@@ -1322,12 +1375,10 @@ $(function() {
 	leiminauts.lastDataUpdate = leiminauts.lastDataUpdate || 0;
 	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') ? localStorage.getItem('nautsbuilder.date') : 0;
 
-	if (console || (leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate)) {
-		Tabletop.init({
-			key: spreadsheetKey,
-			callback: function(data, tabletop) {
-				leiminauts.init({ spreadsheet: tabletop, console: console });
-			}
+	var dataUrl = function(type) { return './json/' + spreadsheetType + '-' + type + '.json'; };
+	if (consolenauts || (leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate)) {
+		$.when($.get(dataUrl('characters')), $.get(dataUrl('upgrades')), $.get(dataUrl('skills'))).done(function(chars, ups, sks) {
+			leiminauts.init({ spreadsheet: {characters: chars[0], skills: sks[0], upgrades: ups[0]}, console: consolenauts });
 		});
 	} else {
 		var dataOk = true;
@@ -1346,11 +1397,8 @@ $(function() {
 			}
 		}
 		if (!Modernizr.localstorage || !dataOk) {
-			Tabletop.init({
-				key: spreadsheetKey,
-				callback: function(data, tabletop) {
-					leiminauts.init({ spreadsheet: tabletop, console: false });
-				}
+			$.when($.get(dataUrl('characters')), $.get(dataUrl('upgrades')), $.get(dataUrl('skills'))).done(function(chars, ups, sks) {
+				leiminauts.init({ spreadsheet: {characters: chars[0], skills: sks[0], upgrades: ups[0]}, console: false });
 			});
 		}
 	}
