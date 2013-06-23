@@ -172,6 +172,8 @@ body, .page-blue body { background-color: #001D2F; background-image: -webkit-gra
 .current-char-skill-icon img { width: 60px; }
 @media only screen and (max-height: 780px) { .current-char-skill-icon img { width: 40px; } }
 
+.current-char-placeholder { height: 100%; max-width: 800px; margin: 0 auto; background: url('../img/awesomenauts.png?1372011278') no-repeat center center; background-size: 100% auto; }
+
 .chars-list { list-style-type: none; margin: 0; padding: 0; }
 .chars-list-container .chars-list { position: fixed; left: 0; right: 0; bottom: 30px; height: 90px; text-align: center; }
 .chars-list .char { display: inline-block; cursor: pointer; padding: 0; margin: 3px 0; border: 5px solid transparent; }

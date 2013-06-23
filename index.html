@@ -67,6 +67,8 @@
 							<p><%= currentChar.get('description') %></p>
 						</div>
 					</div>
+				<% } else { %>
+					<div class="current-char-placeholder"></div>
 				<% } %>
 			</div>
 			<ul class="chars-list">
@@ -212,9 +214,9 @@
 
 		<script>
 			window.leiminauts = window.leiminauts || {};
-			leiminauts.lastDataUpdate = new Date("June 18, 2013 14:00:00 GMT+0200").getTime();
+			leiminauts.lastDataUpdate = new Date("June 22, 2013 12:00:00 GMT+0200").getTime();
 		</script>
-		<script src="js/lib/jquery.min.js"></script>
+		<!--<script src="js/lib/jquery.min.js"></script>
 		<script src="js/lib/underscore.js"></script>
 		<script src="js/lib/backbone.js"></script>
 		<script src="js/lib/tabletop.js"></script>
@@ -234,10 +236,10 @@
 		<script src="js/nautsbuilder/views/skill.js?v=0840"></script>
 		<script src="js/nautsbuilder/views/upgrade.js?v=0840"></script>
 		<script src="js/nautsbuilder/app.js?v=0840"></script>
-		<script src="js/main.js?v=0840"></script>
+		<script src="js/main.js?v=0840"></script>-->
 
-		<!--<script src="dist/libs.min.js"></script>
-		<script src="dist/scripts.min.js"></script>-->
+		<script src="dist/libs.min.js"></script>
+		<script src="dist/scripts.min.js"></script>
 		<script>
 			var _gaq=[['_setAccount','UA-13184829-6'],['_trackPageview']];
 			(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];

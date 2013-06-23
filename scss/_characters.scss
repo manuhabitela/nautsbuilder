@@ -103,6 +103,14 @@
 	}
 }
 
+.current-char-placeholder {
+	height: 100%;
+	max-width: 800px;
+	margin: 0 auto;
+	background: image-url('awesomenauts.png') no-repeat center center;
+	background-size: 100% auto;
+}
+
 .chars-list {
 	.chars-list-container & {
 		position: fixed;
