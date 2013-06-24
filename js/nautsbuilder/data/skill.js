@@ -259,7 +259,8 @@ leiminauts.Skill = Backbone.Model.extend({
 				missilesSequence.pop();
 			avgDmg = _(missilesSequence).reduce(function(memo, num){ return memo + num; }, 0) / missilesSequence.length;
 			effects.findWhere({key: "damage"}).value = missilesSequence.join(' > ');
-			effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
+			if (missilesSequence.length !== 1 && avgDmg !== missilesSequence[0])
+				effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
 		}
 
 		if (this.get('name') == "Bash") {
