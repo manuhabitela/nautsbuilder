@@ -327,10 +327,12 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (this.get('name') == "Laser") return false; //dps is set in specifics for the laser
 
 		var effects = _(this.get('effects'));
+
+		//normal DPS
 		var attackSpeed = effects.findWhere({key: "attack speed"});
 		var damage = effects.findWhere({key: "avg damage"});
 		if (!damage) damage = effects.findWhere({key: "damage"});
-		var dps = effects.findWhere({key: "dps"});
+		var dps = effects.findWhere({key: "DPS"});
 		if (attackSpeed && damage) {
 			dpsVal = leiminauts.utils.dps(damage.value, attackSpeed.value);
 			if (dps) dps.value = dpsVal;
@@ -341,6 +343,13 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 
 		//we look for any bonus dps activated. A "bonus dps" is a couple of effect like "missile damage" and "missile attack speed".
+		//dot DPS
+		var dot = effects.findWhere({key: "damage over time"});
+		var dotDuration = effects.findWhere({key: "damage duration"});
+		if (dot && dotDuration) {
+			effects.push({ key: "DOT DPS", value: leiminauts.utils.number(dot.value/dotDuration.value.replace('s', '')) });
+		}
+
 		var bonusCheck = { "damage": [], "attackSpeed": [] };
 		effects.each(function(e) {
 			var specificDmg = (e.key).match(/(.+) damage/i);
