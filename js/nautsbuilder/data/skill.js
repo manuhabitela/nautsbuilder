@@ -235,6 +235,14 @@ leiminauts.Skill = Backbone.Model.extend({
 		var avgDmg = 0;
 		var dmg = 0;
 
+		if (this.get('name') == "Bolt .45 Fish-gun") {
+			var bonusDmg = effects.findWhere({key: "bonus damage"});
+			if (bonusDmg) {
+				bonusDmgVal = this.bonusDamage(effects.findWhere({key: "damage"}), "bonus damage", effects);
+				bonusDmg.value = bonusDmgVal;
+			}
+		}
+
 		if (this.get('name') == "Missiles") {
 			var missilesSequence = [];
 			var baseDamage = effects.findWhere({key: "damage"}).value;
@@ -401,6 +409,12 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (damage) damage.value = leiminauts.utils.number(damage.value*times) + "&nbsp; ( " + damage.value + "×" + times + " )";
 		if (dps) dps.value = leiminauts.utils.number(dps.value*times) + "&nbsp; ( " + dps.value + "×" + times + " )";
 	},
+
+	bonusDamage: function(baseDmg, effect, effects) {
+		var dmg = baseDmg && baseDmg.value ? baseDmg.value : baseDmg;
+		var eff = effects.findWhere({key: effect});
+		eff = eff ? eff.value : 0;
+		return dmg + eff*1;
 	},
 
 	getActiveUpgrade: function(name) {
