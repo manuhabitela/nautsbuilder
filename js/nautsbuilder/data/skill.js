@@ -385,7 +385,6 @@ leiminauts.Skill = Backbone.Model.extend({
 			}
 		}
 
-		//we look for any bonus dps activated. A "bonus dps" is a couple of effect like "missile damage" and "missile attack speed".
 		//dot DPS
 		var dot = effects.findWhere({key: "damage over time"});
 		var dotDuration = effects.findWhere({key: "damage duration"});
@@ -393,23 +392,40 @@ leiminauts.Skill = Backbone.Model.extend({
 			effects.push({ key: "DOT DPS", value: leiminauts.utils.number(dot.value/dotDuration.value.replace('s', '')) });
 		}
 
-		var bonusCheck = { "damage": [], "attackSpeed": [] };
-		effects.each(function(e) {
-			if (e.key.toLowerCase().indexOf("storm") !== -1) return false;
-			var specificDmg = (e.key).match(/(.+) damage/i);
-			var specificAS = (e.key).match(/(.+) attack speed/i);
-			if (specificDmg) bonusCheck.damage.push(specificDmg[1]);
-			if (specificAS)	bonusCheck.attackSpeed.push(specificAS[1]);
-		});
-		var totalDPS = dps ? +dps.value : 0;
-		var bonus = _.intersection(bonusCheck.damage, bonusCheck.attackSpeed); //in our example, contains "missile"
-		_(bonus).each(function(i) {
-			var itemBonus = {key: i + " DPS", value: leiminauts.utils.dps( effects.findWhere({key: i + " damage"}).value, effects.findWhere({key: i + " attack speed"}).value )};
-			totalDPS += +itemBonus.value;
-			effects.push(itemBonus);
-		});
-		if (bonus.length && dps && totalDPS !== dps.value)
-			effects.push({key: "total DPS", value: leiminauts.utils.number(totalDPS) });
+		if (this.get('type') === "auto") {
+			//"bonus" DPS
+			//we look for any bonus dps activated. A "bonus dps" is generally given from an upgrade of the AA (lonestar missiles, coco conductor, etc)
+			//couple of effects like "missile damage" and "missile attack speed" represents a "bonus dps" that can be calculated
+			//if one part is not detected (ie we have a "missile damage" effect but no "missile attack speed") we take default attack speed and vice versa
+			//"Bonus Damage" or "Avg damage" are usually not calculated
+			var bonusCheck = { "damage": [], "attackSpeed": [] };
+			var deniedBonusWords = ["storm", "bonus", "avg", "turret"];
+			effects.each(function(e) {
+				var denied = false;
+				_(deniedBonusWords).each(function(word) { if (e.key.toLowerCase().indexOf(word) === 0) { denied = true; }});
+				if (denied) return false;
+				var specificDmg = (e.key).match(/(.+) damage/i);
+				var specificAS = (e.key).match(/(.+) attack speed/i);
+				if (specificDmg) bonusCheck.damage.push(specificDmg[1]);
+				if (specificAS)	bonusCheck.attackSpeed.push(specificAS[1]);
+			});
+			var totalDPS = dps ? +dps.value : 0;
+			var bonus = _.union(bonusCheck.damage, bonusCheck.attackSpeed); //in our example, contains "missile"
+			_(bonus).each(function(i) {
+				var dmgEffect;
+				if (effects.findWhere({key: "avg " + i + " damage"}))
+					dmgEffect = effects.findWhere({key: "avg " + i + " damage"});
+				else
+					dmgEffect = effects.findWhere({key: i + " damage"}) ? effects.findWhere({key: i + " damage"}) : effects.findWhere({key: "damage"});
+				var asEffect = effects.findWhere({key: i + " attack speed"}) ? effects.findWhere({key: i + " attack speed"}) : effects.findWhere({key: "attack speed"});
+				console.log(dmgEffect);
+				var itemBonus = {key: i + " DPS", value: leiminauts.utils.dps( dmgEffect.value, asEffect.value )};
+				totalDPS += +itemBonus.value;
+				effects.push(itemBonus);
+			});
+			if (bonus.length && dps && totalDPS !== dps.value && this.get('name') !== 'Slash')
+				effects.push({key: "total DPS", value: leiminauts.utils.number(totalDPS) });
+		}
 	},
 
 	//set specifics effects after DPS calculation
