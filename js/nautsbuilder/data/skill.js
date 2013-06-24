@@ -243,6 +243,27 @@ leiminauts.Skill = Backbone.Model.extend({
 			}
 		}
 
+		if (this.get('name') == "Bubble Gun") {
+			var yakoizaDmg = effects.findWhere({key: "yakoiza damage"});
+			if (yakoizaDmg) {
+				yakoizaDmgVal = this.bonusDamage(effects.findWhere({key: "damage"}), "yakoiza damage", effects);
+				yakoizaDmg.value = yakoizaDmgVal;
+			}
+			var godfishDmg = effects.findWhere({key: "godfish damage"});
+			if (godfishDmg) {
+				godfishDmgVal = this.bonusDamage(effects.findWhere({key: "damage"}), "godfish damage", effects);
+				godfishDmg.value = godfishDmgVal;
+			}
+		}
+
+		if (this.get('name') == "Chain whack") {
+			var blowtorchDmg = effects.findWhere({key: "ion blowtorch damage"});
+			if (blowtorchDmg) {
+				blowtorchDmgVal = this.bonusDamage(effects.findWhere({key: "damage"}), "ion blowtorch damage", effects);
+				blowtorchDmg.value = blowtorchDmgVal;
+			}
+		}
+
 		if (this.get('name') == "Missiles") {
 			var missilesSequence = [];
 			var baseDamage = effects.findWhere({key: "damage"}).value;
@@ -399,7 +420,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			//if one part is not detected (ie we have a "missile damage" effect but no "missile attack speed") we take default attack speed and vice versa
 			//"Bonus Damage" or "Avg damage" are usually not calculated
 			var bonusCheck = { "damage": [], "attackSpeed": [] };
-			var deniedBonusWords = ["storm", "bonus", "avg", "turret"];
+			var deniedBonusWords = ["storm", "bonus", "avg", "turret", "yakoiza"];
 			effects.each(function(e) {
 				var denied = false;
 				_(deniedBonusWords).each(function(word) { if (e.key.toLowerCase().indexOf(word) === 0) { denied = true; }});
@@ -423,7 +444,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				totalDPS += +itemBonus.value;
 				effects.push(itemBonus);
 			});
-			if (bonus.length && dps && totalDPS !== dps.value && this.get('name') !== 'Slash')
+			if (bonus.length && dps && totalDPS !== dps.value && this.get('name') !== 'Slash' && this.get('name') !== 'Bubble Gun')
 				effects.push({key: "total DPS", value: leiminauts.utils.number(totalDPS) });
 		}
 	},
@@ -440,12 +461,16 @@ leiminauts.Skill = Backbone.Model.extend({
 			times = times ? +times.value : 3;
 			this.multiplyDamage(times, effects);
 			effects.splice( effects.indexOf( timess ), 1 );
+
+			this.multiplyDamage(times, effects, "godfish ");
+			this.multiplyDamage(times, effects, "yakoiza ");
 		}
 	},
 
-	multiplyDamage: function(times, effects) {
-		var damage = effects.findWhere({key: "damage"});
-		var dps = effects.findWhere({key: "DPS"});
+	multiplyDamage: function(times, effects, prefix) {
+		prefix = prefix || "";
+		var damage = effects.findWhere({key: prefix + "damage"});
+		var dps = effects.findWhere({key: prefix + "DPS"});
 		// if (damage) damage.value = damage.value + "&nbsp; ( " + leiminauts.utils.number(damage.value*times) + " )";
 		// if (dps) dps.value = dps.value + "&nbsp; ( " + leiminauts.utils.number(dps.value*times) + " )";
 		if (damage) damage.value = leiminauts.utils.number(damage.value*times) + "&nbsp; ( " + damage.value + "×" + times + " )";
