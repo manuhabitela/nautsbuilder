@@ -3,6 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * copyright (c) 2013, Emmanuel Pelletier
  */
+
+/**
+ * THIS is the messy part.
+ */
 leiminauts.Skill = Backbone.Model.extend({
 	initialize: function(attrs, opts) {
 		this.set('upgrades', new leiminauts.Upgrades());
