@@ -204,6 +204,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		}, this);
 		this.setSpecificEffects();
 		this.setDPS();
+		this.setSpecificEffectsTheReturnOfTheRevenge();
 		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
 	},
 
@@ -366,6 +367,34 @@ leiminauts.Skill = Backbone.Model.extend({
 		});
 		if (bonus.length && dps && totalDPS !== dps.value)
 			effects.push({key: "total DPS", value: leiminauts.utils.number(totalDPS) });
+	},
+
+	//set specifics effects after DPS calculation
+	setSpecificEffectsTheReturnOfTheRevenge: function() {
+		if (!this.get('selected')) return false;
+		var effects = _(this.get('effects'));
+		if (this.get('name') == "Butterfly Shot") {
+			this.multiplyDamage(2, effects);
+		}
+		if (this.get('name') == "Bubble Gun") {
+			var times = effects.findWhere({ key: "bullets" });
+			times = times ? +times.value : 3;
+			this.multiplyDamage(times, effects);
+		}
+	},
+
+	// calculateBonusDamage: function(bonus, baseDmg, effects) {
+	// 	if (!base) return bonus;
+	// 	base.
+	// },
+
+	multiplyDamage: function(times, effects) {
+		var damage = effects.findWhere({key: "damage"});
+		var dps = effects.findWhere({key: "DPS"});
+		// if (damage) damage.value = damage.value + "&nbsp; ( " + leiminauts.utils.number(damage.value*times) + " )";
+		// if (dps) dps.value = dps.value + "&nbsp; ( " + leiminauts.utils.number(dps.value*times) + " )";
+		if (damage) damage.value = leiminauts.utils.number(damage.value*times) + "&nbsp; ( " + damage.value + " )";
+		if (dps) dps.value = leiminauts.utils.number(dps.value*times) + "&nbsp; ( " + dps.value + " )";
 	},
 
 	getActiveUpgrade: function(name) {
