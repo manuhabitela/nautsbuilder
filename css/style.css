@@ -217,6 +217,8 @@ html:not(.forum) .char-builder.maxed-out .order { width: 614px; }
 .build-cancel.active { opacity: 1; }
 .build-cancel.active:hover { opacity: 0.9; }
 .char-builder.maxed-out .build-cancel { left: 420px; }
+.char-builder.maxed-out .build-cancel { background-image: url('../img/done.png?1367501993'); }
+.char-builder.maxed-out .build-cancel:hover { background-image: url('../img/cancel.png?1367501974'); }
 
 .char-builder .chars-list { margin-bottom: 20px; text-align: center; }
 .char-builder .chars-list .char { border-width: 1px; margin: 2px 0 2px -4px; }

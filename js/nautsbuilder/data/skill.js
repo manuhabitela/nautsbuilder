@@ -439,7 +439,6 @@ leiminauts.Skill = Backbone.Model.extend({
 				else
 					dmgEffect = effects.findWhere({key: i + " damage"}) ? effects.findWhere({key: i + " damage"}) : effects.findWhere({key: "damage"});
 				var asEffect = effects.findWhere({key: i + " attack speed"}) ? effects.findWhere({key: i + " attack speed"}) : effects.findWhere({key: "attack speed"});
-				console.log(dmgEffect);
 				var itemBonus = {key: i + " DPS", value: leiminauts.utils.dps( dmgEffect.value, asEffect.value )};
 				totalDPS += +itemBonus.value;
 				effects.push(itemBonus);
