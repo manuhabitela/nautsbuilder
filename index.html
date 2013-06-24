@@ -187,7 +187,7 @@
 			if (total_cost > 0) finalEffects.push({key: "Total cost", value: total_cost});
 			_(finalEffects).each(function(effect, i, list) {
 				if (i % 5 == 0) { if (i !== 0) { %></dl><% } %><dl><% } %>
-				<dt class="<%= _(effect.key).underscored().toLowerCase() %>"><span><%= _(effect.key).capitalized() %>:</span></dt>
+				<dt class="<%= _(effect.key).underscored().toLowerCase() %>" <%= effect.key.toLowerCase() === "attack speed" ? 'title="Attacks per minute"' : '' %>><span><%= _(effect.key).capitalized() %>:</span></dt>
 				<dd><%= effect.value %></dd>
 				<% if (list[i+1] == undefined) { %>
 				</dl><% } %>

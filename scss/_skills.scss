@@ -71,6 +71,9 @@
 		display: inline-block;
 		line-height: 21px;
 	}
+	dt[title] {
+		border-bottom: 1px dotted gray;
+	}
 	dd:after {
 		content: '\A';
 		white-space: pre;

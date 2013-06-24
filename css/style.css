@@ -61,7 +61,7 @@ img { border: 0; }
 
 svg:not(:root) { overflow: hidden; }
 
-fieldset { border: 1px solid #c0c0c0; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
+fieldset { border: 1px solid silver; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
 
 legend { border: 0; padding: 0; }
 
@@ -262,6 +262,7 @@ html:not(.forum) .char-builder.maxed-out .char-info { max-width: 170px; }
 .skill-effects dl { margin: 0; display: inline-block; width: 184px; vertical-align: top; }
 .skill-effects dt, .skill-effects dd { display: inline; margin: 0; }
 .skill-effects dt.total_cost span { display: inline-block; line-height: 21px; }
+.skill-effects dt[title] { border-bottom: 1px dotted gray; }
 .skill-effects dd:after { content: '\A'; white-space: pre; }
 
 .skill-wrapper:hover > .skill-effects, .skill-effects:hover { background-color: #1e8fbc; max-height: 600px; overflow: visible; z-index: 50; }
