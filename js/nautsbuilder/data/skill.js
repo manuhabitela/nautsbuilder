@@ -166,7 +166,8 @@ leiminauts.Skill = Backbone.Model.extend({
 		//for leon tong with max damage, our effects var now looks like: { "damage": ["+9", "+9"], "range": ["+2.4"], ...  }
 		//we must combine effects values that looks like numbers so we have "damage": "+18",
 		//without forgetting the possible "+", "-", "%", "/", "s"
-		var effectRegex = /^(\+|-|\/)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
+		//@ is a flag to indicate not to add similar values between them and only take the last one that'll replace others. Yeah, ugly, as usual o/ Used for lonestar missiles attack speed
+		var effectRegex = /^(\+|-|\/|@)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
 		_(effects).each(function(values, key) {
 			var effect = "";
 			var oldEffect = false;
@@ -186,6 +187,8 @@ leiminauts.Skill = Backbone.Model.extend({
 					else if (regexRes[1] && regexRes[1] == "/") {
 						effectNumber = effectNumber/parseFloat(value.substr(1));
 					}
+					else if (regexRes[1] && regexRes[1] == "@")
+						effectNumber = parseFloat(value.substr(1), 10);
 					else
 						effectNumber += parseFloat(value, 10);
 					effectNumber = leiminauts.utils.number(effectNumber);
@@ -225,6 +228,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (!this.get('selected')) return false;
 		var effects = _(this.get('effects'));
 		var avgDmg = 0;
+		var dmg = 0;
 
 		if (this.get('name') == "Missiles") {
 			var missilesSequence = [];
@@ -270,7 +274,8 @@ leiminauts.Skill = Backbone.Model.extend({
 			var attackPerSecond = effects.findWhere({key: "attack speed"}).value/60;
 			var tickPerSecond = effects.findWhere({key: "time to next charge"}).value.replace('s', '')*1;
 			var stepAttackPerSecond = attackPerSecond*tickPerSecond;
-			var dmg = 0; time = 0;
+			var time = 0;
+			dmg = 0;
 			_(steps).each(function(step) {
 				dmg += stepAttackPerSecond*step;
 				time += tickPerSecond;
@@ -281,12 +286,12 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 
 		if (this.get('name') == "Spike Dive") {
-			var dmg = effects.findWhere({key: "damage"}).value;
+			dmg = effects.findWhere({key: "damage"}).value;
 			var seahorse = this.getActiveUpgrade("dead seahorse head");
 			var seahorseEffect = null;
 			if (seahorse) {
 				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "extra spike" }) ), 1 );
-				var seahorseEffect = {key: "Extra Spike", value: dmg/2};
+				seahorseEffect = {key: "Extra Spike", value: dmg/2};
 				effects.push(seahorseEffect);
 			}
 
@@ -303,7 +308,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (this.get('name') == "Evil Eye") {
 			var toothbrush = this.getActiveUpgrade("toothbrush shank");
 			if (toothbrush) {
-				var dmg = _(this.get('baseEffects')).findWhere({key:"damage"}).value.split(' > ');
+				dmg = _(this.get('baseEffects')).findWhere({key:"damage"}).value.split(' > ');
 				toothbrushVal = toothbrush.get('current_step').get('level') > 0 ? toothbrush.get('current_step').get('attrs') : null;
 				if (toothbrushVal) {
 					var percentToAdd = parseInt(_(toothbrushVal).findWhere({key: "damage"}).value, 10);
@@ -329,15 +334,29 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (attackSpeed && damage) {
 			dpsVal = leiminauts.utils.dps(damage.value, attackSpeed.value);
 			if (dps) dps.value = dpsVal;
-			else effects.push({key: "DPS", value: dpsVal});
+			else {
+				dps = {key: "DPS", value: dpsVal};
+				effects.push(dps);
+			}
 		}
 
-		// var specificVals = effects.filter(function(e) {
-		// 	return (/.+ damage/i).test(e.key) || (/.+ attack speed/i).test(e.key);
-		// });
-		// if (specificVals.length) {
-			
-		// }
+		//we look for any bonus dps activated. A "bonus dps" is a couple of effect like "missile damage" and "missile attack speed".
+		var bonusCheck = { "damage": [], "attackSpeed": [] };
+		effects.each(function(e) {
+			var specificDmg = (e.key).match(/(.+) damage/i);
+			var specificAS = (e.key).match(/(.+) attack speed/i);
+			if (specificDmg) bonusCheck.damage.push(specificDmg[1]);
+			if (specificAS)	bonusCheck.attackSpeed.push(specificAS[1]);
+		});
+		var totalDPS = dps ? +dps.value : 0;
+		var bonus = _.intersection(bonusCheck.damage, bonusCheck.attackSpeed); //in our example, contains "missile"
+		_(bonus).each(function(i) {
+			var itemBonus = {key: i + " DPS", value: leiminauts.utils.dps( effects.findWhere({key: i + " damage"}).value, effects.findWhere({key: i + " attack speed"}).value )};
+			totalDPS += +itemBonus.value;
+			effects.push(itemBonus);
+		});
+		if (bonus.length && dps && totalDPS !== dps.value)
+			effects.push({key: "total DPS", value: leiminauts.utils.number(totalDPS) });
 	},
 
 	getActiveUpgrade: function(name) {
