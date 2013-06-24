@@ -88,6 +88,12 @@ html:not(.forum) .char-builder.maxed-out {
 	.char-builder.maxed-out & {
 		left: $skill-compact-width - 10px;
 	}
+	.char-builder.maxed-out & {
+		background-image: image-url("done.png");
+		&:hover {
+			background-image: image-url("cancel.png");
+		}
+	}
 }
 
 .char-builder {
