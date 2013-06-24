@@ -353,6 +353,7 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		var bonusCheck = { "damage": [], "attackSpeed": [] };
 		effects.each(function(e) {
+			if (e.key.toLowerCase().indexOf("storm") !== -1) return false;
 			var specificDmg = (e.key).match(/(.+) damage/i);
 			var specificAS = (e.key).match(/(.+) attack speed/i);
 			if (specificDmg) bonusCheck.damage.push(specificDmg[1]);
