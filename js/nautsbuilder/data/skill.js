@@ -279,6 +279,35 @@ leiminauts.Skill = Backbone.Model.extend({
 			effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
 		}
 
+		if (this.get('name') == "Slash") {
+			var clover = this.getActiveUpgrade("clover of honour");
+			var backstab = this.getActiveUpgrade("backstab blade");
+			var backstabDmg, bsEffect;
+			dmg = effects.findWhere({key: "damage"});
+
+			if (backstab) {
+				backstabDmg = this.bonusDamage(dmg, "backstab damage", effects);
+				bsEffect = effects.findWhere({key: "backstab damage"});
+				if (bsEffect) bsEffect.value = backstabDmg;
+			}
+
+			if (clover) {
+				cloverDmg = this.bonusDamage(dmg, "3rd hit damage", effects);
+				avgDmg = (dmg.value*2+cloverDmg)/3;
+				dmg.value = [dmg.value*1, dmg.value*1, cloverDmg].join(' > ');
+				effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
+
+				if (backstab && bsEffect) {
+					cloverDmgBs = this.bonusDamage(backstabDmg, "3rd hit damage", effects);
+					bsEffect.value = [backstabDmg*1, backstabDmg*1, cloverDmgBs].join(' > ');
+					backstabDmg = (backstabDmg*2+cloverDmgBs)/3;
+					effects.push({key: "avg backstab damage", value: leiminauts.utils.number(backstabDmg)});
+				}
+
+				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "3rd hit damage" }) ), 1 );
+			}
+		}
+
 		//monkey's avg dps and max dps. Avg dps is the dps including all charges but the last one.
 		if (this.get('name') == "Laser") {
 			var minDamage = effects.findWhere({key: "damage"}).value;
