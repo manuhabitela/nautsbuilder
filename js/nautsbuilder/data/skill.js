@@ -391,16 +391,12 @@ leiminauts.Skill = Backbone.Model.extend({
 			this.multiplyDamage(2, effects);
 		}
 		if (this.get('name') == "Bubble Gun") {
-			var times = effects.findWhere({ key: "bullets" });
+			var times, timess = effects.findWhere({ key: "bullets" });
 			times = times ? +times.value : 3;
 			this.multiplyDamage(times, effects);
+			effects.splice( effects.indexOf( timess ), 1 );
 		}
 	},
-
-	// calculateBonusDamage: function(bonus, baseDmg, effects) {
-	// 	if (!base) return bonus;
-	// 	base.
-	// },
 
 	multiplyDamage: function(times, effects) {
 		var damage = effects.findWhere({key: "damage"});
