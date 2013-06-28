@@ -212,10 +212,6 @@
 			</div>
 		</script>
 
-		<script>
-			window.leiminauts = window.leiminauts || {};
-			leiminauts.lastDataUpdate = new Date("June 22, 2013 12:00:00 GMT+0200").getTime();
-		</script>
 		<script src="js/lib/jquery.min.js"></script>
 		<script src="js/lib/underscore.js"></script>
 		<script src="js/lib/backbone.js"></script>
@@ -224,6 +220,8 @@
 		<script src="js/lib/fastclick.js"></script>
 		<script src="js/lib/jquery.sortable.js"></script>
 		<script src="js/nautsbuilder/utils.js?v=0840"></script>
+		<script src="data/last-update.js"></script>
+		<script src="js/nautsbuilder/spreadsheet/last-update.js"></script>
 		<script src="js/nautsbuilder/data/character.js?v=0840"></script>
 		<script src="js/nautsbuilder/data/skill.js?v=0840"></script>
 		<script src="js/nautsbuilder/data/upgrade.js?v=0840"></script>
@@ -237,6 +235,9 @@
 		<script src="js/nautsbuilder/views/upgrade.js?v=0840"></script>
 		<script src="js/nautsbuilder/app.js?v=0840"></script>
 		<script src="js/main.js?v=0840"></script>
+		<!-- ok so this is ugly - be sure to put the update.js script at the very end so that in cases of crash, it doesn't put down the whole app
+		in fact, there is a rare bug with google spreadsheet API that will make Tabletop crash. I can't reproduce and well, can't debug this SO updating data is made at the very end in case the bug occurs -->
+		<script src="js/nautsbuilder/spreadsheet/update.js"></script>
 
 		<!--<script src="dist/libs.min.js"></script>
 		<script src="dist/scripts.min.js"></script>-->

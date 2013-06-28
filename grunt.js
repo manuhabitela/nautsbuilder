@@ -30,6 +30,8 @@ module.exports = function(grunt) {
 				src: [
 					'<banner>',
 					'js/nautsbuilder/utils.js',
+					'data/last-update.js',
+					'js/nautsbuilder/spreadsheet/last-update.js',
 					'js/nautsbuilder/data/character.js',
 					'js/nautsbuilder/data/skill.js',
 					'js/nautsbuilder/data/upgrade.js',
@@ -42,7 +44,8 @@ module.exports = function(grunt) {
 					'js/nautsbuilder/views/skill.js',
 					'js/nautsbuilder/views/upgrade.js',
 					'js/nautsbuilder/app.js',
-					'js/main.js'
+					'js/main.js',
+					'js/nautsbuilder/spreadsheet/update.js'
 				],
 				dest: 'dist/scripts.js'
 			}
