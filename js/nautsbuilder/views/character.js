@@ -27,14 +27,16 @@ leiminauts.CharacterView = Backbone.View.extend({
 
 		this.order.on('changed', function(collection) {
 			this.trigger('order:changed', collection);
+			this.toggleForumTabs();
 		}, this);
 
 		this.order.on('toggled', function() {
 			this.trigger('order:toggled');
+			this.toggleForumTabs();
 		}, this);
 
 		if (this.forum)
-			this.order.collection.on('add remove reset', this.toggleForumTabs, this);
+			this.order.collection.on('all', this.toggleForumTabs, this);
 
 		this.render();
 
@@ -88,6 +90,6 @@ leiminauts.CharacterView = Backbone.View.extend({
 	},
 
 	toggleForumTabs: function() {
-		this.$('.char-forum-switch').toggleClass('forum-hidden', this.order.collection.length);
+		this.$('.char-forum-switch').toggleClass('forum-hidden', !this.order.active);
 	}
 });
