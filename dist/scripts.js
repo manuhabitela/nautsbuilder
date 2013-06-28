@@ -1,8 +1,6 @@
-/* Nautsbuilder - Awesomenauts build calculator v0.8.4 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build maker v0.9.0 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
-* This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
+* This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. *//* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * copyright (c) 2013, Emmanuel Pelletier
@@ -88,6 +86,11 @@ leiminauts.utils = {
 		return leiminauts.utils.number( (parseFloat(speed)/60*parseFloat(damage)).toFixed(2) );
 	}
 };
+window.leiminauts = window.leiminauts || {};
+
+leiminauts.lastServerDataUpdate = 1372443087000; //2013-06-28 20:11:27
+window.leiminauts = window.leiminauts || {};
+leiminauts.lastDataUpdate = new Date("June 28, 2013 20:10:00 GMT+0200").getTime();
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -143,42 +146,29 @@ leiminauts.Character = Backbone.Model.extend({
 /**
  * this is our full "database"
  * we have a characters list > each character has skills > each skills has upgrades
- *
- * you must pass the tabletop object which contains the google spreadsheet with all the data in the options at initialization
  */
 leiminauts.CharactersData = Backbone.Collection.extend({
 	model: leiminauts.Character,
 
 	initialize: function(models, opts) {
-		//treating spreadsheet data:
 		//each character has skills
 		//each skills has upgrades
-		if (opts.spreadsheet !== undefined) {
-			this.spreadsheet = opts.spreadsheet;
+		if (opts.data !== undefined) {
+			this.data = opts.data;
 			this.console = opts.console || false;
 
 			var characters, skills, upgrades;
-			if (this.spreadsheet) {
-				leiminauts.characters = this.spreadsheet.characters;
-				leiminauts.skills = this.spreadsheet.skills;
-				leiminauts.upgrades = this.spreadsheet.upgrades;
+			if (this.data) {
+				leiminauts.characters = this.data.characters;
+				leiminauts.skills = this.data.skills;
+				leiminauts.upgrades = this.data.upgrades;
 
-				if (!this.console && Modernizr.localstorage) {
-					localStorage.setItem('nautsbuilder.characters', JSON.stringify(leiminauts.characters));
-					localStorage.setItem('nautsbuilder.skills', JSON.stringify(leiminauts.skills));
-					localStorage.setItem('nautsbuilder.upgrades', JSON.stringify(leiminauts.upgrades));
-					localStorage.setItem('nautsbuilder.date', new Date().getTime());
-				}
-			} else {
-				leiminauts.characters = JSON.parse(localStorage.getItem('nautsbuilder.characters'));
-				leiminauts.skills = JSON.parse(localStorage.getItem('nautsbuilder.skills'));
-				leiminauts.upgrades = JSON.parse(localStorage.getItem('nautsbuilder.upgrades'));
+				_.each(leiminauts.characters, function(character) {
+					var charSkills = _(leiminauts.skills).where({ character: character.name });
+					character.skills = new leiminauts.Skills(charSkills);
+					this.add(character);
+				}, this);
 			}
-			_.each(leiminauts.characters, function(character) {
-				var charSkills = _(leiminauts.skills).where({ character: character.name });
-				character.skills = new leiminauts.Skills(charSkills);
-				this.add(character);
-			}, this);
 		}
 	}
 });
@@ -186,6 +176,10 @@ leiminauts.CharactersData = Backbone.Collection.extend({
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * copyright (c) 2013, Emmanuel Pelletier
+ */
+
+/**
+ * THIS is the messy part.
  */
 leiminauts.Skill = Backbone.Model.extend({
 	initialize: function(attrs, opts) {
@@ -350,7 +344,8 @@ leiminauts.Skill = Backbone.Model.extend({
 		//for leon tong with max damage, our effects var now looks like: { "damage": ["+9", "+9"], "range": ["+2.4"], ...  }
 		//we must combine effects values that looks like numbers so we have "damage": "+18",
 		//without forgetting the possible "+", "-", "%", "/", "s"
-		var effectRegex = /^(\+|-|\/)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
+		//@ is a flag to indicate not to add similar values between them and only take the last one that'll replace others. Yeah, ugly, as usual o/ Used for lonestar missiles attack speed
+		var effectRegex = /^(\+|-|\/|@)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
 		_(effects).each(function(values, key) {
 			var effect = "";
 			var oldEffect = false;
@@ -370,8 +365,10 @@ leiminauts.Skill = Backbone.Model.extend({
 					else if (regexRes[1] && regexRes[1] == "/") {
 						effectNumber = effectNumber/parseFloat(value.substr(1));
 					}
+					else if (regexRes[1] && regexRes[1] == "@")
+						effectNumber = parseFloat(value.substr(1));
 					else
-						effectNumber += parseFloat(value, 10);
+						effectNumber += parseFloat(value);
 					effectNumber = leiminauts.utils.number(effectNumber);
 					effect = effectNumber;
 					if (regexRes[3] && showUnit) effect += regexRes[3];
@@ -385,6 +382,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		}, this);
 		this.setSpecificEffects();
 		this.setDPS();
+		this.setSpecificEffectsTheReturnOfTheRevenge();
 		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
 	},
 
@@ -409,6 +407,28 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (!this.get('selected')) return false;
 		var effects = _(this.get('effects'));
 		var avgDmg = 0;
+		var dmg = 0;
+
+		var bonusesDmg = [];
+		if (this.get('name') == "Bolt .45 Fish-gun") {
+			bonusesDmg.push('bonus damage');
+		}
+
+		if (this.get('name') == "Bubble Gun") {
+			bonusesDmg.push('yakoiza damage', 'godfish damage');
+		}
+
+		if (this.get('name') == "Chain whack") {
+			bonusesDmg.push('ion blowtorch damage');
+		}
+
+		_(bonusesDmg).each(function(bonus) {
+			var bonusDmg = effects.findWhere({key: bonus});
+			if (bonusDmg) {
+				bonusDmgVal = this.bonusDamage(effects.findWhere({key: "damage"}), bonus, effects);
+				bonusDmg.value = bonusDmgVal;
+			}
+		}, this);
 
 		if (this.get('name') == "Missiles") {
 			var missilesSequence = [];
@@ -426,7 +446,8 @@ leiminauts.Skill = Backbone.Model.extend({
 				missilesSequence.pop();
 			avgDmg = _(missilesSequence).reduce(function(memo, num){ return memo + num; }, 0) / missilesSequence.length;
 			effects.findWhere({key: "damage"}).value = missilesSequence.join(' > ');
-			effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
+			if (missilesSequence.length !== 1 && avgDmg !== missilesSequence[0])
+				effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
 		}
 
 		if (this.get('name') == "Bash") {
@@ -445,6 +466,35 @@ leiminauts.Skill = Backbone.Model.extend({
 			effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
 		}
 
+		if (this.get('name') == "Slash") {
+			var clover = this.getActiveUpgrade("clover of honour");
+			var backstab = this.getActiveUpgrade("backstab blade");
+			var backstabDmg, bsEffect;
+			dmg = effects.findWhere({key: "damage"});
+
+			if (backstab) {
+				backstabDmg = this.bonusDamage(dmg, "backstab damage", effects);
+				bsEffect = effects.findWhere({key: "backstab damage"});
+				if (bsEffect) bsEffect.value = backstabDmg;
+			}
+
+			if (clover) {
+				cloverDmg = this.bonusDamage(dmg, "3rd hit damage", effects);
+				avgDmg = (dmg.value*2+cloverDmg)/3;
+				dmg.value = [dmg.value*1, dmg.value*1, cloverDmg].join(' > ');
+				effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
+
+				if (backstab && bsEffect) {
+					cloverDmgBs = this.bonusDamage(backstabDmg, "3rd hit damage", effects);
+					bsEffect.value = [backstabDmg*1, backstabDmg*1, cloverDmgBs].join(' > ');
+					backstabDmg = (backstabDmg*2+cloverDmgBs)/3;
+					effects.push({key: "avg backstab damage", value: leiminauts.utils.number(backstabDmg)});
+				}
+
+				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "3rd hit damage" }) ), 1 );
+			}
+		}
+
 		//monkey's avg dps and max dps. Avg dps is the dps including all charges but the last one.
 		if (this.get('name') == "Laser") {
 			var minDamage = effects.findWhere({key: "damage"}).value;
@@ -454,7 +504,8 @@ leiminauts.Skill = Backbone.Model.extend({
 			var attackPerSecond = effects.findWhere({key: "attack speed"}).value/60;
 			var tickPerSecond = effects.findWhere({key: "time to next charge"}).value.replace('s', '')*1;
 			var stepAttackPerSecond = attackPerSecond*tickPerSecond;
-			var dmg = 0; time = 0;
+			var time = 0;
+			dmg = 0;
 			_(steps).each(function(step) {
 				dmg += stepAttackPerSecond*step;
 				time += tickPerSecond;
@@ -465,21 +516,21 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 
 		if (this.get('name') == "Spike Dive") {
-			var dmg = effects.findWhere({key: "damage"}).value;
+			dmg = effects.findWhere({key: "damage"}).value;
 			var seahorse = this.getActiveUpgrade("dead seahorse head");
 			var seahorseEffect = null;
 			if (seahorse) {
 				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "extra spike" }) ), 1 );
-				var seahorseEffect = {key: "Extra Spike", value: dmg/2};
+				seahorseEffect = {key: "Extra Spike", value: dmg/2};
 				effects.push(seahorseEffect);
 			}
 
 			var goldfish = this.getActiveUpgrade("bag full of gold fish");
-			var goldfishEffect = effects.findWhere({key: "damage with 100 solar"});
+			var goldfishEffect = effects.findWhere({key: "damage with 150 solar"});
 			if (goldfish && goldfishEffect) {
 				goldfishEffect.value = goldfishEffect.value*1 + dmg;
 				if (seahorseEffect) {
-					effects.push({key: "Extra Spike With 100 Solar", value: Math.floor(goldfishEffect.value/2)});
+					effects.push({key: "Extra Spike With 150 Solar", value: Math.floor(goldfishEffect.value/2)});
 				}
 			}
 		}
@@ -487,7 +538,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (this.get('name') == "Evil Eye") {
 			var toothbrush = this.getActiveUpgrade("toothbrush shank");
 			if (toothbrush) {
-				var dmg = _(this.get('baseEffects')).findWhere({key:"damage"}).value.split(' > ');
+				dmg = _(this.get('baseEffects')).findWhere({key:"damage"}).value.split(' > ');
 				toothbrushVal = toothbrush.get('current_step').get('level') > 0 ? toothbrush.get('current_step').get('attrs') : null;
 				if (toothbrushVal) {
 					var percentToAdd = parseInt(_(toothbrushVal).findWhere({key: "damage"}).value, 10);
@@ -506,22 +557,96 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (this.get('name') == "Laser") return false; //dps is set in specifics for the laser
 
 		var effects = _(this.get('effects'));
+
+		//normal DPS
 		var attackSpeed = effects.findWhere({key: "attack speed"});
 		var damage = effects.findWhere({key: "avg damage"});
 		if (!damage) damage = effects.findWhere({key: "damage"});
-		var dps = effects.findWhere({key: "dps"});
+		var dps = effects.findWhere({key: "DPS"});
 		if (attackSpeed && damage) {
 			dpsVal = leiminauts.utils.dps(damage.value, attackSpeed.value);
 			if (dps) dps.value = dpsVal;
-			else effects.push({key: "DPS", value: dpsVal});
+			else {
+				dps = {key: "DPS", value: dpsVal};
+				effects.push(dps);
+			}
 		}
 
-		// var specificVals = effects.filter(function(e) {
-		// 	return (/.+ damage/i).test(e.key) || (/.+ attack speed/i).test(e.key);
-		// });
-		// if (specificVals.length) {
-			
-		// }
+		//dot DPS
+		var dot = effects.findWhere({key: "damage over time"});
+		var dotDuration = effects.findWhere({key: "damage duration"});
+		if (dot && dotDuration) {
+			effects.push({ key: "DOT DPS", value: leiminauts.utils.number(dot.value/dotDuration.value.replace('s', '')) });
+		}
+
+		if (this.get('type') === "auto") {
+			//"bonus" DPS
+			//we look for any bonus dps activated. A "bonus dps" is generally given from an upgrade of the AA (lonestar missiles, coco conductor, etc)
+			//couple of effects like "missile damage" and "missile attack speed" represents a "bonus dps" that can be calculated
+			//if one part is not detected (ie we have a "missile damage" effect but no "missile attack speed") we take default attack speed and vice versa
+			//"Bonus Damage" or "Avg damage" are usually not calculated
+			var bonusCheck = { "damage": [], "attackSpeed": [] };
+			var deniedBonusWords = ["storm", "bonus", "avg", "turret", "yakoiza"];
+			effects.each(function(e) {
+				var denied = false;
+				_(deniedBonusWords).each(function(word) { if (e.key.toLowerCase().indexOf(word) === 0) { denied = true; }});
+				if (denied) return false;
+				var specificDmg = (e.key).match(/(.+) damage/i);
+				var specificAS = (e.key).match(/(.+) attack speed/i);
+				if (specificDmg) bonusCheck.damage.push(specificDmg[1]);
+				if (specificAS)	bonusCheck.attackSpeed.push(specificAS[1]);
+			});
+			var totalDPS = dps ? +dps.value : 0;
+			var bonus = _.union(bonusCheck.damage, bonusCheck.attackSpeed); //in our example, contains "missile"
+			_(bonus).each(function(i) {
+				var dmgEffect;
+				if (effects.findWhere({key: "avg " + i + " damage"}))
+					dmgEffect = effects.findWhere({key: "avg " + i + " damage"});
+				else
+					dmgEffect = effects.findWhere({key: i + " damage"}) ? effects.findWhere({key: i + " damage"}) : effects.findWhere({key: "damage"});
+				var asEffect = effects.findWhere({key: i + " attack speed"}) ? effects.findWhere({key: i + " attack speed"}) : effects.findWhere({key: "attack speed"});
+				var itemBonus = {key: i + " DPS", value: leiminauts.utils.dps( dmgEffect.value, asEffect.value )};
+				totalDPS += +itemBonus.value;
+				effects.push(itemBonus);
+			});
+			if (bonus.length && dps && totalDPS !== dps.value && this.get('name') !== 'Slash' && this.get('name') !== 'Bubble Gun')
+				effects.push({key: "total DPS", value: leiminauts.utils.number(totalDPS) });
+		}
+	},
+
+	//set specifics effects after DPS calculation
+	setSpecificEffectsTheReturnOfTheRevenge: function() {
+		if (!this.get('selected')) return false;
+		var effects = _(this.get('effects'));
+		if (this.get('name') == "Butterfly Shot") {
+			this.multiplyDamage(2, effects);
+		}
+		if (this.get('name') == "Bubble Gun") {
+			var times, timess = effects.findWhere({ key: "bullets" });
+			times = times ? +times.value : 3;
+			this.multiplyDamage(times, effects);
+			effects.splice( effects.indexOf( timess ), 1 );
+
+			this.multiplyDamage(times, effects, "godfish ");
+			this.multiplyDamage(times, effects, "yakoiza ");
+		}
+	},
+
+	multiplyDamage: function(times, effects, prefix) {
+		prefix = prefix || "";
+		var damage = effects.findWhere({key: prefix + "damage"});
+		var dps = effects.findWhere({key: prefix + "DPS"});
+		// if (damage) damage.value = damage.value + "&nbsp; ( " + leiminauts.utils.number(damage.value*times) + " )";
+		// if (dps) dps.value = dps.value + "&nbsp; ( " + leiminauts.utils.number(dps.value*times) + " )";
+		if (damage) damage.value = leiminauts.utils.number(damage.value*times) + "&nbsp; ( " + damage.value + "×" + times + " )";
+		if (dps) dps.value = leiminauts.utils.number(dps.value*times) + "&nbsp; ( " + dps.value + "×" + times + " )";
+	},
+
+	bonusDamage: function(baseDmg, effect, effects) {
+		var dmg = baseDmg && baseDmg.value ? baseDmg.value : baseDmg;
+		var eff = effects.findWhere({key: effect});
+		eff = eff ? eff.value : 0;
+		return dmg + eff*1;
 	},
 
 	getActiveUpgrade: function(name) {
@@ -565,6 +690,8 @@ leiminauts.Upgrade = Backbone.Model.extend({
 
 	setStep: function(number) {
 		number = parseInt(number, 10);
+		if (number > this.get('max_step')) number = this.get('max_step');
+		if (number < 0) number = 0;
 		var currentStep = this.get('steps').findWhere({level: number});
 		this.set('current_step', currentStep);
 		this.set('active', currentStep.get('level') > 0);
@@ -586,10 +713,16 @@ leiminauts.Step = Backbone.Model.extend({
 	},
 
 	initialize: function() {
-		this.set('attrs', leiminauts.utils.treatEffects(this.get('description')));
 		//description is a string showing the list of effects the step gives. Ex: "crit chance: +15%; crit damage: +10"
 		//so each attribute is separated by a ";"
 		//and attribute name and value are separated by a ":"
+		this.set('attrs', leiminauts.utils.treatEffects(this.get('description')));
+
+		this.updateDescription();
+	},
+
+	updateDescription: function() {
+		this.set('description', this.get('description').replace(': @', ': '));
 	}
 });
 
@@ -621,6 +754,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 		this.mouseOverTimeout = null;
 
 		this.$el.on('mouseover', '.char', _.bind(_.debounce(this.showCharInfo, 50), this));
+		this.$el.on('click', '.current-char', _.bind(this.reset, this));
 	},
 
 	render: function() {
@@ -639,6 +773,11 @@ leiminauts.CharactersView = Backbone.View.extend({
 			this.currentChar = this.collection.findWhere({name: character});
 			this.render();
 		}
+	},
+
+	reset: function(e) {
+		this.currentChar = null;
+		this.render();
 	}
 });
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -670,11 +809,16 @@ leiminauts.CharacterView = Backbone.View.extend({
 
 		this.order.on('changed', function(collection) {
 			this.trigger('order:changed', collection);
+			this.toggleForumTabs();
 		}, this);
 
 		this.order.on('toggled', function() {
 			this.trigger('order:toggled');
+			this.toggleForumTabs();
 		}, this);
+
+		if (this.forum)
+			this.order.collection.on('all', this.toggleForumTabs, this);
 
 		this.render();
 
@@ -725,6 +869,10 @@ leiminauts.CharacterView = Backbone.View.extend({
 			this.$('.char-forum-switch button[data-item="' + forcedClass + '"]').addClass('switch-active');
 		this.$('.build').toggleClass('forum-hidden', itemClass != 'build');
 		this.$('.order').toggleClass('forum-hidden', itemClass != 'order');
+	},
+
+	toggleForumTabs: function() {
+		this.$('.char-forum-switch').toggleClass('forum-hidden', !this.order.active);
 	}
 });
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -1115,8 +1263,8 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	initialize: function(options) {
-		if (options.spreadsheet !== undefined) {
-			this.data = new leiminauts.CharactersData(null, { spreadsheet: options.spreadsheet, console: options.console });
+		if (options.data !== undefined) {
+			this.data = new leiminauts.CharactersData(null, { data: options.data, console: options.console });
 			this.data.on('selected', function(naut) {
 				this.navigate(naut, { trigger: true });
 			}, this);
@@ -1224,7 +1372,7 @@ leiminauts.App = Backbone.Router.extend({
 		var currentUrl = this.getCurrentUrl();
 		var urlParts = currentUrl.split('/');
 		var build = urlParts.length > 1 ? urlParts[1] : null;
-		var order = urlParts.length > 2 ? urlParts[2] : null;
+		var order = urlParts.length > 2 && !_(['forum', 'console']).contains(urlParts[2]) ? urlParts[2] : null;
 		if (build === null) {
 			character.reset();
 			return false;
@@ -1342,50 +1490,73 @@ leiminauts.App = Backbone.Router.extend({
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * copyright (c) 2013, Emmanuel Pelletier
  */
+
+/**
+ * loading necessary libs
+ */
 $(function() {
 	FastClick.attach(document.body);
-});
-;(function() {
-	var consolenauts = window.location.hash.indexOf('console') !== -1;
-	var forum = window.location.hash.indexOf('forum') !== -1;
-
-	var dev = window.location.hostname === "localhost";
-	//steam 0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc
-	//dev   0AuPP-DBESPOedGZHb1Ata1hKdFhSRHVzamN0WVUwMWc
-	//conso 0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE
-	var spreadsheetKey = !dev ? "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc" : "0AuPP-DBESPOedGZHb1Ata1hKdFhSRHVzamN0WVUwMWc";
-	var spreadsheetType = !dev ? "steam" : "dev";
-	if (!dev && consolenauts) {
-		spreadsheetKey = "0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE";
-		spreadsheetType = 'conso';
-	}
-
 	MouseTooltip.init({ "3d": true });
-
 	//small "hack" to set the page to red background directly if we're on root
 	$('html').toggleClass('page-red', !window.location.hash.length);
+});
+
+/**
+ * initialize Nautsbuilder
+ */
+;(function() {
+	var forum = window.location.hash.indexOf('forum') !== -1;
+
+	var consolenauts = window.location.hash.indexOf('console') !== -1;
+	var dev = window.location.hostname === "localhost";
+	leiminauts.sheets = [
+		{ name: "steam", key: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc" },
+		//dev spreadsheet: 0AuPP-DBESPOedGZHb1Ata1hKdFhSRHVzamN0WVUwMWc
+		//here putting steam spreadsheet in the dev sheet to load steam server data when on dev instead of localstorage
+		{ name: "dev", key: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc" },
+		{ name: "conso", key: "0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE" }
+	];
+	var spreadsheet = _(leiminauts.sheets).findWhere({ name: (dev ? "dev" : (consolenauts ? "conso" : "steam") ) });
+	leiminauts.spreadsheet = spreadsheet;
 
 	leiminauts.init = function(opts) {
 		opts = opts || {};
-		_.defaults(opts, { el: "#container", spreadsheet: false, console: consolenauts, forum: forum });
+		_.defaults(opts, { el: "#container", data: false, console: consolenauts, forum: forum });
 		window.nautsbuilder = new leiminauts.App(opts);
 		Backbone.history.start({pushState: false});
 	};
-
-	leiminauts.lastDataUpdate = leiminauts.lastDataUpdate || 0;
-	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.date') ? localStorage.getItem('nautsbuilder.date') : 0;
-
-	var dataUrl = function(type) { return './json/' + spreadsheetType + '-' + type + '.json'; };
-	if (consolenauts || (leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate)) {
-		$.when($.get(dataUrl('characters')), $.get(dataUrl('upgrades')), $.get(dataUrl('skills'))).done(function(chars, ups, sks) {
-			leiminauts.init({ spreadsheet: {characters: chars[0], skills: sks[0], upgrades: ups[0]}, console: consolenauts });
+	var dataUrl = function(type) { return './data/' + spreadsheet.name + '-' + type + '.json'; };
+	var loadData = function() {
+		$.when(
+			$.ajax({url: dataUrl('characters'), dataType: "json"}),
+			$.ajax({url: dataUrl('upgrades'), dataType: "json"}),
+			$.ajax({url: dataUrl('skills'), dataType: "json"})
+		).done(function(chars, ups, sks) {
+			var data = { characters: chars[0], skills: sks[0], upgrades: ups[0] };
+			if (Modernizr.localstorage && !dev) {
+				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.characters', JSON.stringify(data.characters));
+				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.skills', JSON.stringify(data.skills));
+				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.upgrades', JSON.stringify(data.upgrades));
+				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.date', new Date().getTime());
+			}
+			leiminauts.init({ data: data });
 		});
+	};
+
+	//Here we define what data to load - steam, dev, console? and from where - localStorage, server?
+	leiminauts.lastDataUpdate = leiminauts.lastDataUpdate || 0;
+	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.date') ?
+		localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.date') :
+		0;
+
+	if (dev || leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate) {
+		loadData();
 	} else {
 		var dataOk = true;
 		if (Modernizr.localstorage) {
-			var characters = localStorage.getItem('nautsbuilder.characters');
-			var skills = localStorage.getItem('nautsbuilder.skills');
-			var upgrades = localStorage.getItem('nautsbuilder.upgrades');
+			var characters = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.characters');
+			var skills = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.skills');
+			var upgrades = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.upgrades');
 			_([characters, skills, upgrades]).each(function(data) {
 				if (!data || data === "undefined") {
 					dataOk = false;
@@ -1393,13 +1564,55 @@ $(function() {
 				}
 			});
 			if (dataOk) {
-				leiminauts.init({});
+				var data = {};
+				data.characters = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.characters'));
+				data.skills = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.skills'));
+				data.upgrades = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.upgrades'));
+
+				leiminauts.init({ data: data });
 			}
 		}
 		if (!Modernizr.localstorage || !dataOk) {
-			$.when($.get(dataUrl('characters')), $.get(dataUrl('upgrades')), $.get(dataUrl('skills'))).done(function(chars, ups, sks) {
-				leiminauts.init({ spreadsheet: {characters: chars[0], skills: sks[0], upgrades: ups[0]}, console: false });
-			});
+			loadData();
 		}
 	}
 }());
+;(function() {
+	//we update server data if it's obsolete or here since more than 7 days
+	var update = leiminauts.lastServerDataUpdate < leiminauts.lastDataUpdate;
+	if (!update)
+		update = (new Date().getTime() - leiminauts.lastServerDataUpdate) > (1000*60*60*24*7);
+	if (update) {
+		var sheets = {
+			steam: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc",
+			dev  : "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc",
+			conso: "0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE"
+		};
+
+		var sheetsKey = _(sheets).keys();
+		for (var i = sheetsKey.length - 1; i >= 0; i--) {
+			var sheet = sheetsKey[i];
+			(function(sheet) {
+				Tabletop.init({
+					key: sheets[sheet],
+					debug: true,
+					callback: function(dataz, tabletop) {
+						var characters = JSON.stringify(tabletop.sheets('Characters').all());
+						var skills = JSON.stringify(tabletop.sheets('Skills').all());
+						var upgrades = JSON.stringify(tabletop.sheets('Upgrades').all());
+						var data = {sheet: sheet, characters: characters, skills: skills, upgrades: upgrades};
+						$.ajax({
+							type: 'POST',
+							url: '../../../data/update.php',
+							data: data
+						});
+						if (Modernizr.localstorage)
+							localStorage.removeItem('nautsbuilder.' + sheet + '.date');
+					}
+				});
+			})(sheet);
+		}
+
+
+	}
+})();

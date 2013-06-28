@@ -61,7 +61,7 @@ img { border: 0; }
 
 svg:not(:root) { overflow: hidden; }
 
-fieldset { border: 1px solid silver; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
+fieldset { border: 1px solid #c0c0c0; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
 
 legend { border: 0; padding: 0; }
 
@@ -105,9 +105,9 @@ body, .page-blue body { background-color: #001D2F; background-image: -webkit-gra
 
 .zinvisible { visibility: hidden; }
 
-.clearfix:before, .current-char:before, .current-char-skill:before, .char-info:before, .forum .forum-info:before, .clearfix:after, .current-char:after, .current-char-skill:after, .char-info:after, .forum .forum-info:after { content: " "; display: table; }
-.clearfix:after, .current-char:after, .current-char-skill:after, .char-info:after, .forum .forum-info:after { clear: both; }
-.clearfix, .current-char, .current-char-skill, .char-info, .forum .forum-info { *zoom: 1; }
+.clearfix:before, .current-char:before, .current-char-skill:before, .char-builder:before, .char-info:before, .forum .forum-info:before, .clearfix:after, .current-char:after, .current-char-skill:after, .char-builder:after, .char-info:after, .forum .forum-info:after { content: " "; display: table; }
+.clearfix:after, .current-char:after, .current-char-skill:after, .char-builder:after, .char-info:after, .forum .forum-info:after { clear: both; }
+.clearfix, .current-char, .current-char-skill, .char-builder, .char-info, .forum .forum-info { *zoom: 1; }
 
 @media only screen and (max-width: 640px) { .no-small { display: none !important; visibility: hidden; } }
 
@@ -172,7 +172,7 @@ body, .page-blue body { background-color: #001D2F; background-image: -webkit-gra
 .current-char-skill-icon img { width: 60px; }
 @media only screen and (max-height: 780px) { .current-char-skill-icon img { width: 40px; } }
 
-.current-char-placeholder { height: 100%; max-width: 800px; margin: 0 auto; background: url('../img/awesomenauts.png?1372011278') no-repeat center center; background-size: 100% auto; }
+.current-char-placeholder { height: 100%; max-width: 667px; margin: 0 auto; background: url('../img/nautsbuilder.png?1372168425') no-repeat center center; background-size: 100% auto; }
 
 .chars-list { list-style-type: none; margin: 0; padding: 0; }
 .chars-list-container .chars-list { position: fixed; left: 0; right: 0; bottom: 30px; height: 90px; text-align: center; }
@@ -230,7 +230,7 @@ html:not(.forum) .char-builder.maxed-out .order { width: 614px; }
 html:not(.forum) .char-builder.maxed-out .char-info { max-width: 170px; }
 .char-info .info { font-size: 1em; }
 .forum .char-info { margin: 0; padding: 0; display: block; float: right; }
-.forum .char-info > p { display: inline-block; margin: 0; }
+.forum .char-info > p { display: inline-block; margin: 0; padding: 2px 4px; }
 .forum .char-info > p.char-total-cost { margin-right: 15px; }
 
 .char-info, .order { display: inline-block; vertical-align: top; }
@@ -244,7 +244,7 @@ html:not(.forum) .char-builder.maxed-out .char-info { max-width: 170px; }
 
 .forum-snippet { width: 100%; border: 0; resize: none; background: transparent; background: rgba(255, 255, 255, 0.2); font-family: verdana; font-size: small; }
 
-.forum .website-url { display: block; float: left; margin: 0; cursor: pointer; color: #222; }
+.forum .website-url { display: block; float: left; margin: 0; cursor: pointer; color: #222; padding: 2px 4px; }
 .forum .website-url:hover { text-decoration: none; }
 
 .forum .forum-info, .forum .char-info { margin: 5px 0; }
