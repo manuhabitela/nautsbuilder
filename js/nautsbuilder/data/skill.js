@@ -352,11 +352,11 @@ leiminauts.Skill = Backbone.Model.extend({
 			}
 
 			var goldfish = this.getActiveUpgrade("bag full of gold fish");
-			var goldfishEffect = effects.findWhere({key: "damage with 100 solar"});
+			var goldfishEffect = effects.findWhere({key: "damage with 150 solar"});
 			if (goldfish && goldfishEffect) {
 				goldfishEffect.value = goldfishEffect.value*1 + dmg;
 				if (seahorseEffect) {
-					effects.push({key: "Extra Spike With 100 Solar", value: Math.floor(goldfishEffect.value/2)});
+					effects.push({key: "Extra Spike With 150 Solar", value: Math.floor(goldfishEffect.value/2)});
 				}
 			}
 		}
