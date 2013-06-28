@@ -1,15 +1,12 @@
-var nautsbuilder = {
-	"name": "Nautsbuilder - Awesomenauts build calculator",
-	"version": "0.8.4"
-};
-
 module.exports = function(grunt) {
-	grunt.loadNpmTasks('grunt-contrib-mincss');
+	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-cssmin');
 
 	grunt.initConfig({
-		pkg: nautsbuilder,
+		pkg: grunt.file.readJSON('package.json'),
 		meta: {
-			banner: "/* <%= pkg.name %> v<%= pkg.version %> - https://github.com/Leimi/awesomenauts-build-maker\n" +
+			banner: "/* <%= pkg.title %> v<%= pkg.version %> - https://github.com/Leimi/awesomenauts-build-maker\n" +
 			"* Copyright (c) <%= grunt.template.today('yyyy') %> Emmanuel Pelletier\n" +
 			"* This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */"
 		},
@@ -27,8 +24,10 @@ module.exports = function(grunt) {
 				dest: 'dist/libs.js'
 			},
 			app: {
+				options: {
+					banner: "<%= meta.banner %>"
+				},
 				src: [
-					'<banner>',
 					'js/nautsbuilder/utils.js',
 					'data/last-update.js',
 					'js/nautsbuilder/spreadsheet/last-update.js',
@@ -50,17 +49,22 @@ module.exports = function(grunt) {
 				dest: 'dist/scripts.js'
 			}
 		},
-		min: {
+		uglify: {
 			libs: {
-				src: ['dist/libs.js'],
-				dest: 'dist/libs.min.js'
+				files: {
+					'dist/libs.min.js': ['dist/libs.js']
+				}
 			},
 			app: {
-				src: ['<banner>', 'dist/scripts.js'],
-				dest: 'dist/scripts.min.js'
+				options: {
+					banner: "<%= meta.banner %>"
+				},
+				files: {
+					'dist/scripts.min.js': 'dist/scripts.js'
+				}
 			}
 		},
-		mincss: {
+		cssmin: {
 			dist: {
 				files: {
 					'dist/styles.min.css': ['css/style.css']
@@ -68,5 +72,5 @@ module.exports = function(grunt) {
 			}
 		}
 	});
-	grunt.registerTask('default', 'concat min mincss');
+	grunt.registerTask('default', ['concat', 'uglify', 'cssmin']);
 };
