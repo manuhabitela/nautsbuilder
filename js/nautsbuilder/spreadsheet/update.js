@@ -6,7 +6,7 @@
 	if (update) {
 		var sheets = {
 			steam: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc",
-			dev  : "0AuPP-DBESPOedGZHb1Ata1hKdFhSRHVzamN0WVUwMWc",
+			dev  : "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc",
 			conso: "0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE"
 		};
 

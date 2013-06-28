@@ -24,7 +24,9 @@ $(function() {
 	var dev = window.location.hostname === "localhost";
 	leiminauts.sheets = [
 		{ name: "steam", key: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc" },
-		{ name: "dev", key: "0AuPP-DBESPOedGZHb1Ata1hKdFhSRHVzamN0WVUwMWc" },
+		//dev spreadsheet: 0AuPP-DBESPOedGZHb1Ata1hKdFhSRHVzamN0WVUwMWc
+		//here putting steam spreadsheet in the dev sheet to load steam server data when on dev instead of localstorage
+		{ name: "dev", key: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc" },
 		{ name: "conso", key: "0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE" }
 	];
 	var spreadsheet = _(leiminauts.sheets).findWhere({ name: (dev ? "dev" : (consolenauts ? "conso" : "steam") ) });
