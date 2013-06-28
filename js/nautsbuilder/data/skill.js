@@ -192,9 +192,9 @@ leiminauts.Skill = Backbone.Model.extend({
 						effectNumber = effectNumber/parseFloat(value.substr(1));
 					}
 					else if (regexRes[1] && regexRes[1] == "@")
-						effectNumber = parseFloat(value.substr(1), 10);
+						effectNumber = parseFloat(value.substr(1));
 					else
-						effectNumber += parseFloat(value, 10);
+						effectNumber += parseFloat(value);
 					effectNumber = leiminauts.utils.number(effectNumber);
 					effect = effectNumber;
 					if (regexRes[3] && showUnit) effect += regexRes[3];
@@ -235,34 +235,26 @@ leiminauts.Skill = Backbone.Model.extend({
 		var avgDmg = 0;
 		var dmg = 0;
 
+		var bonusesDmg = [];
 		if (this.get('name') == "Bolt .45 Fish-gun") {
-			var bonusDmg = effects.findWhere({key: "bonus damage"});
-			if (bonusDmg) {
-				bonusDmgVal = this.bonusDamage(effects.findWhere({key: "damage"}), "bonus damage", effects);
-				bonusDmg.value = bonusDmgVal;
-			}
+			bonusesDmg.push('bonus damage');
 		}
 
 		if (this.get('name') == "Bubble Gun") {
-			var yakoizaDmg = effects.findWhere({key: "yakoiza damage"});
-			if (yakoizaDmg) {
-				yakoizaDmgVal = this.bonusDamage(effects.findWhere({key: "damage"}), "yakoiza damage", effects);
-				yakoizaDmg.value = yakoizaDmgVal;
-			}
-			var godfishDmg = effects.findWhere({key: "godfish damage"});
-			if (godfishDmg) {
-				godfishDmgVal = this.bonusDamage(effects.findWhere({key: "damage"}), "godfish damage", effects);
-				godfishDmg.value = godfishDmgVal;
-			}
+			bonusesDmg.push('yakoiza damage', 'godfish damage');
 		}
 
 		if (this.get('name') == "Chain whack") {
-			var blowtorchDmg = effects.findWhere({key: "ion blowtorch damage"});
-			if (blowtorchDmg) {
-				blowtorchDmgVal = this.bonusDamage(effects.findWhere({key: "damage"}), "ion blowtorch damage", effects);
-				blowtorchDmg.value = blowtorchDmgVal;
-			}
+			bonusesDmg.push('ion blowtorch damage');
 		}
+
+		_(bonusesDmg).each(function(bonus) {
+			var bonusDmg = effects.findWhere({key: bonus});
+			if (bonusDmg) {
+				bonusDmgVal = this.bonusDamage(effects.findWhere({key: "damage"}), bonus, effects);
+				bonusDmg.value = bonusDmgVal;
+			}
+		}, this);
 
 		if (this.get('name') == "Missiles") {
 			var missilesSequence = [];
