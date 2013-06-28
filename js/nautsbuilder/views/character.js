@@ -33,6 +33,9 @@ leiminauts.CharacterView = Backbone.View.extend({
 			this.trigger('order:toggled');
 		}, this);
 
+		if (this.forum)
+			this.order.collection.on('add remove reset', this.toggleForumTabs, this);
+
 		this.render();
 
 		this.toggleTimeout = null;
@@ -82,5 +85,9 @@ leiminauts.CharacterView = Backbone.View.extend({
 			this.$('.char-forum-switch button[data-item="' + forcedClass + '"]').addClass('switch-active');
 		this.$('.build').toggleClass('forum-hidden', itemClass != 'build');
 		this.$('.order').toggleClass('forum-hidden', itemClass != 'order');
+	},
+
+	toggleForumTabs: function() {
+		this.$('.char-forum-switch').toggleClass('forum-hidden', this.order.collection.length);
 	}
 });

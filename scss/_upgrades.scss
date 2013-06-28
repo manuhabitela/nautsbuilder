@@ -35,6 +35,18 @@
 			display: none;
 		}
 	}
+
+	// &:not(.active) {
+	// 	html.csstransitions.forum & {
+	// 		width: 0;
+	// 		margin: 0;
+	// 		opacity: 0;
+	// 		overflow: hidden;
+	// 	}
+	// 	html.nocsstransitions.forum & {
+	// 		display: none;
+	// 	}
+	// }
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 

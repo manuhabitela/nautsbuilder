@@ -119,7 +119,7 @@ leiminauts.App = Backbone.Router.extend({
 		var currentUrl = this.getCurrentUrl();
 		var urlParts = currentUrl.split('/');
 		var build = urlParts.length > 1 ? urlParts[1] : null;
-		var order = urlParts.length > 2 ? urlParts[2] : null;
+		var order = urlParts.length > 2 && !_(['forum', 'console']).contains(urlParts[2]) ? urlParts[2] : null;
 		if (build === null) {
 			character.reset();
 			return false;
