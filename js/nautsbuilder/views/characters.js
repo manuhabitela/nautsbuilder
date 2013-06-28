@@ -23,6 +23,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 		this.mouseOverTimeout = null;
 
 		this.$el.on('mouseover', '.char', _.bind(_.debounce(this.showCharInfo, 50), this));
+		this.$el.on('click', '.current-char', _.bind(this.reset, this));
 	},
 
 	render: function() {
@@ -41,5 +42,10 @@ leiminauts.CharactersView = Backbone.View.extend({
 			this.currentChar = this.collection.findWhere({name: character});
 			this.render();
 		}
+	},
+
+	reset: function(e) {
+		this.currentChar = null;
+		this.render();
 	}
 });
