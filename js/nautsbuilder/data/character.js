@@ -53,42 +53,29 @@ leiminauts.Character = Backbone.Model.extend({
 /**
  * this is our full "database"
  * we have a characters list > each character has skills > each skills has upgrades
- *
- * you must pass the tabletop object which contains the google spreadsheet with all the data in the options at initialization
  */
 leiminauts.CharactersData = Backbone.Collection.extend({
 	model: leiminauts.Character,
 
 	initialize: function(models, opts) {
-		//treating spreadsheet data:
 		//each character has skills
 		//each skills has upgrades
-		if (opts.spreadsheet !== undefined) {
-			this.spreadsheet = opts.spreadsheet;
+		if (opts.data !== undefined) {
+			this.data = opts.data;
 			this.console = opts.console || false;
 
 			var characters, skills, upgrades;
-			if (this.spreadsheet) {
-				leiminauts.characters = this.spreadsheet.characters;
-				leiminauts.skills = this.spreadsheet.skills;
-				leiminauts.upgrades = this.spreadsheet.upgrades;
+			if (this.data) {
+				leiminauts.characters = this.data.characters;
+				leiminauts.skills = this.data.skills;
+				leiminauts.upgrades = this.data.upgrades;
 
-				if (!this.console && Modernizr.localstorage) {
-					localStorage.setItem('nautsbuilder.characters', JSON.stringify(leiminauts.characters));
-					localStorage.setItem('nautsbuilder.skills', JSON.stringify(leiminauts.skills));
-					localStorage.setItem('nautsbuilder.upgrades', JSON.stringify(leiminauts.upgrades));
-					localStorage.setItem('nautsbuilder.date', new Date().getTime());
-				}
-			} else {
-				leiminauts.characters = JSON.parse(localStorage.getItem('nautsbuilder.characters'));
-				leiminauts.skills = JSON.parse(localStorage.getItem('nautsbuilder.skills'));
-				leiminauts.upgrades = JSON.parse(localStorage.getItem('nautsbuilder.upgrades'));
+				_.each(leiminauts.characters, function(character) {
+					var charSkills = _(leiminauts.skills).where({ character: character.name });
+					character.skills = new leiminauts.Skills(charSkills);
+					this.add(character);
+				}, this);
 			}
-			_.each(leiminauts.characters, function(character) {
-				var charSkills = _(leiminauts.skills).where({ character: character.name });
-				character.skills = new leiminauts.Skills(charSkills);
-				this.add(character);
-			}, this);
 		}
 	}
 });

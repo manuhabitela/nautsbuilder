@@ -10,8 +10,8 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	initialize: function(options) {
-		if (options.spreadsheet !== undefined) {
-			this.data = new leiminauts.CharactersData(null, { spreadsheet: options.spreadsheet, console: options.console });
+		if (options.data !== undefined) {
+			this.data = new leiminauts.CharactersData(null, { data: options.data, console: options.console });
 			this.data.on('selected', function(naut) {
 				this.navigate(naut, { trigger: true });
 			}, this);
