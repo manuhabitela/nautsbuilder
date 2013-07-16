@@ -5,11 +5,14 @@
  */
 leiminauts.App = Backbone.Router.extend({
 	routes: {
-		"(console)": "list",
+		"(console)": "charactersList",
+		"favorites": "favoritesList",
 		":naut(/:build)(/:order)(/console)(/forum)(/)": "buildMaker"
 	},
 
 	initialize: function(options) {
+		leiminauts.ev = _({}).extend(Backbone.Events);
+
 		if (options.data !== undefined) {
 			this.data = new leiminauts.CharactersData(null, { data: options.data, console: options.console });
 			this.data.on('selected', function(naut) {
@@ -17,6 +20,7 @@ leiminauts.App = Backbone.Router.extend({
 			}, this);
 		}
 		this.$el = $(options.el);
+		this.favorites = new leiminauts.Favorites();
 
 		this.console = options.console;
 		$('html').toggleClass('console', this.console);
@@ -26,6 +30,18 @@ leiminauts.App = Backbone.Router.extend({
 		this.grid = [];
 
 		this.forum = options.forum;
+
+		this.handleEvents();
+	},
+
+	handleEvents: function() {
+		leiminauts.ev.on('toggle-favorite', function(data) {
+			this.favorites.toggle(data);
+		}, this);
+		leiminauts.ev.on('add-favorite', function(data) {
+			this.favorites.addToStorage(data);
+		}, this);
+		leiminauts.ev.on('update-specific-links', this.updateSpecificLinks, this);
 	},
 
 	_beforeRoute: function() {
@@ -51,7 +67,7 @@ leiminauts.App = Backbone.Router.extend({
 		$('.website-url').attr('href', window.location.href.replace('/forum', ''));
 	},
 
-	list: function() {
+	charactersList: function() {
 		this._beforeRoute();
 		$('html').removeClass('page-blue').addClass('page-red');
 
@@ -60,6 +76,19 @@ leiminauts.App = Backbone.Router.extend({
 			console: this.console
 		});
 		this.showView( charsView );
+		this.updateSpecificLinks();
+	},
+
+	favoritesList: function() {
+		this._beforeRoute();
+		$('html').addClass('page-blue').removeClass('page-red');
+
+		var favsView = new leiminauts.FavoritesView({
+			collection: this.favorites,
+			characters: this.data,
+			console: this.console
+		});
+		this.showView( favsView );
 		this.updateSpecificLinks();
 	},
 
@@ -90,6 +119,7 @@ leiminauts.App = Backbone.Router.extend({
 		character.reset();
 		var charView = new leiminauts.CharacterView({
 			collection: this.data,
+			favorites: this.favorites,
 			model: character,
 			console: this.console,
 			forum: this.forum
@@ -161,7 +191,7 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	updateBuildUrl: function(charView) {
-		if (this.currentView instanceof leiminauts.CharactersView)
+		if (!(this.currentView instanceof leiminauts.CharacterView))
 			return false;
 		var character = charView.model;
 		var order = charView.order.active ? charView.order.collection : null;

@@ -68,9 +68,9 @@ Code:
 Icons:
 
 * blue tick and red cancel buttons from the Awesomenauts Game,
-* [Home](http://thenounproject.com/noun/home/#icon-No293) from The Noun Project
-* [Gamepad menu icon](http://thenounproject.com/noun/video-game-controller/#icon-No17531) by [Vardan Stepanian](http://thenounproject.com/vardst)
+* [Home](http://thenounproject.com/noun/home/#icon-No293) from The Noun Project * [Gamepad menu icon](http://thenounproject.com/noun/video-game-controller/#icon-No17531) by [Vardan Stepanian](http://thenounproject.com/vardst)
 * [Keyboard](http://thenounproject.com/noun/keyboard/#icon-No783) by [Paul te Kortschot](http://thenounproject.com/Kortschot)
+* [Star icon](http://www.iconfinder.com/icondetails/1935/32/bookmark_star_icon) by [Alexandre Moore](http://sa-ki.deviantart.com/)
 
 ## Credits
 

@@ -103,6 +103,11 @@
 	}
 }
 
+
+.current-char.mini {
+	@extend .hidden;
+}
+
 .current-char-placeholder {
 	height: 100%;
 	max-width: 667px;
@@ -183,5 +188,27 @@
 	.char-icon {
 		vertical-align: middle;
 		width: 70px;
+	}
+
+	.forum & {
+		@extend .hidden;
+	}
+	&.mini {
+		margin-bottom: $build-margin;
+		text-align: center;
+		.char {
+			border-width: 1px;
+			margin: 2px 0 2px -4px;
+			&:hover, &.active {
+				border-radius: 0;
+			}
+			&.home-button, &.console-button {
+				&:hover, &.active { border-color: transparent; opacity: 0.8; }
+			}
+		}
+		.char-icon {
+			height: 26px;
+			width: auto;
+		}
 	}
 }

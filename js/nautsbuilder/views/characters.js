@@ -22,12 +22,14 @@ leiminauts.CharactersView = Backbone.View.extend({
 
 		this.mouseOverTimeout = null;
 
+		this.mini = this.options.mini || false;
+
 		this.$el.on('mouseover', '.char', _.bind(_.debounce(this.showCharInfo, 50), this));
 		this.$el.on('click', '.current-char', _.bind(this.reset, this));
 	},
 
 	render: function() {
-		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar, character: this.character, console: this.options.console }));
+		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar, character: this.character, console: this.options.console, mini: this.mini }));
 		return this;
 	},
 
@@ -37,8 +39,8 @@ leiminauts.CharactersView = Backbone.View.extend({
 
 	showCharInfo: function(e) {
 		if (this.character) return false;
-		var character = $(e.currentTarget).attr('title');
-		if (this.currentChar === null || this.currentChar.get('name') !== character) {
+		var character = $(e.currentTarget).attr('data-char');
+		if (character && (!this.currentChar || this.currentChar.get('name') !== character)) {
 			this.currentChar = this.collection.findWhere({name: character});
 			this.render();
 		}

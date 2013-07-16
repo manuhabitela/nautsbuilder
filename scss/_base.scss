@@ -124,6 +124,14 @@ button[disabled], html input[disabled] {
 	cursor: default;
 }
 
+input[type=text], textarea {
+	border: 0;
+	background: transparent;
+	background: rgba(white, 0.2);
+	font-family: verdana;
+	font-size: small;
+}
+
 input[type="checkbox"], input[type="radio"] {
 	box-sizing: border-box;
 	padding: 0;

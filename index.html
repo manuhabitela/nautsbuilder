@@ -9,8 +9,8 @@
 		<title>Nautsbuilder - Awesomenauts builder: skills calculator, skills simulator - Make and share your Awesomenauts builds!</title>
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
-		<!-- <link rel="stylesheet" href="css/style.css?v=900"> -->
-		<link rel="stylesheet" href="dist/styles.min.css?v=900">
+		<link rel="stylesheet" href="css/style.css?v=900">
+		<!-- <link rel="stylesheet" href="dist/styles.min.css?v=900"> -->
 		<script src="js/lib/modernizr.custom.js"></script>
 	</head>
 	<body>
@@ -40,10 +40,10 @@
 		</div>
 
 		<script type="text/template" id="chars-tpl">
-			<% if (!character) { %>
+			<% if (!mini) { %>
 				<div class="console-info" title="Currently viewing <%= console ? 'Console Nautsbuilder' : 'PC Nautsbuilder' %>"></div>
 			<% } %>
-			<div class="current-char">
+			<div class="current-char <%= mini ? 'mini' : '' %>">
 				<% if (currentChar) { %>
 					<div class="current-char-left">
 						<div class="current-char-box current-char-type">
@@ -71,12 +71,12 @@
 					<div class="current-char-placeholder"></div>
 				<% } %>
 			</div>
-			<ul class="chars-list">
-			<% if (character) { %>
+			<ul class="chars-list <%= mini ? 'mini' : '' %>">
+			<% if (mini) { %>
 				<li title="Back to home" class="char home-button"><a href="#<%= console ? 'console' : '' %>"><img class="char-icon" src="img/home.png" alt="Home"></a></li>
 			<% } %>
 			<% _.each(characters, function(charac) { %>
-				<li title="<%= charac.name %>" class="char <%= charac.beta && charac.beta == "1" ? 'beta' : '' %> <%= character && character.name == charac.name ? 'active' : '' %> <%= !character && currentChar && currentChar.get('name') == charac.name ? 'active' : '' %>">
+				<li title="<%= charac.name %>" data-char="<%= charac.name %>" class="char <%= charac.beta && charac.beta == "1" ? 'beta' : '' %> <%= character && character.name == charac.name ? 'active' : '' %> <%= !character && currentChar && currentChar.get('name') == charac.name ? 'active' : '' %>">
 					<a href="#<%= _.underscored(charac.name) %><%= console ? '/console' : '' %>"><img class="char-icon" src="<%= charac.icon %>" alt=""></a>
 				</li>
 			<% }); %>
@@ -86,6 +86,9 @@
 						<img class="char-icon" src="img/<%= console ? 'pc_blue.png' : 'gamepad_blue.png' %>" alt="">
 					</a>
 				</li> -->
+			<% } %>
+			<% if (mini) { %>
+				<li title="Favorites" class="char fav-button"><a href="#favorites"><img class="char-icon" src="img/star_<%= character ? 'small' : 'big' %>.png" alt="Favorites list"></a></li>
 			<% } %>
 			</ul>
 		</script>
@@ -125,6 +128,16 @@
 
 				</textarea>
 			</label>
+
+			<p>
+				<form action="#" class="fav-add <%= favorite ? 'favorited' : '' %>">
+					<div class="fav-add-content">
+						<button type="button" class="fav-add-submit" title="<%= favorite ? 'Remove from' : 'Add to' %> favorites">Fav</button>
+						<label class="favorited-label">Favorite name <input type="text" <%= favorite ? 'value="' + favorite.name + '"' : '' %> class="fav-add-name" placeholder="<%= _(name).capitalized() %>"></label>
+						<label class="not-favorited-label">Favorite this build</build>
+					</div>
+				</form>
+			</p>
 			<% } %>
 		</script>
 
@@ -212,9 +225,23 @@
 			</div>
 		</script>
 
-		<!--<script src="js/lib/jquery.min.js"></script>
+		<script type="text/template" id="favs-tpl">
+		<div class="chars"></div>
+		<ul class="favs-list">
+		<% _.each(favorites, function(fav) { %>
+			<li class="fav <%= fav.console && fav.console == "1" ? 'console' : '' %>">
+				<img class="fav-icon" src="<%= fav.character.icon %>" alt="">
+				<a class="fav-name" href="#<%= fav.hash %>"><%= fav.character.name + (fav.name ? ' - ' + fav.name : '')  %></a>
+				<span class="fav-delete" title="Delete from favorites (without confirmation)">x</span>
+			</li>
+		<% }); %>
+		</ul>
+		</script>
+
+		<script src="js/lib/jquery.min.js"></script>
 		<script src="js/lib/underscore.js"></script>
 		<script src="js/lib/backbone.js"></script>
+		<script src="js/lib/backbone.localStorage.js"></script>
 		<script src="js/lib/tabletop.js"></script>
 		<script src="js/lib/mousetooltip.js"></script>
 		<script src="js/lib/fastclick.js"></script>
@@ -226,6 +253,7 @@
 		<script src="js/nautsbuilder/data/skill.js?v=900"></script>
 		<script src="js/nautsbuilder/data/upgrade.js?v=900"></script>
 		<script src="js/nautsbuilder/data/step.js?v=900"></script>
+		<script src="js/nautsbuilder/data/favorite.js?v=900"></script>
 		<script src="js/nautsbuilder/views/characters.js?v=900"></script>
 		<script src="js/nautsbuilder/views/character.js?v=900"></script>
 		<script src="js/nautsbuilder/views/character-build.js?v=900"></script>
@@ -233,14 +261,15 @@
 		<script src="js/nautsbuilder/views/character-info.js?v=900"></script>
 		<script src="js/nautsbuilder/views/skill.js?v=900"></script>
 		<script src="js/nautsbuilder/views/upgrade.js?v=900"></script>
+		<script src="js/nautsbuilder/views/favorites.js?v=900"></script>
 		<script src="js/nautsbuilder/app.js?v=900"></script>
-		<script src="js/main.js?v=900"></script> -->
+		<script src="js/main.js?v=900"></script>
 		<!-- ok so this is ugly - be sure to put the update.js script at the very end so that in cases of crash, it doesn't put down the whole app
 		in fact, there is a rare bug with google spreadsheet API that will make Tabletop crash. I can't reproduce and well, can't debug this SO updating data is made at the very end in case the bug occurs -->
 		<!--<script src="js/nautsbuilder/spreadsheet/update.js?v=900"></script> -->
 
-		<script src="dist/libs.min.js?v=900"></script>
-		<script src="dist/scripts.min.js?v=900"></script>
+		<!--<script src="dist/libs.min.js?v=900"></script>
+		<script src="dist/scripts.min.js?v=900"></script> -->
 		<script>
 			var _gaq=[['_setAccount','UA-13184829-6'],['_trackPageview']];
 			(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];

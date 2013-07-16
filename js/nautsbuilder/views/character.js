@@ -13,16 +13,17 @@ leiminauts.CharacterView = Backbone.View.extend({
 	},
 
 	initialize: function(opts) {
-		_.defaults(opts, { build: null, order: null, info: null, console: false, forum: false });
+		_.defaults(opts, { build: null, order: null, info: null, console: false, forum: false, favorites: false });
 
 		this.template = _.template( $('#char-tpl').html() );
 
 		this.console = opts.console;
 		this.forum = opts.forum;
+		this.favorites = opts.favorites;
 
-		this.characters = new leiminauts.CharactersView({ character: this, collection: this.collection, console: this.console });
+		this.characters = new leiminauts.CharactersView({ character: this, collection: this.collection, console: this.console, mini: true });
 		this.build = new leiminauts.BuildView({ character: this, forum: this.forum });
-		this.info = new leiminauts.InfoView({ character: this, forum: this.forum });
+		this.info = new leiminauts.InfoView({ character: this, forum: this.forum, favorites: this.favorites });
 		this.order = new leiminauts.OrderView({ character: this, forum: this.forum });
 
 		this.order.on('changed', function(collection) {

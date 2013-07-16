@@ -1,0 +1,38 @@
+.favs-list {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	.fav {
+		padding: 0;
+		background-color: hsla(197, 70%, 50%, 0.2);
+		margin: 3px 0;
+		border: 5px solid transparent;
+		&:hover {
+			//border-color: #FFF292;
+			//border-radius: 5px;
+		}
+		a {
+			color: white;
+			&:hover, &:focus {
+				text-decoration: none;
+			}
+		}
+	}
+	.fav-icon {
+		vertical-align: middle;
+		width: 48px;
+	}
+	.fav-name {
+		padding: 10px;
+	}
+	.fav-delete {
+		@extend %cancel;
+		display: inline-block;
+		background-size: 22px 22px;
+		background-position: 50% 50%;
+		width: 22px;
+		height: 22px;
+		vertical-align: middle;
+	}
+}
