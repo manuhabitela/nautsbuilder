@@ -435,7 +435,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				totalDPS += +itemBonus.value;
 				effects.push(itemBonus);
 			});
-			if (bonus.length && dps && totalDPS !== dps.value && this.get('name') !== 'Slash' && this.get('name') !== 'Bubble Gun')
+			if (bonus.length && dps && totalDPS !== dps.value && !_(['Slash', 'Bubble Gun', 'Chain whack']).contains(this.get('name')))
 				effects.push({key: "total DPS", value: leiminauts.utils.number(totalDPS) });
 		}
 	},
