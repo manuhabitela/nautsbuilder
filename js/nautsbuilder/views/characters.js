@@ -12,7 +12,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 
 	initialize: function() {
 		this.template = _.template( $('#chars-tpl').html() );
-		this.collection.on('add remove reset', this.render, this);
+		this.listenTo(this.collection, 'add remove reset', this.render);
 
 		if (this.options.character !== undefined)
 			this.character = this.options.character.model.toJSON();

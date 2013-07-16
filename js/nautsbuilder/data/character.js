@@ -9,8 +9,8 @@ leiminauts.Character = Backbone.Model.extend({
 		this.set('total_cost', 0);
 		this.set('maxed_out', false);
 		this.set('level', 1);
-		this.skills.on('change:total_cost', this.onCostChange, this);
-		this.skills.on('change:maxed_out', this.onSkillComplete, this);
+		this.listenTo(this.skills, 'change:total_cost', this.onCostChange);
+		this.listenTo(this.skills, 'change:maxed_out', this.onSkillComplete);
 
 		this.on('change:selected', this.onSelectedChange, this);
 	},

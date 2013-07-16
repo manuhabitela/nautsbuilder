@@ -25,6 +25,7 @@ leiminauts.CharacterView = Backbone.View.extend({
 		this.build = new leiminauts.BuildView({ character: this, forum: this.forum });
 		this.info = new leiminauts.InfoView({ character: this, forum: this.forum, favorites: this.favorites });
 		this.order = new leiminauts.OrderView({ character: this, forum: this.forum });
+		this.subViews = [this.characters, this.build, this.info, this.order];
 
 		this.order.on('changed', function(collection) {
 			this.trigger('order:changed', collection);
@@ -42,7 +43,15 @@ leiminauts.CharacterView = Backbone.View.extend({
 		this.render();
 
 		this.toggleTimeout = null;
-		this.model.on('change:maxed_out', this.toggleMaxedOutView, this);
+
+		this.listenTo(this.model, 'change:maxed_out', this.toggleMaxedOutView);
+	},
+
+	remove: function() {
+		_(this.subViews).each(function(subView) {
+			subView.remove();
+		});
+		Backbone.View.prototype.remove.call(this);
 	},
 
 	render: function() {

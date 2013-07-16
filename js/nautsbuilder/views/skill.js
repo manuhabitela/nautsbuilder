@@ -25,9 +25,9 @@ leiminauts.SkillView = Backbone.View.extend({
 
 		this.template = _.template( $('#build-skill-tpl').html() );
 
-		this.model.get('upgrades').on('change', this.renderUpgradesInfo, this);
+		this.listenTo(this.model.get('upgrades'), 'change', this.renderUpgradesInfo);
 
-		this.model.on('change', this.render, this);
+		this.listenTo(this.model, 'change', this.render);
 	},
 
 	toggleState: function() {

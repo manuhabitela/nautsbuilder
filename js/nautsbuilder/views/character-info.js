@@ -27,7 +27,7 @@ leiminauts.InfoView = Backbone.View.extend({
 
 		this.forum = this.options.forum || false;
 
-		this.model.on('change:total_cost', this.render, this);
+		this.listenTo(this.character.model, 'change:total_cost', this.render);
 		this.listenTo(this.favorites, 'change add remove', this.render);
 	},
 

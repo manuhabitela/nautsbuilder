@@ -28,8 +28,10 @@ leiminauts.BuildView = Backbone.View.extend({
 		this.template = _.template( $('#build-tpl').html() );
 
 		//not that good to put this here but YOLO
-		this.model.get('skills').on('change:active', this.toggleResetButtonClass, this);
-		this.model.get('skills').each(_.bind(function(skill) { skill.get('upgrades').on('change:active', this.toggleResetButtonClass, this); }, this));
+		this.listenTo(this.model.get('skills'), 'change:active', this.toggleResetButtonClass);
+		this.model.get('skills').each(function(skill) {
+			this.listenTo(skill.get('upgrades'), 'change:active', this.toggleResetButtonClass);
+		}, this);
 		this.toggleResetButtonClass();
 	},
 

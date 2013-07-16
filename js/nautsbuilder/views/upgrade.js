@@ -19,7 +19,7 @@ leiminauts.UpgradeView = Backbone.View.extend({
 
 		this.forum = this.options.forum || false;
 
-		this.model.on('change', this.render, this);
+		this.listenTo(this.model, 'change', this.render);
 	},
 
 	render: function() {

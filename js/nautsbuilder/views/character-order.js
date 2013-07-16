@@ -25,12 +25,11 @@ leiminauts.OrderView = Backbone.View.extend({
 
 		this.collection.on('reset', this.onBuildChange, this);
 
-		this.model.get('skills').each(
-			_.bind(function(skill) {
-				skill.get('upgrades').on('change:current_step', this.onBuildChange, this);
-			}, this)
-		);
-		this.model.get('skills').on('change:active', this.onBuildChange, this);
+		this.model.get('skills').each(function(skill) {
+			this.listenTo(skill.get('upgrades'), 'change:current_step', this.onBuildChange);
+		}, this);
+		this.listenTo(this.model.get('skills'), 'change:active', this.onBuildChange);
+		this.listenTo(this.model, 'change:selected', this.onSelectedChange);
 
 		this.on('sorted', this.render, this);
 	},
@@ -49,6 +48,11 @@ leiminauts.OrderView = Backbone.View.extend({
 	onBuildChange: function(model) {
 		this.updateCollection(model);
 		this.render();
+	},
+
+	onSelectedChange: function() {
+		if (!this.model.get('selected'))
+			this.collection.reset();
 	},
 
 	comparator: function(model) {
@@ -101,8 +105,9 @@ leiminauts.OrderView = Backbone.View.extend({
 				this.collection.remove(steps);
 			}
 		}
-		if (this.active)
+		if (this.active) {
 			this.trigger('changed', this.collection);
+		}
 	},
 
 	updateOrder: function() {
