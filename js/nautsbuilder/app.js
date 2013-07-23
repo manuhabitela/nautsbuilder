@@ -102,7 +102,7 @@ leiminauts.App = Backbone.Router.extend({
 		//check if we're just updating current build (with back button)
 		if (this.currentView && this.currentView instanceof leiminauts.CharacterView &&
 			this.currentView.model && this.currentView.model.get('name').toLowerCase() == naut) {
-			this.updateBuildFromUrl(this.currentView);
+			this.updateBuildFromUrl();
 			this.updateSpecificLinks();
 			return true;
 		}
@@ -128,10 +128,10 @@ leiminauts.App = Backbone.Router.extend({
 
 		this._initGrid();
 
-		this.updateBuildFromUrl(charView);
-		var debouncedUrlUpdate = _.debounce(_.bind(function() { this.updateBuildUrl(charView); }, this), 500);
-		character.get('skills').off('change', debouncedUrlUpdate , this);
-		character.get('skills').on('change', debouncedUrlUpdate , this);
+		this.updateBuildFromUrl();
+		var debouncedUrlUpdate = _.debounce(_.bind(this.updateBuildUrl, this), 500);
+		this.stopListening(character.get('skills'), 'change');
+		this.listenTo(character.get('skills'), 'change', debouncedUrlUpdate);
 		charView.on('order:changed', debouncedUrlUpdate, this);
 		charView.on('order:toggled', debouncedUrlUpdate, this);
 		this.updateSpecificLinks();
@@ -145,7 +145,10 @@ leiminauts.App = Backbone.Router.extend({
 		return view;
 	},
 
-	updateBuildFromUrl: function(charView) {
+	updateBuildFromUrl: function() {
+		if (!(this.currentView instanceof leiminauts.CharacterView))
+			return false;
+		charView = this.currentView;
 		var character = charView.model;
 		var currentUrl = this.getCurrentUrl();
 		var urlParts = currentUrl.split('/');
@@ -191,9 +194,10 @@ leiminauts.App = Backbone.Router.extend({
 			charView.order.toggle();
 	},
 
-	updateBuildUrl: function(charView) {
+	updateBuildUrl: function() {
 		if (!(this.currentView instanceof leiminauts.CharacterView))
 			return false;
+		charView = this.currentView;
 		var character = charView.model;
 		var order = charView.order.active ? charView.order.collection : null;
 		var buildUrl = "";
