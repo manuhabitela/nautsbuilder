@@ -1,3 +1,3 @@
 window.leiminauts = window.leiminauts || {};
 
-leiminauts.lastServerDataUpdate = 1372443087000; //2013-06-28 20:11:27
+leiminauts.lastServerDataUpdate = 1374780279000; //2013-07-25 21:24:39

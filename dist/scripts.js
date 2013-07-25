@@ -1,4 +1,4 @@
-/* Nautsbuilder - Awesomenauts build maker v0.9.0 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build maker v0.10.0 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. *//* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -86,11 +86,6 @@ leiminauts.utils = {
 		return leiminauts.utils.number( (parseFloat(speed)/60*parseFloat(damage)).toFixed(2) );
 	}
 };
-window.leiminauts = window.leiminauts || {};
-
-leiminauts.lastServerDataUpdate = 1372443087000; //2013-06-28 20:11:27
-window.leiminauts = window.leiminauts || {};
-leiminauts.lastDataUpdate = new Date("June 28, 2013 20:10:00 GMT+0200").getTime();
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -102,8 +97,8 @@ leiminauts.Character = Backbone.Model.extend({
 		this.set('total_cost', 0);
 		this.set('maxed_out', false);
 		this.set('level', 1);
-		this.skills.on('change:total_cost', this.onCostChange, this);
-		this.skills.on('change:maxed_out', this.onSkillComplete, this);
+		this.listenTo(this.skills, 'change:total_cost', this.onCostChange);
+		this.listenTo(this.skills, 'change:maxed_out', this.onSkillComplete);
 
 		this.on('change:selected', this.onSelectedChange, this);
 	},
@@ -609,7 +604,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				totalDPS += +itemBonus.value;
 				effects.push(itemBonus);
 			});
-			if (bonus.length && dps && totalDPS !== dps.value && this.get('name') !== 'Slash' && this.get('name') !== 'Bubble Gun')
+			if (bonus.length && dps && totalDPS !== dps.value && !_(['Slash', 'Bubble Gun', 'Chain whack']).contains(this.get('name')))
 				effects.push({key: "total DPS", value: leiminauts.utils.number(totalDPS) });
 		}
 	},
@@ -734,6 +729,40 @@ leiminauts.Steps = Backbone.Collection.extend({
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * copyright (c) 2013, Emmanuel Pelletier
  */
+leiminauts.Favorites = Backbone.Collection.extend({
+	initialize: function(models, opts) {
+		this.options = _(opts).defaults(this.defaults);
+
+		this.localStorage = new Backbone.LocalStorage("nautsbuilder.favorites");
+
+		this.fetch();
+	},
+
+	addToStorage: function(data) {
+		var existing = this.findWhere({ hash: data.hash });
+		if (existing) {
+			this.get(existing).save(data);
+		}
+		else {
+			this.create(data);
+		}
+	},
+
+	removeFromStorage: function(favorite) {
+		favorite.destroy();
+		this.remove(favorite);
+	},
+
+	toggle: function(data) {
+		var existing = this.findWhere({ hash: data.hash });
+		return existing ? this.removeFromStorage(existing) : this.addToStorage(data);
+	}
+});
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 leiminauts.CharactersView = Backbone.View.extend({
 	className: 'chars-list-container',
 
@@ -743,7 +772,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 
 	initialize: function() {
 		this.template = _.template( $('#chars-tpl').html() );
-		this.collection.on('add remove reset', this.render, this);
+		this.listenTo(this.collection, 'add remove reset', this.render);
 
 		if (this.options.character !== undefined)
 			this.character = this.options.character.model.toJSON();
@@ -753,12 +782,14 @@ leiminauts.CharactersView = Backbone.View.extend({
 
 		this.mouseOverTimeout = null;
 
+		this.mini = this.options.mini || false;
+
 		this.$el.on('mouseover', '.char', _.bind(_.debounce(this.showCharInfo, 50), this));
 		this.$el.on('click', '.current-char', _.bind(this.reset, this));
 	},
 
 	render: function() {
-		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar, character: this.character, console: this.options.console }));
+		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar, character: this.character, console: this.options.console, mini: this.mini }));
 		return this;
 	},
 
@@ -768,8 +799,8 @@ leiminauts.CharactersView = Backbone.View.extend({
 
 	showCharInfo: function(e) {
 		if (this.character) return false;
-		var character = $(e.currentTarget).attr('title');
-		if (this.currentChar === null || this.currentChar.get('name') !== character) {
+		var character = $(e.currentTarget).attr('data-char');
+		if (character && (!this.currentChar || this.currentChar.get('name') !== character)) {
 			this.currentChar = this.collection.findWhere({name: character});
 			this.render();
 		}
@@ -795,17 +826,19 @@ leiminauts.CharacterView = Backbone.View.extend({
 	},
 
 	initialize: function(opts) {
-		_.defaults(opts, { build: null, order: null, info: null, console: false, forum: false });
+		_.defaults(opts, { build: null, order: null, info: null, console: false, forum: false, favorites: false });
 
 		this.template = _.template( $('#char-tpl').html() );
 
 		this.console = opts.console;
 		this.forum = opts.forum;
+		this.favorites = opts.favorites;
 
-		this.characters = new leiminauts.CharactersView({ character: this, collection: this.collection, console: this.console });
+		this.characters = new leiminauts.CharactersView({ character: this, collection: this.collection, console: this.console, mini: true });
 		this.build = new leiminauts.BuildView({ character: this, forum: this.forum });
-		this.info = new leiminauts.InfoView({ character: this, forum: this.forum });
+		this.info = new leiminauts.InfoView({ character: this, forum: this.forum, favorites: this.favorites });
 		this.order = new leiminauts.OrderView({ character: this, forum: this.forum });
+		this.subViews = [this.characters, this.build, this.info, this.order];
 
 		this.order.on('changed', function(collection) {
 			this.trigger('order:changed', collection);
@@ -823,7 +856,15 @@ leiminauts.CharacterView = Backbone.View.extend({
 		this.render();
 
 		this.toggleTimeout = null;
-		this.model.on('change:maxed_out', this.toggleMaxedOutView, this);
+
+		this.listenTo(this.model, 'change:maxed_out', this.toggleMaxedOutView);
+	},
+
+	remove: function() {
+		_(this.subViews).each(function(subView) {
+			subView.remove();
+		});
+		Backbone.View.prototype.remove.call(this);
 	},
 
 	render: function() {
@@ -905,8 +946,10 @@ leiminauts.BuildView = Backbone.View.extend({
 		this.template = _.template( $('#build-tpl').html() );
 
 		//not that good to put this here but YOLO
-		this.model.get('skills').on('change:active', this.toggleResetButtonClass, this);
-		this.model.get('skills').each(_.bind(function(skill) { skill.get('upgrades').on('change:active', this.toggleResetButtonClass, this); }, this));
+		this.listenTo(this.model.get('skills'), 'change:active', this.toggleResetButtonClass);
+		this.model.get('skills').each(function(skill) {
+			this.listenTo(skill.get('upgrades'), 'change:active', this.toggleResetButtonClass);
+		}, this);
 		this.toggleResetButtonClass();
 	},
 
@@ -969,12 +1012,11 @@ leiminauts.OrderView = Backbone.View.extend({
 
 		this.collection.on('reset', this.onBuildChange, this);
 
-		this.model.get('skills').each(
-			_.bind(function(skill) {
-				skill.get('upgrades').on('change:current_step', this.onBuildChange, this);
-			}, this)
-		);
-		this.model.get('skills').on('change:active', this.onBuildChange, this);
+		this.model.get('skills').each(function(skill) {
+			this.listenTo(skill.get('upgrades'), 'change:current_step', this.onBuildChange);
+		}, this);
+		this.listenTo(this.model.get('skills'), 'change:active', this.onBuildChange);
+		this.listenTo(this.model, 'change:selected', this.onSelectedChange);
 
 		this.on('sorted', this.render, this);
 	},
@@ -993,6 +1035,11 @@ leiminauts.OrderView = Backbone.View.extend({
 	onBuildChange: function(model) {
 		this.updateCollection(model);
 		this.render();
+	},
+
+	onSelectedChange: function() {
+		if (!this.model.get('selected'))
+			this.collection.reset();
 	},
 
 	comparator: function(model) {
@@ -1045,8 +1092,9 @@ leiminauts.OrderView = Backbone.View.extend({
 				this.collection.remove(steps);
 			}
 		}
-		if (this.active)
+		if (this.active) {
 			this.trigger('changed', this.collection);
+		}
 	},
 
 	updateOrder: function() {
@@ -1080,7 +1128,10 @@ leiminauts.InfoView = Backbone.View.extend({
 	className: 'char-info',
 
 	events: {
-		"click .forum-snippet": "focusForumSnippet"
+		"click .forum-snippet": "focusForumSnippet",
+		"submit .fav-add": "addFavorite",
+		"click .fav-add-submit": "toggleFavorite",
+		"blur .fav-add-name": "addFavorite"
 	},
 
 	initialize: function() {
@@ -1088,22 +1139,48 @@ leiminauts.InfoView = Backbone.View.extend({
 			this.character = this.options.character;
 			this.model = this.character.model;
 		}
+
+		this.favorites = this.options.favorites;
+
 		this.template = _.template( $('#info-tpl').html() );
 
 		this.forum = this.options.forum || false;
 
-		this.model.on('change:total_cost', this.render, this);
+		this.listenTo(this.character.model, 'change:total_cost', this.render);
+		this.listenTo(this.favorites, 'change add remove', this.render);
 	},
 
 	render: function() {
 		var data = this.model.toJSON();
 		data.forum = this.forum;
-		this.$el.html(this.template( data ));
+		data.favorite = this.favorites.findWhere({ hash: window.location.hash.substr(1) });
+		if (data.favorite) data.favorite = data.favorite.toJSON();
+		this.$el.html(this.template(data));
+
+		leiminauts.ev.trigger('update-specific-links');
 		return this;
 	},
 
 	focusForumSnippet: function() {
 		this.$('.forum-snippet').select();
+	},
+
+	getFavoriteData: function() {
+		return {
+			hash: window.location.hash.substr(1),
+			name: this.$('.fav-add-name').val(),
+			character: _(this.character.model.toJSON()).pick('name', 'icon')
+		};
+	},
+
+	toggleFavorite: function(e) {
+		e.preventDefault();
+		leiminauts.ev.trigger('toggle-favorite', this.getFavoriteData());
+	},
+
+	addFavorite: function(e) {
+		e.preventDefault();
+		leiminauts.ev.trigger('add-favorite', this.getFavoriteData());
 	}
 });
 /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -1133,9 +1210,9 @@ leiminauts.SkillView = Backbone.View.extend({
 
 		this.template = _.template( $('#build-skill-tpl').html() );
 
-		this.model.get('upgrades').on('change', this.renderUpgradesInfo, this);
+		this.listenTo(this.model.get('upgrades'), 'change', this.renderUpgradesInfo);
 
-		this.model.on('change', this.render, this);
+		this.listenTo(this.model, 'change', this.render);
 	},
 
 	toggleState: function() {
@@ -1210,7 +1287,7 @@ leiminauts.UpgradeView = Backbone.View.extend({
 
 		this.forum = this.options.forum || false;
 
-		this.model.on('change', this.render, this);
+		this.listenTo(this.model, 'change', this.render);
 	},
 
 	render: function() {
@@ -1256,13 +1333,62 @@ leiminauts.UpgradeView = Backbone.View.extend({
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * copyright (c) 2013, Emmanuel Pelletier
  */
+leiminauts.FavoritesView = Backbone.View.extend({
+	className: 'favorites-list-container',
+
+	events: {
+		"click .fav-delete": "deleteFavorite",
+		"click .favs-share textarea": "focusList",
+		"change .favs-share-switch": "render"
+	},
+
+	initialize: function() {
+		if (!Modernizr.localstorage)
+			return false;
+		this.template = _.template( $('#favs-tpl').html() );
+		this.listenTo(this.collection, 'add remove reset', this.render);
+
+		this.characters = new leiminauts.CharactersView({ collection: this.options.characters, console: this.options.console, mini: true });
+	},
+
+	render: function() {
+		var data = this.collection.toJSON();
+		var favoritesTextType = this.$('.favs-share-switch').val() || "forum";
+		var favoritesTextList = _.template( $('#favs-list-' + favoritesTextType + '-tpl').html(), { "favorites": data, "root": leiminauts.root });
+		this.$el.html(this.template({ "favorites": data, "favoritesText": favoritesTextList }));
+		this.assign(this.characters, '.chars');
+		this.$('.favs-share-switch').val(favoritesTextType);
+		return this;
+	},
+
+	focusList: function(e) {
+		this.$('.favs-share textarea').select();
+	},
+
+	deleteFavorite: function(e) {
+		var favHash = $(e.currentTarget).siblings('.fav-name').attr('href').substr(1);
+		var fav = this.collection.findWhere({ hash: favHash });
+		if (fav)
+			this.collection.removeFromStorage(fav);
+	}
+});
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * copyright (c) 2013, Emmanuel Pelletier
+ */
 leiminauts.App = Backbone.Router.extend({
 	routes: {
-		"(console)": "list",
+		"(console)": "charactersList",
+		"favorites": "favoritesList",
 		":naut(/:build)(/:order)(/console)(/forum)(/)": "buildMaker"
 	},
 
 	initialize: function(options) {
+		leiminauts.ev = _({}).extend(Backbone.Events);
+
+		leiminauts.root = window.location.host;
+
 		if (options.data !== undefined) {
 			this.data = new leiminauts.CharactersData(null, { data: options.data, console: options.console });
 			this.data.on('selected', function(naut) {
@@ -1270,6 +1396,7 @@ leiminauts.App = Backbone.Router.extend({
 			}, this);
 		}
 		this.$el = $(options.el);
+		this.favorites = new leiminauts.Favorites();
 
 		this.console = options.console;
 		$('html').toggleClass('console', this.console);
@@ -1279,6 +1406,18 @@ leiminauts.App = Backbone.Router.extend({
 		this.grid = [];
 
 		this.forum = options.forum;
+
+		this.handleEvents();
+	},
+
+	handleEvents: function() {
+		leiminauts.ev.on('toggle-favorite', function(data) {
+			this.favorites.toggle(data);
+		}, this);
+		leiminauts.ev.on('add-favorite', function(data) {
+			this.favorites.addToStorage(data);
+		}, this);
+		leiminauts.ev.on('update-specific-links', this.updateSpecificLinks, this);
 	},
 
 	_beforeRoute: function() {
@@ -1304,7 +1443,7 @@ leiminauts.App = Backbone.Router.extend({
 		$('.website-url').attr('href', window.location.href.replace('/forum', ''));
 	},
 
-	list: function() {
+	charactersList: function() {
 		this._beforeRoute();
 		$('html').removeClass('page-blue').addClass('page-red');
 
@@ -1313,6 +1452,19 @@ leiminauts.App = Backbone.Router.extend({
 			console: this.console
 		});
 		this.showView( charsView );
+		this.updateSpecificLinks();
+	},
+
+	favoritesList: function() {
+		this._beforeRoute();
+		$('html').addClass('page-blue').removeClass('page-red');
+
+		var favsView = new leiminauts.FavoritesView({
+			collection: this.favorites,
+			characters: this.data,
+			console: this.console
+		});
+		this.showView( favsView );
 		this.updateSpecificLinks();
 	},
 
@@ -1326,7 +1478,7 @@ leiminauts.App = Backbone.Router.extend({
 		//check if we're just updating current build (with back button)
 		if (this.currentView && this.currentView instanceof leiminauts.CharacterView &&
 			this.currentView.model && this.currentView.model.get('name').toLowerCase() == naut) {
-			this.updateBuildFromUrl(this.currentView);
+			this.updateBuildFromUrl();
 			this.updateSpecificLinks();
 			return true;
 		}
@@ -1343,6 +1495,7 @@ leiminauts.App = Backbone.Router.extend({
 		character.reset();
 		var charView = new leiminauts.CharacterView({
 			collection: this.data,
+			favorites: this.favorites,
 			model: character,
 			console: this.console,
 			forum: this.forum
@@ -1351,9 +1504,10 @@ leiminauts.App = Backbone.Router.extend({
 
 		this._initGrid();
 
-		this.updateBuildFromUrl(charView);
-		var debouncedUrlUpdate = _.debounce(_.bind(function() { this.updateBuildUrl(charView); }, this), 500);
-		character.get('skills').on('change', debouncedUrlUpdate , this);
+		this.updateBuildFromUrl();
+		var debouncedUrlUpdate = _.debounce(_.bind(this.updateBuildUrl, this), 500);
+		this.stopListening(character.get('skills'), 'change');
+		this.listenTo(character.get('skills'), 'change', debouncedUrlUpdate);
 		charView.on('order:changed', debouncedUrlUpdate, this);
 		charView.on('order:toggled', debouncedUrlUpdate, this);
 		this.updateSpecificLinks();
@@ -1367,7 +1521,10 @@ leiminauts.App = Backbone.Router.extend({
 		return view;
 	},
 
-	updateBuildFromUrl: function(charView) {
+	updateBuildFromUrl: function() {
+		if (!(this.currentView instanceof leiminauts.CharacterView))
+			return false;
+		charView = this.currentView;
 		var character = charView.model;
 		var currentUrl = this.getCurrentUrl();
 		var urlParts = currentUrl.split('/');
@@ -1413,9 +1570,10 @@ leiminauts.App = Backbone.Router.extend({
 			charView.order.toggle();
 	},
 
-	updateBuildUrl: function(charView) {
-		if (this.currentView instanceof leiminauts.CharactersView)
+	updateBuildUrl: function() {
+		if (!(this.currentView instanceof leiminauts.CharacterView))
 			return false;
+		charView = this.currentView;
 		var character = charView.model;
 		var order = charView.order.active ? charView.order.collection : null;
 		var buildUrl = "";

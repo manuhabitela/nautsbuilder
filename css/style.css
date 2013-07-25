@@ -17,7 +17,7 @@
 
 #mouse-tooltip .cost, .char-info .char-total-cost .cost, .skill-effects dt.total_cost span, .upgrade-popup .cost { padding-left: 24px; min-height: 21px; background: url('../img/solar_small.png?1367166637') no-repeat center left; }
 
-.build-cancel, .skill-cancel { background: transparent url('../img/cancel.png?1367501974') no-repeat top left; color: rgba(217, 89, 38, 0.8); font-family: verdana; font-size: 24px; cursor: pointer; }
+.build-cancel, .skill-cancel, .favs-list .fav-delete { background: transparent url('../img/cancel.png?1367501974') no-repeat top left; color: rgba(217, 89, 38, 0.8); font-family: verdana; font-size: 24px; cursor: pointer; }
 
 #footer button, .forum .char-forum-switch button { display: inline-block; font-family: verdana; background: rgba(255, 255, 255, 0.2); border: none; border-radius: 3px; padding: 2px 4px; margin: 0; color: #ccc; text-decoration: none; }
 #footer button:hover, .forum .char-forum-switch button:hover, #footer button:focus, .forum .char-forum-switch button:focus { background: none; text-decoration: underline; }
@@ -61,7 +61,7 @@ img { border: 0; }
 
 svg:not(:root) { overflow: hidden; }
 
-fieldset { border: 1px solid #c0c0c0; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
+fieldset { border: 1px solid silver; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
 
 legend { border: 0; padding: 0; }
 
@@ -74,6 +74,8 @@ button, select { text-transform: none; }
 button, html input[type="button"], input[type="reset"], input[type="submit"] { -webkit-appearance: button; cursor: pointer; }
 
 button[disabled], html input[disabled] { cursor: default; }
+
+input[type=text], textarea { border: 0; background: transparent; background: rgba(255, 255, 255, 0.2); font-family: verdana; font-size: small; }
 
 input[type="checkbox"], input[type="radio"] { box-sizing: border-box; padding: 0; }
 
@@ -95,10 +97,10 @@ body, .page-blue body { background-color: #001D2F; background-image: -webkit-gra
 .page-red body { background-color: #6D0206; background-image: -webkit-gradient(radial, 800px 800px, 0, 800px 800px, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(800px 800px, #6d0206, #220000); background-image: -moz-radial-gradient(800px 800px, #6d0206, #220000); background-image: -o-radial-gradient(800px 800px, #6d0206, #220000); background-image: radial-gradient(800px 800px, #6d0206, #220000); background-image: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 100, color-stop(0%, #6d0206), color-stop(100%, #220000)); background-image: -webkit-radial-gradient(50% 50%, #6d0206, #220000); background-image: -moz-radial-gradient(50% 50%, #6d0206, #220000); background-image: -o-radial-gradient(50% 50%, #6d0206, #220000); background-image: radial-gradient(50% 50%, #6d0206, #220000); }
 .forum body { background: transparent; }
 
-.ir, .build-cancel, .skill-cancel { border: 0; overflow: hidden; *text-indent: -9999px; }
-.ir:before, .build-cancel:before, .skill-cancel:before { content: ""; display: block; width: 0; height: 100%; }
+.ir, .build-cancel, .skill-cancel, .favs-list .fav-delete { border: 0; overflow: hidden; *text-indent: -9999px; }
+.ir:before, .build-cancel:before, .skill-cancel:before, .favs-list .fav-delete:before { content: ""; display: block; width: 0; height: 100%; }
 
-.hidden, .mouse-tooltip-hidden, .forum #footer, .forum .console-info, .forum .build-cancel, .char-builder .current-char, .forum .char-builder .chars-list, .forum-hidden, .forum .skill-wrapper > .skill-effects, .forum .skill-cancel { display: none !important; visibility: hidden; }
+.hidden, .mouse-tooltip-hidden, .forum #footer, .forum .console-info, .current-char.mini, .forum .chars-list, .forum .build-cancel, .char-builder .current-char, .forum-hidden, .forum .skill-wrapper > .skill-effects, .forum .skill-cancel { display: none !important; visibility: hidden; }
 
 .visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
 .visuallyhidden.focusable:active, .visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
@@ -188,6 +190,11 @@ body, .page-blue body { background-color: #001D2F; background-image: -webkit-gra
 .char-builder .chars-list .char.beta:hover:after { display: block; }
 .char-builder .chars-list .char.active.beta:after { display: block; }
 .chars-list .char-icon { vertical-align: middle; width: 70px; }
+.chars-list.mini { margin-bottom: 20px; text-align: center; }
+.chars-list.mini .char { border-width: 1px; margin: 2px 0 2px -4px; }
+.chars-list.mini .char:hover, .chars-list.mini .char.active { border-radius: 0; }
+.chars-list.mini .char.home-button:hover, .chars-list.mini .char.home-button.active, .chars-list.mini .char.console-button:hover, .chars-list.mini .char.console-button.active { border-color: transparent; opacity: 0.8; }
+.chars-list.mini .char-icon { height: 26px; width: auto; }
 
 .char-builder { margin: 0 auto; }
 .forum .char-builder { margin: 0; }
@@ -220,12 +227,6 @@ html:not(.forum) .char-builder.maxed-out .order { width: 614px; }
 .char-builder.maxed-out .build-cancel { background-image: url('../img/done.png?1367501993'); }
 .char-builder.maxed-out .build-cancel:hover { background-image: url('../img/cancel.png?1367501974'); }
 
-.char-builder .chars-list { margin-bottom: 20px; text-align: center; }
-.char-builder .chars-list .char { border-width: 1px; margin: 2px 0 2px -4px; }
-.char-builder .chars-list .char:hover, .char-builder .chars-list .char.active { border-radius: 0; }
-.char-builder .chars-list .char.home-button:hover, .char-builder .chars-list .char.home-button.active, .char-builder .chars-list .char.console-button:hover, .char-builder .chars-list .char.console-button.active { border-color: transparent; opacity: 0.8; }
-.char-builder .chars-list .char-icon { height: 26px; width: auto; }
-
 .char-info { margin-left: 8px; padding-left: 0; padding-top: 0; margin-top: 0; max-width: 380px; }
 html:not(.forum) .char-builder.maxed-out .char-info { max-width: 170px; }
 .char-info .info { font-size: 1em; }
@@ -242,12 +243,20 @@ html:not(.forum) .char-builder.maxed-out .char-info { max-width: 170px; }
 .forum .char-forum-switch button:active { background: #1a7ea6; }
 .forum .char-forum-switch button.switch-active { background: #176e90; }
 
-.forum-snippet { width: 100%; border: 0; resize: none; background: transparent; background: rgba(255, 255, 255, 0.2); font-family: verdana; font-size: small; }
+.forum-snippet { width: 100%; resize: none; font-family: verdana, sans-serif; }
 
 .forum .website-url { display: block; float: left; margin: 0; cursor: pointer; color: #222; padding: 2px 4px; }
 .forum .website-url:hover { text-decoration: none; }
 
 .forum .forum-info, .forum .char-info { margin: 5px 0; }
+
+.fav-add-content * { display: inline-block; vertical-align: bottom; }
+.fav-add-content .fav-add-submit { min-height: 32px; background: none; border-radius: 3px; border: 0; overflow: hidden; *text-indent: -9999px; background-image: url('../img/star_small.png?1372796855'); background-position: 50% 50%; width: 32px; height: 32px; opacity: 0.6; }
+.fav-add-content .fav-add-submit:before { content: ""; display: block; width: 0; height: 100%; }
+.fav-add-content .fav-add-submit:hover, .fav-add-content .fav-add-submit:focus, .fav-add.favorited .fav-add-content .fav-add-submit { opacity: 1; }
+.fav-add-content .fav-add-submit:active, .fav-add.favorited .fav-add-content .fav-add-submit:active { opacity: 0.5; }
+.fav-add-content .fav-add-submit ~ .favorited-label, .fav-add.favorited .fav-add-content .fav-add-submit ~ .not-favorited-label { display: none; }
+.fav-add-content .fav-add-submit ~ .not-favorited-label, .fav-add.favorited .fav-add-content .fav-add-submit ~ .favorited-label { display: inline-block; }
 
 .skill-wrapper { margin: 3px auto; position: relative; }
 .forum .skill-wrapper { max-width: 575px; margin: 3px 0; }
@@ -321,3 +330,17 @@ html:not(.forum) .order-item, html:not(.forum) .sortable-placeholder { cursor: m
 .sortable-placeholder { width: 60px; height: 60px; border: 1px dashed gray; }
 
 .order-icon, .forum .order-icon { width: 60px; height: 60px; }
+
+.favs-header { margin: 20px auto; padding: 0 20px; text-align: center; }
+
+.favs-list { list-style-type: none; margin: 0; padding: 0; text-align: center; }
+.favs-list .fav { padding: 0; background-color: rgba(38, 166, 217, 0.2); margin: 3px 0; border: 5px solid transparent; }
+.favs-list .fav a { color: white; }
+.favs-list .fav a:hover, .favs-list .fav a:focus { text-decoration: none; }
+.favs-list .fav-icon { vertical-align: middle; width: 48px; }
+.favs-list .fav-name { padding: 10px; }
+.favs-list .fav-delete { display: inline-block; background-size: 22px 22px; background-position: 50% 50%; width: 22px; height: 22px; vertical-align: middle; }
+
+.favs-share { width: 80%; margin: 20px auto; }
+.favs-share select { color: #222; }
+.favs-share textarea { font-family: verdana, sans-serif; width: 100%; }
