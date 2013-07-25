@@ -1,3 +1,10 @@
+<?php
+	define('PROD', (!empty($_SERVER['SERVER_NAME']) && strpos($_SERVER['SERVER_NAME'], "nautsbuilder.com") !== false));
+	// define('PROD', true);
+	$now = time();
+	$v = "900";
+?>
+
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html lang="en" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html lang="en" class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -9,8 +16,11 @@
 		<title>Nautsbuilder - Awesomenauts builder: skills calculator, skills simulator - Make and share your Awesomenauts builds!</title>
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
-		<link rel="stylesheet" href="css/style.css?v=900">
-		<!-- <link rel="stylesheet" href="dist/styles.min.css?v=900"> -->
+		<?php if (!PROD): ?>
+		<link rel="stylesheet" href="css/style.css?v=<?php echo $v ?>">
+		<?php else: ?>
+		<link rel="stylesheet" href="dist/styles.min.css?v=<?php echo $v ?>">
+		<?php endif ?>
 		<script src="js/lib/modernizr.custom.js"></script>
 	</head>
 	<body>
@@ -238,6 +248,9 @@
 		</ul>
 		</script>
 
+		<script src="data/last-update.js?v=<?php echo $now ?>"></script>
+		<script src="js/nautsbuilder/spreadsheet/last-update.js?v=<?php echo $now ?>"></script>
+		<?php if (!PROD): ?>
 		<script src="js/lib/jquery.min.js"></script>
 		<script src="js/lib/underscore.js"></script>
 		<script src="js/lib/backbone.js"></script>
@@ -246,30 +259,29 @@
 		<script src="js/lib/mousetooltip.js"></script>
 		<script src="js/lib/fastclick.js"></script>
 		<script src="js/lib/jquery.sortable.js"></script>
-		<script src="js/nautsbuilder/utils.js?v=900"></script>
-		<script src="data/last-update.js?v=900"></script>
-		<script src="js/nautsbuilder/spreadsheet/last-update.js?v=900"></script>
-		<script src="js/nautsbuilder/data/character.js?v=900"></script>
-		<script src="js/nautsbuilder/data/skill.js?v=900"></script>
-		<script src="js/nautsbuilder/data/upgrade.js?v=900"></script>
-		<script src="js/nautsbuilder/data/step.js?v=900"></script>
-		<script src="js/nautsbuilder/data/favorite.js?v=900"></script>
-		<script src="js/nautsbuilder/views/characters.js?v=900"></script>
-		<script src="js/nautsbuilder/views/character.js?v=900"></script>
-		<script src="js/nautsbuilder/views/character-build.js?v=900"></script>
-		<script src="js/nautsbuilder/views/character-order.js?v=900"></script>
-		<script src="js/nautsbuilder/views/character-info.js?v=900"></script>
-		<script src="js/nautsbuilder/views/skill.js?v=900"></script>
-		<script src="js/nautsbuilder/views/upgrade.js?v=900"></script>
-		<script src="js/nautsbuilder/views/favorites.js?v=900"></script>
-		<script src="js/nautsbuilder/app.js?v=900"></script>
-		<script src="js/main.js?v=900"></script>
+		<script src="js/nautsbuilder/utils.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/data/character.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/data/skill.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/data/upgrade.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/data/step.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/data/favorite.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/views/characters.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/views/character.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/views/character-build.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/views/character-order.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/views/character-info.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/views/skill.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/views/upgrade.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/views/favorites.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/app.js?v=<?php echo $v ?>"></script>
+		<script src="js/main.js?v=<?php echo $v ?>"></script>
 		<!-- ok so this is ugly - be sure to put the update.js script at the very end so that in cases of crash, it doesn't put down the whole app
 		in fact, there is a rare bug with google spreadsheet API that will make Tabletop crash. I can't reproduce and well, can't debug this SO updating data is made at the very end in case the bug occurs -->
-		<!--<script src="js/nautsbuilder/spreadsheet/update.js?v=900"></script> -->
-
-		<!--<script src="dist/libs.min.js?v=900"></script>
-		<script src="dist/scripts.min.js?v=900"></script> -->
+		<script src="js/nautsbuilder/spreadsheet/update.js?v=<?php echo $v ?>"></script>
+		<?php else: ?>
+		<script src="dist/libs.min.js?v=<?php echo $v ?>"></script>
+		<script src="dist/scripts.min.js?v=<?php echo $v ?>"></script>
+		<?php endif ?>
 		<script>
 			var _gaq=[['_setAccount','UA-13184829-6'],['_trackPageview']];
 			(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
