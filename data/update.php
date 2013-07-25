@@ -21,7 +21,9 @@ leiminauts.lastServerDataUpdate = " . time()*1000 . "; //" . date('Y-m-d H:i:s')
 			echo "\n", $sheet, ' ', $type, " ok";
 		} else {
 			$errors++;
-			echo "\n", $sheet, ' ', $type, " NOT OK MAN, NOT OKAY, OKAY?";
+			echo "\n\n\n";
+			print_r($json);
+			echo "\n", $sheet, ' ', $type, json_last_error(), " NOT OK MAN, NOT OKAY, OKAY?";
 		}
 	}
 
