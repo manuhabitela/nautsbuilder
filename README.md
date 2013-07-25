@@ -48,6 +48,7 @@ Characters should be listed in the same order as they are in the character selec
 * If an upgrade is common to every character or so (present in the 4th row of upgrades, like Solar Tree or Piggy Bank), bind it to the "Jump" skill.
 * If the upgrade replaces a common upgrade (like Solar Krab Burgers for Voltar), bind the upgrade to the character's jump skill (for Voltar, this would be "Hover"), and write the upgrade it must replaces in the `replaces` field (for Voltar and his burgers, this would be "Piggy Bank").
 * Upgrade has multiple steps: describe them in `step1`, `step2`... fields. **Steps are formatted just like skill effects**: a `;` separated list of `key:value` pairs. The "keys" should match the ones of the skill. For example, if a skill has a `damage: 8`, and one of its upgrades adds 4 damage, make sure to write `damage: +4` in the step field, and not `damages: +4` or `adds 4 damage`.
+* If a skill has multiple upgrades with effects that should not stack, effect values should be prefixed with a `@`. For example, Lonestar's Bull has two Slow upgrades. The slow duration is 3 seconds for each but they don't stack to make 6 seconds if you take both. The effect of Mature Ribbit Snail Slime is, in the end, written like this `Slowing Power: +30%; Slow Duration: @3s`.
 
 ## License
 
