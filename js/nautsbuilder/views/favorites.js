@@ -7,7 +7,9 @@ leiminauts.FavoritesView = Backbone.View.extend({
 	className: 'favorites-list-container',
 
 	events: {
-		"click .fav-delete": "deleteFavorite"
+		"click .fav-delete": "deleteFavorite",
+		"click .favs-share textarea": "focusList",
+		"change .favs-share-switch": "render"
 	},
 
 	initialize: function() {
@@ -20,9 +22,17 @@ leiminauts.FavoritesView = Backbone.View.extend({
 	},
 
 	render: function() {
-		this.$el.html(this.template({ "favorites": this.collection.toJSON() }));
+		var data = this.collection.toJSON();
+		var favoritesTextType = this.$('.favs-share-switch').val() || "forum";
+		var favoritesTextList = _.template( $('#favs-list-' + favoritesTextType + '-tpl').html(), { "favorites": data, "root": leiminauts.root });
+		this.$el.html(this.template({ "favorites": data, "favoritesText": favoritesTextList }));
 		this.assign(this.characters, '.chars');
+		this.$('.favs-share-switch').val(favoritesTextType);
 		return this;
+	},
+
+	focusList: function(e) {
+		this.$('.favs-share textarea').select();
 	},
 
 	deleteFavorite: function(e) {

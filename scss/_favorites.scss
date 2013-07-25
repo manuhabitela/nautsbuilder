@@ -1,3 +1,9 @@
+.favs-header {
+	margin: 20px auto;
+	padding: 0 20px;
+	text-align: center;
+}
+
 .favs-list {
 	list-style-type: none;
 	margin: 0;
@@ -34,5 +40,17 @@
 		width: 22px;
 		height: 22px;
 		vertical-align: middle;
+	}
+}
+
+.favs-share {
+	width: 80%;
+	margin: 20px auto;
+	select {
+		color: #222;
+	}
+	textarea {
+		font-family: verdana, sans-serif;
+		width: 100%;
 	}
 }

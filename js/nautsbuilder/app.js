@@ -13,6 +13,8 @@ leiminauts.App = Backbone.Router.extend({
 	initialize: function(options) {
 		leiminauts.ev = _({}).extend(Backbone.Events);
 
+		leiminauts.root = window.location.host;
+
 		if (options.data !== undefined) {
 			this.data = new leiminauts.CharactersData(null, { data: options.data, console: options.console });
 			this.data.on('selected', function(naut) {
