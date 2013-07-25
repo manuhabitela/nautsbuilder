@@ -16,6 +16,7 @@
 		<title>Nautsbuilder - Awesomenauts builder: skills calculator, skills simulator - Make and share your Awesomenauts builds!</title>
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
+		<link rel="icon" type="image/png" href="img/favicon.png">
 		<?php if (!PROD): ?>
 		<link rel="stylesheet" href="css/style.css?v=<?php echo $v ?>">
 		<?php else: ?>
