@@ -165,11 +165,22 @@ leiminauts.App = Backbone.Router.extend({
 		var character = charView.model;
 		var currentUrl = this.getCurrentUrl();
 		var urlParts = currentUrl.split('/');
+		var isCompressed = !!(urlParts.length > 1 && urlParts[1].length !== 28);
 		var build = urlParts.length > 1 ? urlParts[1] : null;
 		var order = urlParts.length > 2 && !_(['forum', 'console']).contains(urlParts[2]) ? urlParts[2] : null;
+
 		if (build === null) {
 			character.reset();
 			return false;
+		}
+		if(isCompressed) {
+			if(build != null)
+				build = this._buildDecompress(build);
+			if(order != null)
+				order = this._orderDecompress(order);
+		} else {
+			if(order != null)
+				order = order.split('-');
 		}
 		var currentSkill = null;
 		//we look at the build as a grid: 4 skills + 6 upgrades by skills = 28 items
@@ -185,11 +196,10 @@ leiminauts.App = Backbone.Router.extend({
 
 		if (order) {
 			var grid = this._initGrid();
-			var orderPositions = order.split('-');
-			var count = _(orderPositions).countBy(function(o) { return o; });
+			var count = _(order).countBy(function(o) { return o; });
 			var doneSteps = {};
 			var items = [];
-			_(orderPositions).each(function(gridPos, i) {
+			_(order).each(function(gridPos, i) {
 				var item = grid[gridPos-1];
 				if (item instanceof leiminauts.Skill)
 					items.push(item);
@@ -225,6 +235,7 @@ leiminauts.App = Backbone.Router.extend({
 				buildUrl += upgrade.get('current_step').get('level');
 			});
 		});
+		buildUrl = this._buildCompress(buildUrl);
 		if (order && order.length > 0) {
 			order.each(function(item) { //item can be a skill or an upgrade step
 				//get the position on the grid
@@ -240,7 +251,7 @@ leiminauts.App = Backbone.Router.extend({
 						orderUrlParts.push(_(grid).indexOf(upgrade)+1);
 				}
 			});
-			orderUrl = '/' + orderUrlParts.join('-');
+			orderUrl = '/' + this._orderCompress(orderUrlParts);
 		}
 
 		var currentUrl = this.getCurrentUrl();
@@ -288,7 +299,7 @@ leiminauts.App = Backbone.Router.extend({
 		var order = orderStr.split(''), res = [];
 		for(key in order) {
 			if(order.hasOwnProperty(key)) {
-				res.push(this.convArray.indexOf(order[key]));
+				res.push(_(this.convArray).indexOf(order[key]));
 			}
 		}
 		return res;
