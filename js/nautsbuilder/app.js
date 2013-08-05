@@ -14,6 +14,17 @@ leiminauts.App = Backbone.Router.extend({
 		leiminauts.ev = _({}).extend(Backbone.Events);
 
 		leiminauts.root = window.location.host;
+		
+		this.convArray = [];
+		for(var i = 0; i <= 61; i++) {
+			if(i < 10) {
+				this.convArray.push(i);
+			} else if(i < 36) {
+				this.convArray.push(i.toString(36));
+			} else {
+				this.convArray.push((i - 26).toString(36).toUpperCase();
+			}
+		}
 
 		if (options.data !== undefined) {
 			this.data = new leiminauts.CharactersData(null, { data: options.data, console: options.console });
@@ -253,6 +264,34 @@ leiminauts.App = Backbone.Router.extend({
 		//Without any success.
 		//Sadness.
 		return _(window.location.hash.substring(1)).trim('/').replace('ø', 'o'); //no # and trailing slash and no special unicode characters
+	},
+	
+	_buildCompress: function(build) {
+		return parseInt(build, 2).toString(36);
+	},
+	
+	_buildDecompress: function(build) {
+		return parseInt(build, 36).toString(2);
+	},
+	
+	_orderCompress: function(order) {
+		var res = [];
+		for(key in order) {
+			if(order.hasOwnProperty(key)) {
+				res.push(this.convArray[order[key]]);
+			}
+		}
+		return res.join('');
+	},
+	
+	_orderDecompress: function(orderStr) {
+		var order = orderStr.split(''), res = [];
+		for(key in order) {
+			if(order.hasOwnProperty(key)) {
+				res.push(this.convArray.indexOf(order[key]));
+			}
+		}
+		return res;
 	},
 
 	_initGrid: function() {
