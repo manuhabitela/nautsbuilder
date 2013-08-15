@@ -223,7 +223,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			var solar = effects.findWhere({key: "solar"});
 			var solarPerMin = effects.findWhere({key: "solar per min"});
 			if (!solar)
-				effects.push({key: "solar", value: 200});
+				effects.push({key: "solar", value: 235});
 			if (!solarPerMin)
 				effects.push({key: "solar per min", value: 30});
 		}
@@ -347,7 +347,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			var seahorseEffect = null;
 			if (seahorse) {
 				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "extra spike" }) ), 1 );
-				seahorseEffect = {key: "Extra Spike", value: dmg/2};
+				seahorseEffect = {key: "Extra Spike", value: dmg*0.4};
 				effects.push(seahorseEffect);
 			}
 
