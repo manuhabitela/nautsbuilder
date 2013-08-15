@@ -1609,10 +1609,10 @@ $(function() {
 	}
 }());
 ;(function() {
-	//we update server data if it's obsolete or here since more than 7 days
+	//we update server data if it's obsolete or here since more than 2 days
 	var update = leiminauts.lastServerDataUpdate < leiminauts.lastDataUpdate;
 	if (!update)
-		update = (new Date().getTime() - leiminauts.lastServerDataUpdate) > (1000*60*60*24*7);
+		update = (new Date().getTime() - leiminauts.lastServerDataUpdate) > (1000*60*60*24*2);
 	if (update) {
 		var sheets = {
 			steam: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc",
