@@ -347,7 +347,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			var seahorseEffect = null;
 			if (seahorse) {
 				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "extra spike" }) ), 1 );
-				seahorseEffect = {key: "Extra Spike", value: dmg/2};
+				seahorseEffect = {key: "Extra Spike", value: dmg*0.4};
 				effects.push(seahorseEffect);
 			}
 
