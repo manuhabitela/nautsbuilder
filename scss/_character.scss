@@ -201,29 +201,3 @@ html:not(.forum) .char-builder.maxed-out {
 		margin: 5px 0;
 	}
 }
-
-.fav-add-content {
-	* {
-		display: inline-block;
-		vertical-align: bottom;
-	}
-	.fav-add-submit {
-		min-height: 32px;
-		background: none;
-		border-radius: 3px;
-		@include sized-image-replacement('star_small.png');
-		opacity: 0.6;
-		&:hover, &:focus, .fav-add.favorited & {
-			opacity: 1;
-		}
-		&:active, .fav-add.favorited &:active {
-			opacity: 0.5;
-		}
-		~ .favorited-label, .fav-add.favorited & ~ .not-favorited-label {
-			display: none;
-		}
-		~ .not-favorited-label, .fav-add.favorited & ~ .favorited-label {
-			display: inline-block;
-		}
-	}
-}
