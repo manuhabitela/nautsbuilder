@@ -2,7 +2,7 @@
 	define('PROD', (!empty($_SERVER['SERVER_NAME']) && strpos($_SERVER['SERVER_NAME'], "nautsbuilder.com") !== false));
 	// define('PROD', true);
 	$now = time();
-	$v = "011";
+	$v = "0.11";
 ?>
 
 <!DOCTYPE html>
@@ -45,7 +45,7 @@
 					<input type="hidden" name="bn" value="PP-DonationsBF:btn_donate_SM.gif:NonHostedGuest">
 					<button>Buy me a beer! Or a pizza. Whatever.</button>
 				</form>
-				<a href="https://github.com/Leimi/awesomenauts-build-maker" target="_blank">v0.10</a> - <a style="color: #ccc" href="http://www.awesomenauts.com/forum/viewtopic.php?f=14&amp;t=13663" target="_blank">Forum topic</a> -
+				<a href="https://github.com/Leimi/nautsbuilder" target="_blank"><?php echo "v".$v ?></a> - <a style="color: #ccc" href="http://www.awesomenauts.com/forum/viewtopic.php?f=14&amp;t=13663" target="_blank">Forum topic</a> -
 				Data gathered from the <a href="http://www.awesomenauts.com" target="_blank">Awesomenauts game</a> and the <a href="http://awesomenauts.wikia.com/wiki/Awesomenauts_Wiki" target="_blank">Wiki</a> by the community.
 			</p>
 		</div>
