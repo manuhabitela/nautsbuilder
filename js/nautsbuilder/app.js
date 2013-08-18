@@ -6,6 +6,7 @@
 leiminauts.App = Backbone.Router.extend({
 	routes: {
 		"(console)": "charactersList",
+		"favorites": "favoritesList",
 		":naut(/:build)(/:order)(/console)(/forum)(/)": "buildMaker"
 	},
 
@@ -21,6 +22,7 @@ leiminauts.App = Backbone.Router.extend({
 			}, this);
 		}
 		this.$el = $(options.el);
+		this.favorites = new leiminauts.Favorites();
 
 		this.console = options.console;
 		$('html').toggleClass('console', this.console);
@@ -35,6 +37,12 @@ leiminauts.App = Backbone.Router.extend({
 	},
 
 	handleEvents: function() {
+		leiminauts.ev.on('toggle-favorite', function(data) {
+			this.favorites.toggle(data);
+		}, this);
+		leiminauts.ev.on('add-favorite', function(data) {
+			this.favorites.addToStorage(data);
+		}, this);
 		leiminauts.ev.on('update-specific-links', this.updateSpecificLinks, this);
 	},
 
@@ -73,6 +81,19 @@ leiminauts.App = Backbone.Router.extend({
 		this.updateSpecificLinks();
 	},
 
+	favoritesList: function() {
+		this._beforeRoute();
+		$('html').addClass('page-blue').removeClass('page-red');
+
+		var favsView = new leiminauts.FavoritesView({
+			collection: this.favorites,
+			characters: this.data,
+			console: this.console
+		});
+		this.showView( favsView );
+		this.updateSpecificLinks();
+	},
+
 	buildMaker: function(naut, build, order) {
 		if (!_.isNaN(parseInt(naut, 10)))
 			return false;
@@ -100,6 +121,7 @@ leiminauts.App = Backbone.Router.extend({
 		character.reset();
 		var charView = new leiminauts.CharacterView({
 			collection: this.data,
+			favorites: this.favorites,
 			model: character,
 			console: this.console,
 			forum: this.forum
