@@ -2,7 +2,7 @@
 	define('PROD', (!empty($_SERVER['SERVER_NAME']) && strpos($_SERVER['SERVER_NAME'], "nautsbuilder.com") !== false));
 	// define('PROD', true);
 	$now = time();
-	$v = "0.11";
+	$v = "0.11.1";
 ?>
 
 <!DOCTYPE html>
@@ -139,16 +139,6 @@
 
 				</textarea>
 			</label>
-
-			<p>
-				<form action="#" class="fav-add <%= favorite ? 'favorited' : '' %>">
-					<div class="fav-add-content">
-						<button type="button" class="fav-add-submit" title="<%= favorite ? 'Remove from' : 'Add to' %> favorites">Fav</button>
-						<label class="favorited-label">Favorite name <input type="text" <%= favorite ? 'value="' + favorite.name + '"' : '' %> class="fav-add-name" placeholder="<%= _(name).capitalized() %>"></label>
-						<label class="not-favorited-label">Favorite this build</build>
-					</div>
-				</form>
-			</p>
 			<% } %>
 		</script>
 
@@ -238,6 +228,7 @@
 
 		<script type="text/template" id="favs-tpl">
 		<div class="chars"></div>
+		<p class="warning">The favorites list, <a href="http://www.awesomenauts.com/forum/viewtopic.php?p=216258#p216258" target="_blank">being kinda useless</a>, will be totally removed at the end of August. Be sure to backup your builds in your browser's bookmarks or something.</p>
 		<p class="favs-header">These are your favorite builds. They are stored locally on your device. You can share them all at once easily by copy/pasting all the URLs at the bottom.</p>
 		<ul class="favs-list">
 		<% _.each(favorites, function(fav) { %>

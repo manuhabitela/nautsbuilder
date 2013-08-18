@@ -92,3 +92,13 @@
 		text-decoration: underline;
 	}
 }
+
+.warning {
+	background: rgba(red, 0.5);
+	text-align: center;
+	color: white;
+	padding: 10px;
+	a {
+		color: white;
+	}
+}

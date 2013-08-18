@@ -22,6 +22,9 @@
 #footer button, .forum .char-forum-switch button { display: inline-block; font-family: verdana; background: rgba(255, 255, 255, 0.2); border: none; border-radius: 3px; padding: 2px 4px; margin: 0; color: #ccc; text-decoration: none; }
 #footer button:hover, .forum .char-forum-switch button:hover, #footer button:focus, .forum .char-forum-switch button:focus { background: none; text-decoration: underline; }
 
+.warning { background: rgba(255, 0, 0, 0.5); text-align: center; color: white; padding: 10px; }
+.warning a { color: white; }
+
 * { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
 
 audio, canvas, video { display: inline-block; }
@@ -61,7 +64,7 @@ img { border: 0; }
 
 svg:not(:root) { overflow: hidden; }
 
-fieldset { border: 1px solid silver; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
+fieldset { border: 1px solid #c0c0c0; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
 
 legend { border: 0; padding: 0; }
 
