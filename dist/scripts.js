@@ -1,4 +1,4 @@
-/* Nautsbuilder - Awesomenauts build maker v0.11.1 - https://github.com/Leimi/awesomenauts-build-maker
+/* Nautsbuilder - Awesomenauts build maker v0.11.2 - https://github.com/Leimi/awesomenauts-build-maker
 * Copyright (c) 2013 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. *//* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -212,14 +212,19 @@ leiminauts.Skill = Backbone.Model.extend({
 		//the jump skill has common upgrades, but also some custom ones sometimes
 		if (this.get('type') == "jump") {
 			skillUpgrades = _(leiminauts.upgrades).where({ skill: "Jump" });
-			//some chars have turbo pills, others have light; we remove the one unused
+			//some chars have turbo pills, others have light, others have companion; we remove the ones unused
 			var jumpEffects = leiminauts.utils.treatEffects(this.get('effects'));
 			var pills = _(jumpEffects).findWhere({key: "pills"});
-			var unwantedPills = "Power Pills Light";
-			if (pills && pills.value == "light") {
-				unwantedPills = "Power Pills Turbo";
-			}
-			skillUpgrades.splice( _(skillUpgrades).indexOf( _(skillUpgrades).findWhere({ name: unwantedPills }) ), 1 );
+			var unwantedPills = [];
+			if (pills && pills.value == "light")
+				unwantedPills = ["Power Pills Turbo", "Power Pills Companion"];
+			else if (pills && pills.value == "companion")
+				unwantedPills = ["Power Pills Light", "Power Pills Turbo"];
+			else
+				unwantedPills = ["Power Pills Light", "Power Pills Companion"];
+			_(unwantedPills).each(function(pill) {
+				skillUpgrades.splice( _(skillUpgrades).indexOf( _(skillUpgrades).findWhere({ name: pill }) ), 1 );
+			});
 
 			var effects = leiminauts.utils.treatEffects(this._originalEffects);
 			effects.splice( _(effects).indexOf( _(effects).findWhere({ key: 'pills' }) ), 1 );
@@ -581,7 +586,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			//if one part is not detected (ie we have a "missile damage" effect but no "missile attack speed") we take default attack speed and vice versa
 			//"Bonus Damage" or "Avg damage" are usually not calculated
 			var bonusCheck = { "damage": [], "attackSpeed": [] };
-			var deniedBonusWords = ["storm", "bonus", "avg", "turret", "yakoiza"];
+			var deniedBonusWords = ["storm", "bonus", "avg", "turret", "yakoiza", "grenade", "snipe"];
 			effects.each(function(e) {
 				var denied = false;
 				_(deniedBonusWords).each(function(word) { if (e.key.toLowerCase().indexOf(word) === 0) { denied = true; }});
@@ -788,8 +793,20 @@ leiminauts.CharactersView = Backbone.View.extend({
 		this.$el.on('click', '.current-char', _.bind(this.reset, this));
 	},
 
-	render: function() {
-		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar, character: this.character, console: this.options.console, mini: this.mini }));
+	render: function(opts) {
+		opts = _.extend({}, { currentCharOnly: false }, (opts || {}) );
+		var newHtml = this.template({
+			characters: this.collection.toJSON(),
+			currentChar: this.currentChar,
+			character: this.character,
+			console: this.options.console,
+			mini: this.mini
+		});
+		if (opts.currentCharOnly) {
+			this.$('.current-char').html( $( $.parseHTML('<div>' + newHtml + '</div>') ).find('.current-char').html() );
+		}
+		else
+			this.$el.html(newHtml);
 		return this;
 	},
 
@@ -802,7 +819,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 		var character = $(e.currentTarget).attr('data-char');
 		if (character && (!this.currentChar || this.currentChar.get('name') !== character)) {
 			this.currentChar = this.collection.findWhere({name: character});
-			this.render();
+			this.render({ currentCharOnly: true });
 		}
 	},
 
@@ -1542,7 +1559,9 @@ leiminauts.App = Backbone.Router.extend({
 				currentSkill = character.get('skills').at(i/7);
 				currentSkill.setActive(build.charAt(i) === "1");
 			} else if (currentSkill) { //it's an upgrade!
-				currentSkill.get('upgrades').at( (i % 7) - 1 ).setStep(build.charAt(i));
+				var upgrd = currentSkill.get('upgrades').at( (i % 7) - 1 );
+				if (upgrd)
+					upgrd.setStep(build.charAt(i));
 			}
 		}
 

@@ -181,7 +181,9 @@ body, .page-blue body { background-color: #001D2F; background-image: -webkit-gra
 
 .chars-list { list-style-type: none; margin: 0; padding: 0; }
 .chars-list-container .chars-list { position: fixed; left: 0; right: 0; bottom: 30px; height: 90px; text-align: center; }
+@media only screen and (max-width: 1350px) { .chars-list-container .chars-list { height: 70px; } }
 .chars-list .char { display: inline-block; cursor: pointer; padding: 0; margin: 3px 0; border: 5px solid transparent; }
+@media only screen and (max-width: 1350px) { .chars-list .char { margin: 1px 0; } }
 .chars-list .char:hover, .chars-list .char.active { border-color: #FFF292; border-radius: 5px; }
 .chars-list .char.active, .chars-list .char.beta.active { border-color: #ffec5f; }
 .chars-list .char.beta { border-color: rgba(255, 0, 0, 0.6); }
@@ -193,6 +195,7 @@ body, .page-blue body { background-color: #001D2F; background-image: -webkit-gra
 .char-builder .chars-list .char.beta:hover:after { display: block; }
 .char-builder .chars-list .char.active.beta:after { display: block; }
 .chars-list .char-icon { vertical-align: middle; width: 70px; }
+@media only screen and (max-width: 1350px) { .chars-list .char-icon { width: 50px; } }
 .chars-list.mini { margin-bottom: 20px; text-align: center; }
 .chars-list.mini .char { border-width: 1px; margin: 2px 0 2px -4px; }
 .chars-list.mini .char:hover, .chars-list.mini .char.active { border-radius: 0; }
