@@ -261,8 +261,6 @@
 <% _.each(favorites, function(fav) { %>[url="<%= root + '/#' + fav.hash %>"]<%= fav.character.name + (fav.name ? ' - ' + fav.name : '') %>[/url]&#13;&#10;<% }); %></script>
 
 
-		<script src="http://c.jslogger.com/jslogger.js"></script>
-		<script>window.jslogger = new JSLogger();</script>
 		<script src="data/last-update.js?v=<?php echo $now ?>"></script>
 		<script src="js/nautsbuilder/spreadsheet/last-update.js?v=<?php echo $now ?>"></script>
 		<?php if (!PROD): ?>
