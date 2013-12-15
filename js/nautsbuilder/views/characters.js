@@ -28,8 +28,20 @@ leiminauts.CharactersView = Backbone.View.extend({
 		this.$el.on('click', '.current-char', _.bind(this.reset, this));
 	},
 
-	render: function() {
-		this.$el.html(this.template({ "characters": this.collection.toJSON(), "currentChar": this.currentChar, character: this.character, console: this.options.console, mini: this.mini }));
+	render: function(opts) {
+		opts = _.extend({}, { currentCharOnly: false }, (opts || {}) );
+		var newHtml = this.template({
+			characters: this.collection.toJSON(),
+			currentChar: this.currentChar,
+			character: this.character,
+			console: this.options.console,
+			mini: this.mini
+		});
+		if (opts.currentCharOnly) {
+			this.$('.current-char').html( $( $.parseHTML('<div>' + newHtml + '</div>') ).find('.current-char').html() );
+		}
+		else
+			this.$el.html(newHtml);
 		return this;
 	},
 
@@ -42,7 +54,7 @@ leiminauts.CharactersView = Backbone.View.extend({
 		var character = $(e.currentTarget).attr('data-char');
 		if (character && (!this.currentChar || this.currentChar.get('name') !== character)) {
 			this.currentChar = this.collection.findWhere({name: character});
-			this.render();
+			this.render({ currentCharOnly: true });
 		}
 	},
 
