@@ -43,14 +43,19 @@ leiminauts.Skill = Backbone.Model.extend({
 		//the jump skill has common upgrades, but also some custom ones sometimes
 		if (this.get('type') == "jump") {
 			skillUpgrades = _(leiminauts.upgrades).where({ skill: "Jump" });
-			//some chars have turbo pills, others have light; we remove the one unused
+			//some chars have turbo pills, others have light, others have companion; we remove the ones unused
 			var jumpEffects = leiminauts.utils.treatEffects(this.get('effects'));
 			var pills = _(jumpEffects).findWhere({key: "pills"});
-			var unwantedPills = "Power Pills Light";
-			if (pills && pills.value == "light") {
-				unwantedPills = "Power Pills Turbo";
-			}
-			skillUpgrades.splice( _(skillUpgrades).indexOf( _(skillUpgrades).findWhere({ name: unwantedPills }) ), 1 );
+			var unwantedPills = [];
+			if (pills && pills.value == "light")
+				unwantedPills = ["Power Pills Turbo", "Power Pills Companion"];
+			else if (pills && pills.value == "companion")
+				unwantedPills = ["Power Pills Light", "Power Pills Turbo"];
+			else
+				unwantedPills = ["Power Pills Light", "Power Pills Companion"];
+			_(unwantedPills).each(function(pill) {
+				skillUpgrades.splice( _(skillUpgrades).indexOf( _(skillUpgrades).findWhere({ name: pill }) ), 1 );
+			});
 
 			var effects = leiminauts.utils.treatEffects(this._originalEffects);
 			effects.splice( _(effects).indexOf( _(effects).findWhere({ key: 'pills' }) ), 1 );

@@ -168,7 +168,9 @@ leiminauts.App = Backbone.Router.extend({
 				currentSkill = character.get('skills').at(i/7);
 				currentSkill.setActive(build.charAt(i) === "1");
 			} else if (currentSkill) { //it's an upgrade!
-				currentSkill.get('upgrades').at( (i % 7) - 1 ).setStep(build.charAt(i));
+				var upgrd = currentSkill.get('upgrades').at( (i % 7) - 1 );
+				if (upgrd)
+					upgrd.setStep(build.charAt(i));
 			}
 		}
 
