@@ -124,6 +124,9 @@
 		bottom: 30px;
 		height: 90px;
 		text-align: center;
+		@media only screen and (max-width: 1350px) {
+			height: 70px;
+		}
 	}
 	list-style-type: none;
 	margin: 0;
@@ -133,6 +136,9 @@
 		cursor: pointer;
 		padding: 0;
 		margin: 3px 0;
+		@media only screen and (max-width: 1350px) {
+			margin: 1px 0;
+		}
 		border: 5px solid transparent;
 		&:hover, &.active {
 			border-color: #FFF292;
@@ -188,6 +194,9 @@
 	.char-icon {
 		vertical-align: middle;
 		width: 70px;
+		@media only screen and (max-width: 1350px) {
+			width: 50px;
+		}
 	}
 
 	.forum & {
