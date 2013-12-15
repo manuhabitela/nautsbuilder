@@ -98,9 +98,6 @@
 					</a>
 				</li> -->
 			<% } %>
-			<% if (mini) { %>
-				<li title="Favorites" class="char fav-button"><a href="#favorites"><img class="char-icon" src="img/star_<%= character ? 'small' : 'big' %>.png" alt="Favorites list"></a></li>
-			<% } %>
 			</ul>
 		</script>
 
