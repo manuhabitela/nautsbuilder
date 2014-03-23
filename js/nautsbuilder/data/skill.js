@@ -449,17 +449,16 @@ leiminauts.Skill = Backbone.Model.extend({
 	setSpecificEffectsTheReturnOfTheRevenge: function() {
 		if (!this.get('selected')) return false;
 		var effects = _(this.get('effects'));
-		if (this.get('name') == "Butterfly Shot") {
-			this.multiplyDamage(2, effects);
-		}
-		if (this.get('name') == "Bubble Gun") {
-			var times, timess = effects.findWhere({ key: "bullets" });
-			times = times ? +times.value : 3;
-			this.multiplyDamage(times, effects);
-			effects.splice( effects.indexOf( timess ), 1 );
 
-			this.multiplyDamage(times, effects, "godfish ");
-			this.multiplyDamage(times, effects, "yakoiza ");
+		var damageMultiplier = effects.findWhere({ key: 'damage multiplier'});
+		if (damageMultiplier && damageMultiplier.value) {
+			effects.splice( effects.indexOf( damageMultiplier ), 1 );
+			this.multiplyDamage(damageMultiplier.value, effects);
+		}
+
+		if (this.get('name') == "Bubble Gun") {
+			this.multiplyDamage(damageMultiplier.value, effects, "godfish ");
+			this.multiplyDamage(damageMultiplier.value, effects, "yakoiza ");
 		}
 	},
 
