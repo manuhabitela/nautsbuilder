@@ -4,6 +4,10 @@
 	if (!update)
 		update = (new Date().getTime() - leiminauts.lastServerDataUpdate) > (1000*60*60*24*2);
 	if (update) {
+		if ( $('.data-update-button').length ) {
+			$('.data-update-button').attr('disabled', 'disabled');
+		}
+
 		var sheets = {
 			steam: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc",
 			dev  : "0AuPP-DBESPOedHBBU1FCcWl2ZTZDSUdwM0JPcW0wV2c",
@@ -28,7 +32,7 @@
 				$('.data-updated-notice').html(text);
 			}
 		};
-		var onSheetDataUpdated = _.after(sheetsKey.length, function() { notifyUser("The Nautsbuilder's data is now up-to-date."); });
+		var onSheetDataUpdated = _.after(sheetsKey.length, function() { notifyUser("The <a href=\"/\">Nautsbuilder</a>'s data is now up-to-date!"); });
 
 		notifyUser("Updating data...");
 

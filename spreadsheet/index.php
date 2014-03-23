@@ -7,11 +7,14 @@
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
 		<link rel="icon" type="image/png" href="../img/favicon.png">
-		<?php if (!PROD): ?>
-		<!-- <link rel="stylesheet" href="../css/style.css?v=<?php echo $v ?>"> -->
-		<?php else: ?>
-		<!-- <link rel="stylesheet" href="../dist/styles.min.css?v=<?php echo $v ?>"> -->
-		<?php endif ?>
+		<style>
+			#container {
+				width: 600px;
+				margin: 20px auto;
+				text-align: center;
+				font-family: Arial, Helvetica, sans-serif;
+			}
+		</style>
 		<script src="../js/lib/modernizr.custom.js"></script>
 	</head>
 	<body>
@@ -23,7 +26,7 @@
 			<p>If you continue, the Nautsbuiler will be updated with the current spreadsheet data.</p>
 			<form action="/spreadsheet/update.php" method="post">
 				<input type="hidden" name="pleaseUpdateTheDataForMePleasePleasePlease" value="1">
-				<button>Ok, let's go</button>
+				<button class="data-update-button">Ok, let's go</button>
 			</form>
 
 			<p class="data-updated-notice"></p>
