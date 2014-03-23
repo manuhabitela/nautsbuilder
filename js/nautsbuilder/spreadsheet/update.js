@@ -6,7 +6,7 @@
 	if (update) {
 		var sheets = {
 			steam: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc",
-			dev  : "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc",
+			dev  : "0AuPP-DBESPOedHBBU1FCcWl2ZTZDSUdwM0JPcW0wV2c",
 			conso: "0AuPP-DBESPOedHJTeGo4QUZsY0hiUThaRWg1eUJrZFE"
 		};
 		var sheetsKey = _(sheets).keys();

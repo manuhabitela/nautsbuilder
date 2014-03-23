@@ -26,7 +26,7 @@
 				<button>Ok, let's go</button>
 			</form>
 
-			<div class="data-updated-notice"></div>
+			<p class="data-updated-notice"></p>
 		</div>
 
 		<?php $now = time(); ?>
