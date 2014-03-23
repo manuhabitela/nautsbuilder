@@ -417,7 +417,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			//if one part is not detected (ie we have a "missile damage" effect but no "missile attack speed") we take default attack speed and vice versa
 			//"Bonus Damage" or "Avg damage" are usually not calculated
 			var bonusCheck = { "damage": [], "attackSpeed": [] };
-			var deniedBonusWords = ["storm", "bonus", "avg", "turret", "yakoiza", "grenade", "snipe"];
+			var deniedBonusWords = ["storm", "bonus", "avg", "turret", "yakoiza", "grenade", "snipe", "min", "max", "droid"];
 			effects.each(function(e) {
 				var denied = false;
 				_(deniedBonusWords).each(function(word) { if (e.key.toLowerCase().indexOf(word) === 0) { denied = true; }});
