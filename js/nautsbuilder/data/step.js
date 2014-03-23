@@ -19,7 +19,7 @@ leiminauts.Step = Backbone.Model.extend({
 	},
 
 	updateDescription: function() {
-		this.set('description', this.get('description').replace(': @', ': '));
+		this.set('description', this.get('description').replace(/: @/g, ': '));
 	}
 });
 
