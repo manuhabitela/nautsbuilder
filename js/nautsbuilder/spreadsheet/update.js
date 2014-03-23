@@ -1,6 +1,6 @@
 ;(function() {
 	//we update server data if it's obsolete or here since more than 2 days
-	var update = leiminauts.lastServerDataUpdate < leiminauts.lastDataUpdate;
+	var update = leiminauts.lastServerDataUpdate < leiminauts.lastSpreadsheetUpdate;
 	if (!update)
 		update = (new Date().getTime() - leiminauts.lastServerDataUpdate) > (1000*60*60*24*2);
 	if (update) {

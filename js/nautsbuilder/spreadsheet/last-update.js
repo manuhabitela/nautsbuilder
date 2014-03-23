@@ -1,2 +1,3 @@
 window.leiminauts = window.leiminauts || {};
-leiminauts.lastDataUpdate = new Date("December 15, 2013 18:15:00 GMT+0200").getTime();
+
+leiminauts.lastSpreadsheetUpdate = 1395583627000; //2014-03-23 15:07:07
