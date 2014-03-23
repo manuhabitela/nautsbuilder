@@ -58,12 +58,12 @@ $(function() {
 	};
 
 	//Here we define what data to load - steam, dev, console? and from where - localStorage, server?
-	leiminauts.lastDataUpdate = leiminauts.lastDataUpdate || 0;
+	leiminauts.lastServerDataUpdate = leiminauts.lastServerDataUpdate || 0;
 	leiminauts.localDate = Modernizr.localstorage && localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.date') ?
 		localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.date') :
 		0;
 
-	if (!useLocalStorage || leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate) {
+	if (!useLocalStorage || leiminauts.lastServerDataUpdate === 0 || leiminauts.lastServerDataUpdate > leiminauts.localDate) {
 		loadData();
 	} else {
 		var dataOk = true;
