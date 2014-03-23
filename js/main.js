@@ -22,6 +22,7 @@ $(function() {
 
 	var consolenauts = window.location.hash.indexOf('console') !== -1;
 	var dev = window.location.hostname === "localhost";
+	var useLocalStorage = true;
 	leiminauts.sheets = [
 		{ name: "steam", key: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc" },
 		//dev spreadsheet: 0AuPP-DBESPOedGZHb1Ata1hKdFhSRHVzamN0WVUwMWc
@@ -46,7 +47,7 @@ $(function() {
 			$.ajax({url: dataUrl('skills'), dataType: "json"})
 		).done(function(chars, ups, sks) {
 			var data = { characters: chars[0], skills: sks[0], upgrades: ups[0] };
-			if (Modernizr.localstorage && !dev) {
+			if (Modernizr.localstorage && useLocalStorage) {
 				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.characters', JSON.stringify(data.characters));
 				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.skills', JSON.stringify(data.skills));
 				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.upgrades', JSON.stringify(data.upgrades));
@@ -62,7 +63,7 @@ $(function() {
 		localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.date') :
 		0;
 
-	if (dev || leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate) {
+	if (!useLocalStorage || leiminauts.lastDataUpdate === 0 || leiminauts.lastDataUpdate > leiminauts.localDate) {
 		loadData();
 	} else {
 		var dataOk = true;
