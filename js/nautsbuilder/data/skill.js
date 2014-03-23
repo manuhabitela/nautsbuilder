@@ -350,9 +350,12 @@ leiminauts.Skill = Backbone.Model.extend({
 			dmg = effects.findWhere({key: "damage"}).value;
 			var seahorse = this.getActiveUpgrade("dead seahorse head");
 			var seahorseEffect = null;
-			if (seahorse) {
+			var seahorsePercent = effects.findWhere({key: "extra spike damage"});
+			seahorsePercent = seahorsePercent ? parseInt(seahorsePercent.value, 10) : null;
+			if (seahorse && seahorsePercent) {
 				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "extra spike" }) ), 1 );
-				seahorseEffect = {key: "Extra Spike", value: dmg*0.4};
+				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "extra spike damage" }) ), 1 );
+				seahorseEffect = {key: "Extra Spike", value: dmg*seahorsePercent/100 };
 				effects.push(seahorseEffect);
 			}
 
@@ -361,7 +364,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			if (goldfish && goldfishEffect) {
 				goldfishEffect.value = goldfishEffect.value*1 + dmg;
 				if (seahorseEffect) {
-					effects.push({key: "Extra Spike With 150 Solar", value: Math.floor(goldfishEffect.value/2)});
+					effects.push({key: "Extra Spike With 150 Solar", value: Math.floor(goldfishEffect.value*seahorsePercent/100)});
 				}
 			}
 		}
