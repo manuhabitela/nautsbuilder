@@ -187,7 +187,7 @@ body, .page-blue body { background-color: #001D2F; background-image: -webkit-gra
 .chars-list .char:hover, .chars-list .char.active { border-color: #FFF292; border-radius: 5px; }
 .chars-list .char.active, .chars-list .char.beta.active { border-color: #ffec5f; }
 .chars-list .char.beta { border-color: rgba(255, 0, 0, 0.6); }
-.chars-list .char.beta:after { content: 'beta'; display: block; background: rgba(255, 0, 0, 0.6); }
+.chars-list .char.beta:after { content: 'beta'; display: block; background: rgba(255, 0, 0, 0.6); pointer-events: none; }
 .chars-list-container .chars-list .char.beta { position: relative; border-radius: 5px; }
 .chars-list-container .chars-list .char.beta:after { position: absolute; bottom: 0; left: 0; right: 0; }
 .char-builder .chars-list .char.beta { position: relative; }

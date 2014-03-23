@@ -153,6 +153,7 @@
 				content: 'beta';
 				display: block;
 				background: rgba(#FF0000, 0.6);
+				pointer-events: none;
 			}
 		}
 		.chars-list-container &.beta {
