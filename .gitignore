@@ -13,6 +13,8 @@ composer.phar
 node_modules
 
 .htaccess
+.htpasswd
+
 sftp-config*.json
 
 img/data/*.png
