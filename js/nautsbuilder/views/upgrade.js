@@ -49,7 +49,7 @@ leiminauts.UpgradeView = Backbone.View.extend({
 	updateStep: function() {
 		if (this.model.get('locked')) {
 			var skill = this.model.get('skill');
-			if (skill && skill.get('active'))
+			if (skill && (!_.isObject(skill) || skill.get('active')))
 				return false;
 			if (skill) skill.setActive(true);
 		}

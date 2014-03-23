@@ -11,19 +11,23 @@
 			self.hide();
 		},
 		html: function(html) {
+			if (!self.$tooltip) return false;
 			self.$tooltip.html(html);
 		},
 		show: function(html) {
+			if (!self.$tooltip) return false;
 			if (html !== undefined)
 				self.html(html);
 			self.$tooltip.removeClass('mouse-tooltip-hidden');
 			$(document).on('mousemove.tooltip', self._stickToMouse);
 		},
 		hide: function() {
+			if (!self.$tooltip) return false;
 			self.$tooltip.addClass('mouse-tooltip-hidden');
 			$(document).off('mousemove.tooltip');
 		},
 		_stickToMouse: function(e) {
+			if (!self.$tooltip) return false;
 			xOffset = self.opts.offset.x;
 			yOffset = self.opts.offset.y;
 			var win = $(window),
