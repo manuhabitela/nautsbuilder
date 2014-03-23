@@ -46,7 +46,7 @@
 					<button>Buy me a beer! Or a pizza. Whatever.</button>
 				</form>
 				<a href="https://github.com/Leimi/nautsbuilder" target="_blank"><?php echo "v".$v ?></a> - <a style="color: #ccc" href="http://www.awesomenauts.com/forum/viewtopic.php?f=14&amp;t=13663" target="_blank">Forum topic</a> -
-				Data gathered from the <a href="http://www.awesomenauts.com" target="_blank">Awesomenauts game</a> and the <a href="http://awesomenauts.wikia.com/wiki/Awesomenauts_Wiki" target="_blank">Wiki</a> by the community.
+				Data gathered from the <a href="http://www.awesomenauts.com" target="_blank">Awesomenauts game</a> and the <a href="http://awesomenauts.gamepedia.com/Awesomenauts_Wiki" target="_blank">Wiki</a> by the community.
 			</p>
 		</div>
 
