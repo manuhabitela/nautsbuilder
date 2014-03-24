@@ -452,31 +452,31 @@ leiminauts.Skill = Backbone.Model.extend({
 	setSpecificEffectsTheReturnOfTheRevenge: function() {
 		if (!this.get('selected')) return false;
 		var effects = _(this.get('effects'));
-		
+
 		effects.each(function(effect) {
-		    var result = (effect.key).match(/(.+) multiplier/i);		    
-		    if (result && effect.value) {
-		        effects.splice(effects.indexOf(effect), 1);
-			    this.multiplyEffect(effect.value, effects, result[1]);
-			    
-			    if (this.get('name') == "Bubble Gun") {
-			        this.multiplyEffect(effect.value, effects, "godfish damage");
-			        this.multiplyEffect(effect.value, effects, "yakoiza damage");
-		        }
-    		}
+			var result = (effect.key).match(/(.+) multiplier/i);
+			if (result && effect.value) {
+				effects.splice(effects.indexOf(effect), 1);
+				this.multiplyEffect(effect.value, effects, result[1]);
+
+				if (this.get('name') == "Bubble Gun") {
+					this.multiplyEffect(effect.value, effects, "godfish damage");
+					this.multiplyEffect(effect.value, effects, "yakoiza damage");
+				}
+			}
 		}, this);
 	},
 
 	multiplyEffect: function(times, effects, effectKey) {
 		effectKey = effectKey || "damage";
-		var effect = effects.findWhere({key: effectKey});		
+		var effect = effects.findWhere({key: effectKey});
 		if (effect) effect.value = leiminauts.utils.number(effect.value*times) + "&nbsp; ( " + effect.value + "×" + times + " )";
-		
+
 		var dmgLength = "damage".length;
 		if (effectKey.substr(-dmgLength) === "damage") {
-		    var dpsPrefix = effectKey.substr(0, effectKey.length - dmgLength);				
-		    var dps = effects.findWhere({key: dpsPrefix + "DPS"});
-		    if (dps) dps.value = leiminauts.utils.number(dps.value*times) + "&nbsp; ( " + dps.value + "×" + times + " )";
+			var dpsPrefix = effectKey.substr(0, effectKey.length - dmgLength);
+			var dps = effects.findWhere({key: dpsPrefix + "DPS"});
+			if (dps) dps.value = leiminauts.utils.number(dps.value*times) + "&nbsp; ( " + dps.value + "×" + times + " )";
 		}
 	},
 
