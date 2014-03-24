@@ -127,7 +127,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		
 		var activeSteps = this.getActiveSteps();		
 		this.set('effects', [], {silent: true});
-		var effects = this.mergeEffects(this.get('baseEffects'), activeSteps);
+		var effects = this.mergeEffectsAndSteps(this.get('baseEffects'), activeSteps);
 		this.applyUpgrades(effects);
 		
 		this.setSpecificEffects();
@@ -167,7 +167,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		return cost;		
 	},
 
-	mergeEffects: function(baseEffects, activeSteps) {		
+	mergeEffectsAndSteps: function(baseEffects, activeSteps) {		
 		var effects = {};		
 		
 		// Combine all effects with the name key into an array of values
