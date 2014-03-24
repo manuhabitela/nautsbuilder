@@ -176,46 +176,161 @@ leiminauts.Skill = Backbone.Model.extend({
 		//we must combine effects values that looks like numbers so we have "damage": "+18",
 		//without forgetting the possible "+", "-", "%", "/", "s"
 		//@ is a flag to indicate not to add similar values between them and only take the last one that'll replace others. Yeah, ugly, as usual o/ Used for lonestar missiles attack speed
-		var effectRegex = /^(\+|-|\/|@)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
+		var upgradeRegex = /^(\+|-|\/|@)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc		
+		
+		_(effects).each(function(upgradez, key) {
+		    var baseUpgrade = String(upgradez[0]);
+		    var baseStages = baseUpgrade.split(' > ');
+		    
+		    var effectStages = [];		    
+		    var effectNumbers = [];
+		    for (var i = 0; i < baseStages.length; ++i) {
+		        effectStages[i] = "";
+		        effectNumbers[i] = 0;
+		    }
+		    
+		    _(upgradez).each(function(upgrade) {
+		        var upgradeStages = String(upgrade).split(' > ');
+		        var regexResults = [];
+		        _(upgradeStages).each(function(u, i) {
+		            regexResults[i] = upgradeRegex.exec(u);
+		        });
+
+                _(effectStages).each(function(effect, i, stages) {
+                    // Apply the upgrade stages pair-wise if there are multiple upgrade stages
+                    var upgradeIndex = (upgradeStages.length == 1 ? 0 : i);
+                
+                    var upgrade = upgradeStages[upgradeIndex];
+                    var regexResult = regexResults[upgradeIndex];
+                    var effectNumber = effectNumbers[i];
+                    var result = this.applyUpgrade(upgrade, regexResult, effectNumber, baseUpgrade);
+                    stages[i] = result[0];
+                    effectNumbers[i] = result[1];
+                }, this);
+		    }, this);
+		
+            this.get('effects').push({"key": key, value: effectStages.join(' > ')});
+		}, this);
+		
+		/*
 		_(effects).each(function(values, key) {
 			var effect = "";
 			var oldEffect = false;
-			_(values).each(function(value, i) {
+			_(values).each(function(value, i) {			
 				regexRes = effectRegex.exec(value);
-				if (regexRes !== null) {
-					var showUnit = true;
+				if (regexRes === null) {
+				    effect = value;
+				}
+				else {
+				    var showUnit = true;				    
 					var effectNumber = parseFloat(effect);
-					if (_(effectNumber).isNaN()) effectNumber = 0;
-
-					//if original value is %, we just += values. Otherwise (ie attack speed), we calculate the % based on original value
-					if (regexRes[3] && regexRes[3] == "%" && effectNumber !== 0 && values[0].substr(-1) != "%") {
-						effectNumber += parseFloat(values[0]) * (parseFloat(value)/100);
-						showUnit = false;
+					if (_(effectNumber).isNaN()) {
+					    effectNumber = 0;
 					}
-					//we divide if there is a "/"
+					
+					// Set operation flag
+					// empty or null adds effect value
+					// % adds percentage onto base value
+					// divides by effect value
+					// @ sets effect value
+					var baseValue = values[0];
+					var flag = "";															
+					if (regexRes[3] && regexRes[3] == "%" && effectNumber !== 0 && baseValue.substr(-1) != "%") {
+					    flag = "%";
+					    showUnit = false;
+					}
 					else if (regexRes[1] && regexRes[1] == "/") {
-						effectNumber = effectNumber/parseFloat(value.substr(1));
+					    flag = "/";
 					}
-					else if (regexRes[1] && regexRes[1] == "@")
-						effectNumber = parseFloat(value.substr(1));
-					else
-						effectNumber += parseFloat(value);
+					else if (regexRes[1] && regexRes[1] == "@") {
+					    flag = "@";
+					}
+					
+					effectNumber = obj.applyEffect(effectNumber, baseValue, value, flag)
 					effectNumber = leiminauts.utils.number(effectNumber);
 					effect = effectNumber;
 					if (regexRes[3] && showUnit) effect += regexRes[3];
 					if (regexRes[1] && regexRes[1] == "+" && effectNumber > 0 && (!oldEffect || oldEffect.toString().indexOf('+') === 0))
 						effect = "+" + effect;
-				} else
-					effect = value;
+				}
 				oldEffect = effect;
 			});
-			this.get('effects').push({ "key": key, value: effect });
+			
+			console.log("Push new element:");
+			console.log(key);
+			console.log(effect);
+			
+			this.get('effects').push({"key": key, value: effect});
 		}, this);
+		*/
+		
 		this.setSpecificEffects();
 		this.setDPS();
 		this.setSpecificEffectsTheReturnOfTheRevenge();
 		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
 	},
+
+    applyUpgrade: function(upgrade, regexResult, effectNumber, baseUpgrade) {
+        var baseIsPercent = baseUpgrade.charAt(baseUpgrade.length-1) == "%";
+        var baseIsRelative = baseUpgrade.charAt(0) == "+";
+        
+		var effect;
+        var effectNumber;
+        
+        if (regexResult === null) {
+            effect = upgrade;            
+        }
+        else {
+            var upgradeNumber = parseFloat(regexResult[2]);
+        
+            var flag;
+		    if (regexResult[3] && regexResult[3] == "%" && !baseIsPercent) {
+		        flag = "%";
+		    }
+		    else if (regexResult[1] && regexResult[1] == "/") {
+		        flag = "/";
+		    }
+		    else if (regexResult[1] && regexResult[1] == "@") {
+		        flag = "@";
+		    }
+            else if (regexResult[1] && regexResult[1] == "-") {
+                upgradeNumber = -upgradeNumber;
+            }
+            
+            effectNumber = this.calcEffect(effectNumber, upgradeNumber, flag);
+   
+            effect = (baseIsRelative ? regexResult[1] : "");             
+            effect += leiminauts.utils.number(effectNumber);
+            if (regexResult[3] && (regexResult[3] == "s" || baseIsPercent)) {
+                effect += regexResult[3];
+            }
+        }
+        
+        if (effectNumber == 0) {
+            console.log(effectNumber);
+        }
+        
+        return [effect, effectNumber];
+    },
+    
+    calcEffect: function(value, upgrade, flag) {
+        flag = flag || "";
+		
+		if (flag == "%") {
+		    value *= 1 + upgrade/100;
+		}
+		else if (flag == "/") {
+			value /= upgrade;
+		}
+		else if (flag == "@") {
+			value = upgrade;
+	    }
+		else {
+			value += upgrade;
+		}
+		
+		return value;
+    },
 
 	prepareBaseEffects: function() {
 		if (!this.get('selected')) return false;
@@ -263,7 +378,7 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		if (this.get('name') == "Missiles") {
 			var missilesSequence = [];
-			var baseDamage = effects.findWhere({key: "damage"}).value;
+			var baseDamage = parseInt(effects.findWhere({key: "damage"}).value, 10);
 			_(4).times(function() { missilesSequence.push(baseDamage); });
 			var missiles = effects.filter(function(effect) {
 				return (/^missile [0-9]$/).test(effect.key);
@@ -369,7 +484,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			}
 		}
 
-		if (this.get('name') == "Evil Eye") {
+		/*if (this.get('name') == "Evil Eye") {
 			var toothbrush = this.getActiveUpgrade("toothbrush shank");
 			if (toothbrush) {
 				dmg = _(this.get('baseEffects')).findWhere({key:"damage"}).value.split(' > ');
@@ -383,7 +498,7 @@ leiminauts.Skill = Backbone.Model.extend({
 					effects.findWhere({key: "damage"}).value = newDmg.join(' > ');
 				}
 			}
-		}
+		}*/
 	},
 
 	setDPS: function() {
