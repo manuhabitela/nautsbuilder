@@ -463,22 +463,6 @@ leiminauts.Skill = Backbone.Model.extend({
 				}
 			}
 		}
-
-		if (this.get('name') == "Evil Eye") {
-			var toothbrush = this.getActiveUpgrade("toothbrush shank");
-			if (toothbrush) {
-				dmg = _(this.get('baseEffects')).findWhere({key:"damage"}).value.split(' > ');
-				toothbrushVal = toothbrush.get('current_step').get('level') > 0 ? toothbrush.get('current_step').get('attrs') : null;
-				if (toothbrushVal) {
-					var percentToAdd = parseInt(_(toothbrushVal).findWhere({key: "damage"}).value, 10);
-					var newDmg = [];
-					_(dmg).each(function(val) {
-						newDmg.push(((val*1)/100*(percentToAdd*1))+val*1);
-					});
-					effects.findWhere({key: "damage"}).value = newDmg.join(' > ');
-				}
-			}
-		}
 	},
 
 	setDPS: function() {
