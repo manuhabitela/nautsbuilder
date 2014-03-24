@@ -178,8 +178,8 @@ leiminauts.Skill = Backbone.Model.extend({
 		//@ is a flag to indicate not to add similar values between them and only take the last one that'll replace others. Yeah, ugly, as usual o/ Used for lonestar missiles attack speed
 		var upgradeRegex = /^(\+|-|\/|@)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc		
 		
-		_(effects).each(function(upgradez, key) {
-		    var baseUpgrade = String(upgradez[0]);
+		_(effects).each(function(upgrades, key) {
+		    var baseUpgrade = String(upgrades[0]);
 		    var baseStages = baseUpgrade.split(' > ');
 		    
 		    var effectStages = [];		    
@@ -189,7 +189,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		        effectNumbers[i] = 0;
 		    }
 		    
-		    _(upgradez).each(function(upgrade) {
+		    _(upgrades).each(function(upgrade) {
 		        var upgradeStages = String(upgrade).split(' > ');
 		        var regexResults = [];
 		        _(upgradeStages).each(function(u, i) {
