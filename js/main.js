@@ -9,7 +9,7 @@
  */
 $(function() {
 	FastClick.attach(document.body);
-	MouseTooltip.init({ "3d": true });
+	MouseTooltip.init({ "3d": false });
 	//small "hack" to set the page to red background directly if we're on root
 	$('html').toggleClass('page-red', !window.location.hash.length);
 });
