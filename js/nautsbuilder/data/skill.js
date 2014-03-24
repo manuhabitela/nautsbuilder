@@ -376,22 +376,6 @@ leiminauts.Skill = Backbone.Model.extend({
 				effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
 		}
 
-		/*if (this.get('name') == "Bash") {
-			var punchsSequence = _(this.get('baseEffects')).findWhere({key:"damage"}).value.split(' > ');
-			var punchs = effects.filter(function(effect) {
-				return (/^punch [0-9]$/).test(effect.key);
-			});
-			_(punchs).each(function(punch) {
-				var number = parseInt(punch.key.substr(-1), 10)-1;
-				punchsSequence[number] = punchsSequence[number]*1 + parseInt(punch.value, 10);
-				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: punch.key }) ), 1 );
-			});
-
-			avgDmg = _(punchsSequence).reduce(function(memo, num){ return memo + num*1; }, 0) / punchsSequence.length;
-			effects.findWhere({key: "damage"}).value = punchsSequence.join(' > ');
-			effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
-		}*/
-
 		if (this.get('name') == "Slash") {
 			var clover = this.getActiveUpgrade("clover of honour");
 			var backstab = this.getActiveUpgrade("backstab blade");
