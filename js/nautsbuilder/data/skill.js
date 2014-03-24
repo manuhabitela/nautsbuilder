@@ -452,31 +452,36 @@ leiminauts.Skill = Backbone.Model.extend({
 	setSpecificEffectsTheReturnOfTheRevenge: function() {
 		if (!this.get('selected')) return false;
 		var effects = _(this.get('effects'));
-
-		var damageMultiplier = effects.findWhere({ key: 'damage multiplier'});
-		if (damageMultiplier && damageMultiplier.value) {
-			effects.splice( effects.indexOf( damageMultiplier ), 1 );
-			this.multiplyDamage(damageMultiplier.value, effects);
-		}
-
-		if (this.get('name') == "Bubble Gun") {
-			this.multiplyDamage(damageMultiplier.value, effects, "godfish ");
-			this.multiplyDamage(damageMultiplier.value, effects, "yakoiza ");
-		}
+		
+		effects.each(function(effect) {
+			var result = (effect.key).match(/(.+) multiplier/i);			
+			if (result && effect.value) {
+				effects.splice(effects.indexOf(effect), 1);
+				this.multiplyEffect(effect.value, effects, result[1]);
+				
+				if (this.get('name') == "Bubble Gun") {
+					this.multiplyEffect(effect.value, effects, "godfish damage");
+					this.multiplyEffect(effect.value, effects, "yakoiza damage");
+				}
+			}
+		}, this);
 	},
 
-	multiplyDamage: function(times, effects, prefix) {
-		prefix = prefix || "";
-		var damage = effects.findWhere({key: prefix + "damage"});
-		var dps = effects.findWhere({key: prefix + "DPS"});
-		// if (damage) damage.value = damage.value + "&nbsp; ( " + leiminauts.utils.number(damage.value*times) + " )";
-		// if (dps) dps.value = dps.value + "&nbsp; ( " + leiminauts.utils.number(dps.value*times) + " )";
-		if (damage) damage.value = leiminauts.utils.number(damage.value*times) + "&nbsp; ( " + damage.value + "×" + times + " )";
-		if (dps) dps.value = leiminauts.utils.number(dps.value*times) + "&nbsp; ( " + dps.value + "×" + times + " )";
+	multiplyEffect: function(times, effects, effectKey) {
+		effectKey = effectKey || "damage";
+		var effect = effects.findWhere({key: effectKey});		
+		if (effect) effect.value = leiminauts.utils.number(effect.value*times) + "&nbsp; ( " + effect.value + "×" + times + " )";
+		
+		var dmgLength = "damage".length;
+		if (effectKey.substr(-dmgLength) === "damage") {
+			var dpsPrefix = effectKey.substr(0, effectKey.length - dmgLength);				
+			var dps = effects.findWhere({key: dpsPrefix + "DPS"});
+			if (dps) dps.value = leiminauts.utils.number(dps.value*times) + "&nbsp; ( " + dps.value + "×" + times + " )";
+		}
 	},
 
 	bonusDamage: function(baseDmg, effect, effects) {
-		var dmg = baseDmg && baseDmg.value ? baseDmg.value : baseDmg;
+		var dmg = parseFloat(baseDmg && baseDmg.value ? baseDmg.value : baseDmg);
 		var eff = effects.findWhere({key: effect});
 		eff = eff ? eff.value : 0;
 		return dmg + eff*1;
