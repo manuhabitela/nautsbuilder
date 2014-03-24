@@ -234,19 +234,46 @@ leiminauts.Skill = Backbone.Model.extend({
 		var upgradeRegex = /^(\+|-|\/|@)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
 
 		_(effects).each(function(upgrades, key) {
-			var baseUpgrade = String(upgrades[0]);
-			var effect;
-			var effectNumber = 0;
+		    var baseUpgrade = String(upgrades[0]);
+		    var baseStages = baseUpgrade.split(' > ');
 
-			// Merge all upgrades into one effect
-			_(upgrades).each(function(upgrade) {
-				var regexResult = upgradeRegex.exec(upgrade);
-				var result = this.applyUpgrade(upgrade, regexResult, effectNumber, baseUpgrade);
-				effect = result[0];
-				effectNumber = result[1];
-			}, this);
+		    var effectStages = [];
+		    var effectNumbers = [];
+		    for (var i = 0; i < baseStages.length; ++i) {
+		        effectStages[i] = "";
+		        effectNumbers[i] = 0;
+		    }
 
-			this.get('effects').push({"key": key, value: effect});
+		    // Merge all upgrades into effectStages
+		    _(upgrades).each(function(upgrade) {
+		        var upgradeStages = String(upgrade).split(' > ');
+		        var regexResults = [];
+		        _(upgradeStages).each(function(u, i) {
+		            regexResults[i] = upgradeRegex.exec(u);
+		        });
+
+				if (effectStages.length == 1 && upgradeStages.length > 1) {
+					// Split up effectStages so we can apply upgradeStages to every one of them
+					for (var i = 1; i < upgradeStages.length; ++i) {
+						effectStages.push(effectStages[0]);
+						effectNumbers.push(effectNumbers[0]);
+					}
+				}
+
+                _(effectStages).each(function(effect, i, stages) {
+                    // Apply the upgrade stages pair-wise if there are multiple upgrade stages
+                    var upgradeIndex = (upgradeStages.length == 1 ? 0 : i);
+
+                    var upgrade = upgradeStages[upgradeIndex];
+                    var regexResult = regexResults[upgradeIndex];
+                    var effectNumber = effectNumbers[i];
+                    var result = this.applyUpgrade(upgrade, regexResult, effectNumber, baseUpgrade);
+                    stages[i] = result[0];
+                    effectNumbers[i] = result[1];
+                }, this);
+		    }, this);
+
+            this.get('effects').push({"key": key, value: effectStages.join(' > ')});
 		}, this);
 	},
 
