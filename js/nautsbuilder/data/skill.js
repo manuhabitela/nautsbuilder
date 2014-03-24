@@ -211,79 +211,79 @@ leiminauts.Skill = Backbone.Model.extend({
 		var upgradeRegex = /^(\+|-|\/|@)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
 		
 		_(effects).each(function(upgrades, key) {			
-		    var baseUpgrade = String(upgrades[0]);		    
-		    var effect;
-		    var effectNumber = 0;
-		    
-		    // Merge all upgrades into one effect
-		    _(upgrades).each(function(upgrade) {
-		        var regexResult = upgradeRegex.exec(upgrade);
-		        var result = this.applyUpgrade(upgrade, regexResult, effectNumber, baseUpgrade);
+			var baseUpgrade = String(upgrades[0]);			
+			var effect;
+			var effectNumber = 0;
+			
+			// Merge all upgrades into one effect
+			_(upgrades).each(function(upgrade) {
+				var regexResult = upgradeRegex.exec(upgrade);
+				var result = this.applyUpgrade(upgrade, regexResult, effectNumber, baseUpgrade);
 				effect = result[0];
 				effectNumber = result[1];
-		    }, this);
+			}, this);
 		
-            this.get('effects').push({"key": key, value: effect});
+			this.get('effects').push({"key": key, value: effect});
 		}, this);
 	},
 
-    applyUpgrade: function(upgrade, regexResult, effectNumber, baseUpgrade) {
-        var baseIsPercent = baseUpgrade.charAt(baseUpgrade.length-1) == "%";
-        var baseIsRelative = baseUpgrade.charAt(0) == "+";
-        
+	applyUpgrade: function(upgrade, regexResult, effectNumber, baseUpgrade) {
+		var baseIsPercent = baseUpgrade.charAt(baseUpgrade.length-1) == "%";
+		var baseIsRelative = baseUpgrade.charAt(0) == "+";
+		
 		var effect;
-        var effectNumber;
-        
-        if (regexResult === null) {
-            effect = upgrade;            
-        }
-        else {
-            var upgradeNumber = parseFloat(regexResult[2]);
-        
-            var operation;
-		    if (regexResult[3] && regexResult[3] == "%" && !baseIsPercent) {
-		        operation = "%";
-		    }
-		    else if (regexResult[1] && regexResult[1] == "/") {
-		        operation = "/";
-		    }
-		    else if (regexResult[1] && regexResult[1] == "@") {
-		        operation = "@";
-		    }
-            else if (regexResult[1] && regexResult[1] == "-") {
-                upgradeNumber = -upgradeNumber;
-            }
-            
-            effectNumber = this.applyOperation(effectNumber, upgradeNumber, operation);
+		var effectNumber;
+		
+		if (regexResult === null) {
+			effect = upgrade;			
+		}
+		else {
+			var upgradeNumber = parseFloat(regexResult[2]);
+		
+			var operation;
+			if (regexResult[3] && regexResult[3] == "%" && !baseIsPercent) {
+				operation = "%";
+			}
+			else if (regexResult[1] && regexResult[1] == "/") {
+				operation = "/";
+			}
+			else if (regexResult[1] && regexResult[1] == "@") {
+				operation = "@";
+			}
+			else if (regexResult[1] && regexResult[1] == "-") {
+				upgradeNumber = -upgradeNumber;
+			}
+			
+			effectNumber = this.applyOperation(effectNumber, upgradeNumber, operation);
    
-            effect = (baseIsRelative ? regexResult[1] : "");             
-            effect += leiminauts.utils.number(effectNumber);
-            if (regexResult[3] && (regexResult[3] == "s" || baseIsPercent)) {
-                effect += regexResult[3];
-            }
-        }
-        
-        return [effect, effectNumber];
-    },
-    
-    applyOperation: function(number, operand, operation) {
-        operation = operation || "";
+			effect = (baseIsRelative ? regexResult[1] : "");			 
+			effect += leiminauts.utils.number(effectNumber);
+			if (regexResult[3] && (regexResult[3] == "s" || baseIsPercent)) {
+				effect += regexResult[3];
+			}
+		}
+		
+		return [effect, effectNumber];
+	},
+	
+	applyOperation: function(number, operand, operation) {
+		operation = operation || "";
 		
 		if (operation == "%") {
-		    number *= 1 + operand/100;
+			number *= 1 + operand/100;
 		}
 		else if (operation == "/") {
 			number /= operand;
 		}
 		else if (operation == "@") {
 			number = operand;
-	    }
+		}
 		else {
 			number += operand;
 		}
 		
 		return number;
-    },
+	},
 
 	prepareBaseEffects: function() {
 		if (!this.get('selected')) return false;
@@ -523,16 +523,16 @@ leiminauts.Skill = Backbone.Model.extend({
 		
 		var obj = this
 		effects.each(function(effect) {
-		    var result = (effect.key).match(/(.*)damage multiplier/i);		    
-		    if (result && effect.value) {
-		        effects.splice(effects.indexOf(effect), 1);
-			    obj.multiplyDamage(effect.value, effects, result[1]);
-			    
-			    if (obj.get('name') == "Bubble Gun") {
-			        obj.multiplyDamage(effect.value, effects, "godfish ");
-			        obj.multiplyDamage(effect.value, effects, "yakoiza ");
-		        }
-    		}
+			var result = (effect.key).match(/(.*)damage multiplier/i);			
+			if (result && effect.value) {
+				effects.splice(effects.indexOf(effect), 1);
+				obj.multiplyDamage(effect.value, effects, result[1]);
+				
+				if (obj.get('name') == "Bubble Gun") {
+					obj.multiplyDamage(effect.value, effects, "godfish ");
+					obj.multiplyDamage(effect.value, effects, "yakoiza ");
+				}
+			}
 		});
 	},
 
