@@ -93,20 +93,15 @@ leiminauts.Skill = Backbone.Model.extend({
 	},
 
 	getActiveUpgrades: function() {
-		var activeUpgrades = this.upgrades.filter(function(upgrade) {
+		return this.upgrades.filter(function(upgrade) {
 			return upgrade.get('active') === true;
 		});
-		return activeUpgrades;
 	},
 
 	getActiveSteps: function() {
-		var activeSteps = [];
-		this.upgrades.each(function(upgrade) {
-			if (upgrade.get('active') === true) {
-				activeSteps.push(upgrade.get('current_step'));
-			}
+		return this.getActiveUpgrades().map(function(upgrade) {
+			return upgrade.get('current_step');
 		});
-		return activeSteps;
 	},
 
 	updateEffects: function(e) {
