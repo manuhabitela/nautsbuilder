@@ -229,6 +229,14 @@ leiminauts.Skill = Backbone.Model.extend({
 		            regexResults[i] = upgradeRegex.exec(u);
 		        });
 
+				if (effectStages.length == 1 && upgradeStages.length > 1) {
+					// Split up effectStages so we can apply upgradeStages to every one of them
+					for (var i = 1; i < upgradeStages.length; ++i) {
+						effectStages.push(effectStages[0]);
+						effectNumbers.push(effectNumbers[0]);
+					}
+				}
+
                 _(effectStages).each(function(effect, i, stages) {
                     // Apply the upgrade stages pair-wise if there are multiple upgrade stages
                     var upgradeIndex = (upgradeStages.length == 1 ? 0 : i);
