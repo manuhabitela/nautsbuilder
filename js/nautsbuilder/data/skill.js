@@ -382,7 +382,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
 		}
 
-		if (this.get('name') == "Bash") {
+		/*if (this.get('name') == "Bash") {
 			var punchsSequence = _(this.get('baseEffects')).findWhere({key:"damage"}).value.split(' > ');
 			var punchs = effects.filter(function(effect) {
 				return (/^punch [0-9]$/).test(effect.key);
@@ -396,7 +396,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			avgDmg = _(punchsSequence).reduce(function(memo, num){ return memo + num*1; }, 0) / punchsSequence.length;
 			effects.findWhere({key: "damage"}).value = punchsSequence.join(' > ');
 			effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
-		}
+		}*/
 
 		if (this.get('name') == "Slash") {
 			var clover = this.getActiveUpgrade("clover of honour");
@@ -494,12 +494,27 @@ leiminauts.Skill = Backbone.Model.extend({
 		var effects = _(this.get('effects'));
 
 		//normal DPS
-		var attackSpeed = effects.findWhere({key: "attack speed"});
-		var damage = effects.findWhere({key: "avg damage"});
-		if (!damage) damage = effects.findWhere({key: "damage"});
+		var attackSpeedEffect = effects.findWhere({key: "attack speed"});
+		
+		var damage;
+		var damageEffect = effects.findWhere({key: "avg damage"});
+		if (damageEffect) {
+			damage = damageEffect.value;
+		}
+		else {
+			// Calculate the average damage of 'damage'
+			damageEffect = effects.findWhere({key: "damage"});
+			if (damageEffect) {
+				var damageStages = damageEffect.value.split(' > ');
+				damage = damageStages.reduce(function(a, b) { return parseFloat(a) + parseFloat(b); }) / damageStages.length;
+				if (damageStages.length > 1) {
+					effects.push({key: "avg damage", value: leiminauts.utils.number(damage)});
+				}
+			}
+		}
 		var dps = effects.findWhere({key: "DPS"});
-		if (attackSpeed && damage) {
-			dpsVal = leiminauts.utils.dps(damage.value, attackSpeed.value);
+		if (attackSpeedEffect && damageEffect) {
+			dpsVal = leiminauts.utils.dps(damage, attackSpeedEffect.value);
 			if (dps) dps.value = dpsVal;
 			else {
 				dps = {key: "DPS", value: dpsVal};
