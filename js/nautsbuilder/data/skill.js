@@ -454,16 +454,16 @@ leiminauts.Skill = Backbone.Model.extend({
 		var effects = _(this.get('effects'));
 		
 		effects.each(function(effect) {
-		    var result = (effect.key).match(/(.+) multiplier/i);		    
-		    if (result && effect.value) {
-		        effects.splice(effects.indexOf(effect), 1);
-			    this.multiplyEffect(effect.value, effects, result[1]);
-			    
-			    if (this.get('name') == "Bubble Gun") {
-			        this.multiplyEffect(effect.value, effects, "godfish damage");
-			        this.multiplyEffect(effect.value, effects, "yakoiza damage");
-		        }
-    		}
+			var result = (effect.key).match(/(.+) multiplier/i);			
+			if (result && effect.value) {
+				effects.splice(effects.indexOf(effect), 1);
+				this.multiplyEffect(effect.value, effects, result[1]);
+				
+				if (this.get('name') == "Bubble Gun") {
+					this.multiplyEffect(effect.value, effects, "godfish damage");
+					this.multiplyEffect(effect.value, effects, "yakoiza damage");
+				}
+			}
 		}, this);
 	},
 
@@ -474,9 +474,9 @@ leiminauts.Skill = Backbone.Model.extend({
 		
 		var dmgLength = "damage".length;
 		if (effectKey.substr(-dmgLength) === "damage") {
-		    var dpsPrefix = effectKey.substr(0, effectKey.length - dmgLength);				
-		    var dps = effects.findWhere({key: dpsPrefix + "DPS"});
-		    if (dps) dps.value = leiminauts.utils.number(dps.value*times) + "&nbsp; ( " + dps.value + "×" + times + " )";
+			var dpsPrefix = effectKey.substr(0, effectKey.length - dmgLength);				
+			var dps = effects.findWhere({key: dpsPrefix + "DPS"});
+			if (dps) dps.value = leiminauts.utils.number(dps.value*times) + "&nbsp; ( " + dps.value + "×" + times + " )";
 		}
 	},
 
