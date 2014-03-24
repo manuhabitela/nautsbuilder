@@ -194,7 +194,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				var rightIsDivison = right.toString().charAt(0) == "/";
 			
 				// If they are not the same type, return the one with divison
-				// Otherwise, don't sort
+				// Otherwise, don't sort so that the baseEffect is still the first value
 				if (leftIsDivison !== rightIsDivison) {
 					return leftIsDivison;
 				}
