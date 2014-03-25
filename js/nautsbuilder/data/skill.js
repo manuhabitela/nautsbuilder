@@ -60,16 +60,17 @@ leiminauts.Skill = Backbone.Model.extend({
 	},
 
 	initUpgrades: function() {
-		var skillUpgrades = [];
-		//the jump skill has common upgrades, but also some custom ones sometimes
-		if (this.get('type') == "jump") {
-			skillUpgrades = _(leiminauts.upgrades).where({ skill: "Jump" });
+		// Use the common upgrades named Jump for the jump skill
+		var skillName = (this.get('type') == "jump" ? "Jump" : this.get('name'));
+		var skillUpgrades = _(leiminauts.upgrades).where({ skill: skillName });
+		
+		// Handle pills and unique character upgrades for the jump skill
+		if (skillName === "Jump") {
 			var upgradesObj = _(skillUpgrades);
 			
 			// Handle character specific pills
 			var baseEffects = this.get('baseEffects');
-			var pills = _(baseEffects).findWhere({key: "pills"});
-			
+			var pills = _(baseEffects).findWhere({key: "pills"});			
 			if (pills) {
 				// Remove pills value from baseEffects
 				var index = _(baseEffects).indexOf(pills);
@@ -87,19 +88,13 @@ leiminauts.Skill = Backbone.Model.extend({
 				});
 			}
 
-			//some chars have unique jump upgrades that replace common ones
-			var customJumpUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
-			_(skillUpgrades).each(function(upgrade, i) {
-				_(customJumpUpgrades).each(function(jupgrade) {
-					if (jupgrade.replaces == upgrade.name)
-						skillUpgrades[i] = _(jupgrade).clone();
-				});
+			// Replace unique jump upgrades with common ones
+			var characterJumpUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
+			_(characterJumpUpgrades).each(function(newUpgrade) {
+				var oldUpgrade = upgradesObj.findWhere({ skill: "Jump", name: newUpgrade.replaces });
+				var index = upgradesObj.indexOf(oldUpgrade);
+				skillUpgrades[index] = _(newUpgrade).clone();
 			});
-		} else {
-			skillUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
-			_(skillUpgrades).each(function(upgrade) {
-				upgrade.skill = this;
-			}, this);
 		}
 		this.get('upgrades').reset(skillUpgrades);
 		this.resetUpgradesState();
