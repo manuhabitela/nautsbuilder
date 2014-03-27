@@ -93,32 +93,45 @@ leiminauts.Skill = Backbone.Model.extend({
 	},
 
 	getActiveUpgrades: function() {
-		var activeUpgrades = this.upgrades.filter(function(upgrade) {
+		return this.upgrades.filter(function(upgrade) {
 			return upgrade.get('active') === true;
 		});
-		return activeUpgrades;
 	},
 
 	getActiveSteps: function() {
-		var activeSteps = [];
-		this.upgrades.each(function(upgrade) {
-			if (upgrade.get('active') === true) {
-				activeSteps.push(upgrade.get('current_step'));
-			}
+		return this.getActiveUpgrades().map(function(upgrade) {
+			return upgrade.get('current_step');
 		});
-		return activeSteps;
 	},
 
 	updateEffects: function(e) {
-		if (!this.get('selected')) return false;
+		if (!this.get('selected')) {
+			return false;
+		}
+
 		if (!this.get('active')) {
 			this.set('effects', []);
 			this.set('total_cost', 0);
 			return false;
 		}
-		var activeUpgrades = this.getActiveUpgrades();
 
-		//is the skill maxed out?
+		var activeUpgrades = this.getActiveUpgrades();
+		this.set('total_cost', this.getTotalCost(activeUpgrades));
+		this.set('maxed_out', this.skillIsMaxedOut(activeUpgrades));
+		this.lockNonActiveUpgrades(this.upgrades, activeUpgrades);
+
+		var activeSteps = this.getActiveSteps();
+		this.set('effects', [], {silent: true});
+		var effects = this.mergeEffectsAndSteps(this.get('baseEffects'), activeSteps);
+		this.applyUpgrades(effects);
+
+		this.setSpecificEffects();
+		this.setDPS();
+		this.setSpecificEffectsTheReturnOfTheRevenge();
+		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
+	},
+
+	skillIsMaxedOut: function(activeUpgrades) {
 		var maxedOut = true;
 		if (activeUpgrades.length >= 3) {
 			_(activeUpgrades).each(function(upgrade) {
@@ -127,94 +140,144 @@ leiminauts.Skill = Backbone.Model.extend({
 					return false;
 				}
 			});
-		} else
+		} else {
 			maxedOut = false;
-		this.set('maxed_out', maxedOut);
+		}
+		return maxedOut;
+	},
 
-		var activeSteps = this.getActiveSteps();
-		this.upgrades.each(function(upgrade) {
-			if (this.get('active'))
-				upgrade.set('locked', activeUpgrades.length >= 3 && !_(activeUpgrades).contains(upgrade));
-		}, this);
-
-		var cost = parseInt(this.get('cost'), 10);
-		//update total skill cost
-		_(activeUpgrades).each(function(upgrade) {
-			cost += upgrade.get('current_step').get('level')*upgrade.get('cost');
+	lockNonActiveUpgrades: function(upgrades, activeUpgrades) {
+		// Make all none active upgrades locked if 3 upgrades are active
+		upgrades.each(function(upgrade) {
+			upgrade.set('locked', activeUpgrades.length >= 3 && !_(activeUpgrades).contains(upgrade));
 		});
-		this.set('total_cost', cost);
+	},
 
-		//combine similar steps: some characters have upgrades that enhance similar things.
-		// Ie Leon has 2 upgrades that add damages to its tong (1: +3/+6/+9 and 2: +9)
-		//
-		// this is KIND OF a mess
-		// update 2nd of may 2013: THIS IS A BIG FREAKIN MESS. HOW DARE YOU. Sorry, future me.
-		this.set('effects', [], {silent: true});
+	getTotalCost: function(activeUpgrades) {
+		var cost = parseInt(this.get('cost'), 10);
+		// Update total skill cost
+		_(activeUpgrades).each(function(upgrade) {
+			cost += upgrade.get('current_step').get('level') * upgrade.get('cost');
+		});
+		return cost;
+	},
+
+	mergeEffectsAndSteps: function(baseEffects, activeSteps) {
 		var effects = {};
-		var effectsAtEnd = [];
-		var organizeEffects = function(attributesList) {
+
+		// Combine all effects with the name key into an array of values
+		var addToEffects = function(attributesList) {
 			_(attributesList).each(function(attr) {
-				var val = attr.value;
-				//if the effect concerns a division, it is put at the end of the array so that it divides the whole value
-				if (attributesList !== effectsAtEnd && val.toString().charAt(0) == "/" && !_(parseFloat(val.substr(1))).isNaN())
-					effectsAtEnd.push({key: attr.key, value: val});
+				if (effects[attr.key] === undefined) {
+					effects[attr.key] = [ attr.value ];
+				}
 				else {
-					if (effects[attr.key] !== undefined)
-						effects[attr.key].push(attr.value);
-					else
-						effects[attr.key] = [attr.value];
+					effects[attr.key].push(attr.value);
 				}
 			});
 		};
-		organizeEffects(this.get('baseEffects'));
-		_(activeSteps).each(function(step, i) {
-			organizeEffects(step.get('attrs'));
+
+		addToEffects(baseEffects);
+		_(activeSteps).each(function(step) {
+			addToEffects(step.get('attrs'))
 		});
-		organizeEffects(effectsAtEnd);
 
-		//for leon tong with max damage, our effects var now looks like: { "damage": ["+9", "+9"], "range": ["+2.4"], ...  }
-		//we must combine effects values that looks like numbers so we have "damage": "+18",
-		//without forgetting the possible "+", "-", "%", "/", "s"
-		//@ is a flag to indicate not to add similar values between them and only take the last one that'll replace others. Yeah, ugly, as usual o/ Used for lonestar missiles attack speed
-		var effectRegex = /^(\+|-|\/|@)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
-		_(effects).each(function(values, key) {
-			var effect = "";
-			var oldEffect = false;
-			_(values).each(function(value, i) {
-				regexRes = effectRegex.exec(value);
-				if (regexRes !== null) {
-					var showUnit = true;
-					var effectNumber = parseFloat(effect);
-					if (_(effectNumber).isNaN()) effectNumber = 0;
+		// Sort each array so that divison values always come last
+		_(effects).each(function(arr, key, map) {
+			map[key].sort(function(left, right) {
+				var leftIsDivison = left.toString().charAt(0) == "/";
+				var rightIsDivison = right.toString().charAt(0) == "/";
 
-					//if original value is %, we just += values. Otherwise (ie attack speed), we calculate the % based on original value
-					if (regexRes[3] && regexRes[3] == "%" && effectNumber !== 0 && values[0].substr(-1) != "%") {
-						effectNumber += parseFloat(values[0]) * (parseFloat(value)/100);
-						showUnit = false;
-					}
-					//we divide if there is a "/"
-					else if (regexRes[1] && regexRes[1] == "/") {
-						effectNumber = effectNumber/parseFloat(value.substr(1));
-					}
-					else if (regexRes[1] && regexRes[1] == "@")
-						effectNumber = parseFloat(value.substr(1));
-					else
-						effectNumber += parseFloat(value);
-					effectNumber = leiminauts.utils.number(effectNumber);
-					effect = effectNumber;
-					if (regexRes[3] && showUnit) effect += regexRes[3];
-					if (regexRes[1] && regexRes[1] == "+" && effectNumber > 0 && (!oldEffect || oldEffect.toString().indexOf('+') === 0))
-						effect = "+" + effect;
-				} else
-					effect = value;
-				oldEffect = effect;
+				// If they are not the same type, return the one with divison
+				// Otherwise, don't sort so that the baseEffect is still the first value
+				if (leftIsDivison !== rightIsDivison) {
+					return leftIsDivison;
+				}
+				else {
+					return false;
+				}
 			});
-			this.get('effects').push({ "key": key, value: effect });
+		});
+
+		return effects;
+	},
+
+	applyUpgrades: function(effects) {
+		var upgradeRegex = /^(\+|-|\/|@)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
+
+		_(effects).each(function(upgrades, key) {
+			var baseUpgrade = String(upgrades[0]);
+			var effect;
+			var effectNumber = 0;
+
+			// Merge all upgrades into one effect
+			_(upgrades).each(function(upgrade) {
+				var regexResult = upgradeRegex.exec(upgrade);
+				var result = this.applyUpgrade(upgrade, regexResult, effectNumber, baseUpgrade);
+				effect = result[0];
+				effectNumber = result[1];
+			}, this);
+
+			this.get('effects').push({"key": key, value: effect});
 		}, this);
-		this.setSpecificEffects();
-		this.setDPS();
-		this.setSpecificEffectsTheReturnOfTheRevenge();
-		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
+	},
+
+	applyUpgrade: function(upgrade, regexResult, effectNumber, baseUpgrade) {
+		var baseIsPercent = baseUpgrade.charAt(baseUpgrade.length-1) == "%";
+		var baseIsRelative = baseUpgrade.charAt(0) == "+";
+
+		var effect;
+		var effectNumber;
+
+		if (regexResult === null) {
+			effect = upgrade;
+		}
+		else {
+			var upgradeNumber = parseFloat(regexResult[2]);
+
+			var operation;
+			if (regexResult[3] && regexResult[3] == "%" && !baseIsPercent) {
+				operation = "%";
+			}
+			else if (regexResult[1] && regexResult[1] == "/") {
+				operation = "/";
+			}
+			else if (regexResult[1] && regexResult[1] == "@") {
+				operation = "@";
+			}
+			else if (regexResult[1] && regexResult[1] == "-") {
+				upgradeNumber = -upgradeNumber;
+			}
+
+			effectNumber = this.applyOperation(effectNumber, upgradeNumber, operation);
+
+			effect = (baseIsRelative ? regexResult[1] : "");
+			effect += leiminauts.utils.number(effectNumber);
+			if (regexResult[3] && (regexResult[3] == "s" || baseIsPercent)) {
+				effect += regexResult[3];
+			}
+		}
+
+		return [effect, effectNumber];
+	},
+
+	applyOperation: function(number, operand, operation) {
+		operation = operation || "";
+
+		if (operation == "%") {
+			number *= 1 + operand/100;
+		}
+		else if (operation == "/") {
+			number /= operand;
+		}
+		else if (operation == "@") {
+			number = operand;
+		}
+		else {
+			number += operand;
+		}
+
+		return number;
 	},
 
 	prepareBaseEffects: function() {
@@ -263,7 +326,7 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		if (this.get('name') == "Missiles") {
 			var missilesSequence = [];
-			var baseDamage = effects.findWhere({key: "damage"}).value;
+			var baseDamage = parseInt(effects.findWhere({key: "damage"}).value, 10);
 			_(4).times(function() { missilesSequence.push(baseDamage); });
 			var missiles = effects.filter(function(effect) {
 				return (/^missile [0-9]$/).test(effect.key);
