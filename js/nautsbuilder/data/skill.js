@@ -234,23 +234,23 @@ leiminauts.Skill = Backbone.Model.extend({
 		var upgradeRegex = /^(\+|-|\/|@)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
 
 		_(effects).each(function(upgrades, key) {
-		    var baseUpgrade = String(upgrades[0]);
-		    var baseStages = baseUpgrade.split(' > ');
+			var baseUpgrade = String(upgrades[0]);
+			var baseStages = baseUpgrade.split(' > ');
 
-		    var effectStages = [];
-		    var effectNumbers = [];
-		    for (var i = 0; i < baseStages.length; ++i) {
-		        effectStages[i] = "";
-		        effectNumbers[i] = 0;
-		    }
+			var effectStages = [];
+			var effectNumbers = [];
+			for (var i = 0; i < baseStages.length; ++i) {
+				effectStages[i] = "";
+				effectNumbers[i] = 0;
+			}
 
-		    // Merge all upgrades into effectStages
-		    _(upgrades).each(function(upgrade) {
-		        var upgradeStages = String(upgrade).split(' > ');
-		        var regexResults = [];
-		        _(upgradeStages).each(function(u, i) {
-		            regexResults[i] = upgradeRegex.exec(u);
-		        });
+			// Merge all upgrades into effectStages
+			_(upgrades).each(function(upgrade) {
+				var upgradeStages = String(upgrade).split(' > ');
+				var regexResults = [];
+				_(upgradeStages).each(function(u, i) {
+					regexResults[i] = upgradeRegex.exec(u);
+				});
 
 				if (effectStages.length == 1 && upgradeStages.length > 1) {
 					// Split up effectStages so we can apply upgradeStages to every one of them
@@ -260,20 +260,20 @@ leiminauts.Skill = Backbone.Model.extend({
 					}
 				}
 
-                _(effectStages).each(function(effect, i, stages) {
-                    // Apply the upgrade stages pair-wise if there are multiple upgrade stages
-                    var upgradeIndex = (upgradeStages.length == 1 ? 0 : i);
+				_(effectStages).each(function(effect, i, stages) {
+					// Apply the upgrade stages pair-wise if there are multiple upgrade stages
+					var upgradeIndex = (upgradeStages.length == 1 ? 0 : i);
 
-                    var upgrade = upgradeStages[upgradeIndex];
-                    var regexResult = regexResults[upgradeIndex];
-                    var effectNumber = effectNumbers[i];
-                    var result = this.applyUpgrade(upgrade, regexResult, effectNumber, baseUpgrade);
-                    stages[i] = result[0];
-                    effectNumbers[i] = result[1];
-                }, this);
-		    }, this);
+					var upgrade = upgradeStages[upgradeIndex];
+					var regexResult = regexResults[upgradeIndex];
+					var effectNumber = effectNumbers[i];
+					var result = this.applyUpgrade(upgrade, regexResult, effectNumber, baseUpgrade);
+					stages[i] = result[0];
+					effectNumbers[i] = result[1];
+				}, this);
+			}, this);
 
-            this.get('effects').push({"key": key, value: effectStages.join(' > ')});
+			this.get('effects').push({"key": key, value: effectStages.join(' > ')});
 		}, this);
 	},
 
@@ -463,7 +463,7 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		//normal DPS
 		var attackSpeedEffect = effects.findWhere({key: "attack speed"});
-		
+
 		var damage;
 		var damageEffect = effects.findWhere({key: "avg damage"});
 		if (damageEffect) {
@@ -512,7 +512,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				var specificDmg = (e.key).match(/(.+) damage/i);
 				var specificAS = (e.key).match(/(.+) attack speed/i);
 				if (specificDmg) bonusCheck.damage.push(specificDmg[1]);
-				if (specificAS)	bonusCheck.attackSpeed.push(specificAS[1]);
+				if (specificAS) bonusCheck.attackSpeed.push(specificAS[1]);
 			});
 			var totalDPS = dps ? +dps.value : 0;
 			var bonus = _.union(bonusCheck.damage, bonusCheck.attackSpeed); //in our example, contains "missile"
