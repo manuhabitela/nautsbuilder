@@ -93,49 +93,44 @@ leiminauts.Skill = Backbone.Model.extend({
 	},
 
 	getActiveUpgrades: function() {
-		var activeUpgrades = this.upgrades.filter(function(upgrade) {
+		return this.upgrades.filter(function(upgrade) {
 			return upgrade.get('active') === true;
 		});
-		return activeUpgrades;
 	},
 
 	getActiveSteps: function() {
-		var activeSteps = [];
-		this.upgrades.each(function(upgrade) {
-			if (upgrade.get('active') === true) {
-				activeSteps.push(upgrade.get('current_step'));
-			}
+		return this.getActiveUpgrades().map(function(upgrade) {
+			return upgrade.get('current_step');
 		});
-		return activeSteps;
 	},
 
 	updateEffects: function(e) {
 		if (!this.get('selected')) {
 			return false;
 		}
-		
+
 		if (!this.get('active')) {
 			this.set('effects', []);
 			this.set('total_cost', 0);
 			return false;
 		}
-		
+
 		var activeUpgrades = this.getActiveUpgrades();
 		this.set('total_cost', this.getTotalCost(activeUpgrades));
-		this.set('maxed_out', this.skillIsMaxedOut(activeUpgrades));		
+		this.set('maxed_out', this.skillIsMaxedOut(activeUpgrades));
 		this.lockNonActiveUpgrades(this.upgrades, activeUpgrades);
-		
-		var activeSteps = this.getActiveSteps();		
+
+		var activeSteps = this.getActiveSteps();
 		this.set('effects', [], {silent: true});
-		var effects = this.mergeEffects(this.get('baseEffects'), activeSteps);
+		var effects = this.mergeEffectsAndSteps(this.get('baseEffects'), activeSteps);
 		this.applyUpgrades(effects);
-		
+
 		this.setSpecificEffects();
 		this.setDPS();
 		this.setSpecificEffectsTheReturnOfTheRevenge();
 		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
 	},
-	
+
 	skillIsMaxedOut: function(activeUpgrades) {
 		var maxedOut = true;
 		if (activeUpgrades.length >= 3) {
@@ -150,9 +145,9 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 		return maxedOut;
 	},
-	
+
 	lockNonActiveUpgrades: function(upgrades, activeUpgrades) {
-		// Make all none active upgrades locked if 3 upgrades are active		
+		// Make all none active upgrades locked if 3 upgrades are active
 		upgrades.each(function(upgrade) {
 			upgrade.set('locked', activeUpgrades.length >= 3 && !_(activeUpgrades).contains(upgrade));
 		});
@@ -164,15 +159,15 @@ leiminauts.Skill = Backbone.Model.extend({
 		_(activeUpgrades).each(function(upgrade) {
 			cost += upgrade.get('current_step').get('level') * upgrade.get('cost');
 		});
-		return cost;		
+		return cost;
 	},
 
-	mergeEffects: function(baseEffects, activeSteps) {		
-		var effects = {};		
-		
+	mergeEffectsAndSteps: function(baseEffects, activeSteps) {
+		var effects = {};
+
 		// Combine all effects with the name key into an array of values
 		var addToEffects = function(attributesList) {
-			_(attributesList).each(function(attr) {			
+			_(attributesList).each(function(attr) {
 				if (effects[attr.key] === undefined) {
 					effects[attr.key] = [ attr.value ];
 				}
@@ -181,20 +176,20 @@ leiminauts.Skill = Backbone.Model.extend({
 				}
 			});
 		};
-		
+
 		addToEffects(baseEffects);
 		_(activeSteps).each(function(step) {
 			addToEffects(step.get('attrs'))
 		});
-		
+
 		// Sort each array so that divison values always come last
 		_(effects).each(function(arr, key, map) {
 			map[key].sort(function(left, right) {
 				var leftIsDivison = left.toString().charAt(0) == "/";
 				var rightIsDivison = right.toString().charAt(0) == "/";
-			
+
 				// If they are not the same type, return the one with divison
-				// Otherwise, don't sort
+				// Otherwise, don't sort so that the baseEffect is still the first value
 				if (leftIsDivison !== rightIsDivison) {
 					return leftIsDivison;
 				}
@@ -203,31 +198,31 @@ leiminauts.Skill = Backbone.Model.extend({
 				}
 			});
 		});
-		
+
 		return effects;
 	},
-	
+
 	applyUpgrades: function(effects) {
 		var upgradeRegex = /^(\+|-|\/|@)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
-		
+
 		_(effects).each(function(upgrades, key) {
-		    var baseUpgrade = String(upgrades[0]);
-		    var baseStages = baseUpgrade.split(' > ');
-		    
-		    var effectStages = [];		    
-		    var effectNumbers = [];
-		    for (var i = 0; i < baseStages.length; ++i) {
-		        effectStages[i] = "";
-		        effectNumbers[i] = 0;
-		    }
-		    
-		    // Merge all upgrades into effectStages
-		    _(upgrades).each(function(upgrade) {
-		        var upgradeStages = String(upgrade).split(' > ');
-		        var regexResults = [];
-		        _(upgradeStages).each(function(u, i) {
-		            regexResults[i] = upgradeRegex.exec(u);
-		        });
+			var baseUpgrade = String(upgrades[0]);
+			var baseStages = baseUpgrade.split(' > ');
+
+			var effectStages = [];
+			var effectNumbers = [];
+			for (var i = 0; i < baseStages.length; ++i) {
+				effectStages[i] = "";
+				effectNumbers[i] = 0;
+			}
+
+			// Merge all upgrades into effectStages
+			_(upgrades).each(function(upgrade) {
+				var upgradeStages = String(upgrade).split(' > ');
+				var regexResults = [];
+				_(upgradeStages).each(function(u, i) {
+					regexResults[i] = upgradeRegex.exec(u);
+				});
 
 				if (effectStages.length == 1 && upgradeStages.length > 1) {
 					// Split up effectStages so we can apply upgradeStages to every one of them
@@ -237,36 +232,36 @@ leiminauts.Skill = Backbone.Model.extend({
 					}
 				}
 
-                _(effectStages).each(function(effect, i, stages) {
-                    // Apply the upgrade stages pair-wise if there are multiple upgrade stages
-                    var upgradeIndex = (upgradeStages.length == 1 ? 0 : i);
-                
-                    var upgrade = upgradeStages[upgradeIndex];
-                    var regexResult = regexResults[upgradeIndex];
-                    var effectNumber = effectNumbers[i];
-                    var result = this.applyUpgrade(upgrade, regexResult, effectNumber, baseUpgrade);
-                    stages[i] = result[0];
-                    effectNumbers[i] = result[1];
-                }, this);
-		    }, this);
-		
-            this.get('effects').push({"key": key, value: effectStages.join(' > ')});
+				_(effectStages).each(function(effect, i, stages) {
+					// Apply the upgrade stages pair-wise if there are multiple upgrade stages
+					var upgradeIndex = (upgradeStages.length == 1 ? 0 : i);
+
+					var upgrade = upgradeStages[upgradeIndex];
+					var regexResult = regexResults[upgradeIndex];
+					var effectNumber = effectNumbers[i];
+					var result = this.applyUpgrade(upgrade, regexResult, effectNumber, baseUpgrade);
+					stages[i] = result[0];
+					effectNumbers[i] = result[1];
+				}, this);
+			}, this);
+
+			this.get('effects').push({"key": key, value: effectStages.join(' > ')});
 		}, this);
 	},
 
 	applyUpgrade: function(upgrade, regexResult, effectNumber, baseUpgrade) {
 		var baseIsPercent = baseUpgrade.charAt(baseUpgrade.length-1) == "%";
 		var baseIsRelative = baseUpgrade.charAt(0) == "+";
-		
+
 		var effect;
 		var effectNumber;
-		
+
 		if (regexResult === null) {
-			effect = upgrade;			
+			effect = upgrade;
 		}
 		else {
 			var upgradeNumber = parseFloat(regexResult[2]);
-		
+
 			var operation;
 			if (regexResult[3] && regexResult[3] == "%" && !baseIsPercent) {
 				operation = "%";
@@ -280,22 +275,22 @@ leiminauts.Skill = Backbone.Model.extend({
 			else if (regexResult[1] && regexResult[1] == "-") {
 				upgradeNumber = -upgradeNumber;
 			}
-			
+
 			effectNumber = this.applyOperation(effectNumber, upgradeNumber, operation);
-   
-			effect = (baseIsRelative ? regexResult[1] : "");			 
+
+			effect = (baseIsRelative ? regexResult[1] : "");
 			effect += leiminauts.utils.number(effectNumber);
 			if (regexResult[3] && (regexResult[3] == "s" || baseIsPercent)) {
 				effect += regexResult[3];
 			}
 		}
-		
+
 		return [effect, effectNumber];
 	},
-	
+
 	applyOperation: function(number, operand, operation) {
 		operation = operation || "";
-		
+
 		if (operation == "%") {
 			number *= 1 + operand/100;
 		}
@@ -308,7 +303,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		else {
 			number += operand;
 		}
-		
+
 		return number;
 	},
 
@@ -457,7 +452,7 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		//normal DPS
 		var attackSpeedEffect = effects.findWhere({key: "attack speed"});
-		
+
 		var damage;
 		var damageEffect = effects.findWhere({key: "avg damage"});
 		if (damageEffect) {
@@ -498,7 +493,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			//if one part is not detected (ie we have a "missile damage" effect but no "missile attack speed") we take default attack speed and vice versa
 			//"Bonus Damage" or "Avg damage" are usually not calculated
 			var bonusCheck = { "damage": [], "attackSpeed": [] };
-			var deniedBonusWords = ["storm", "bonus", "avg", "turret", "yakoiza", "grenade", "snipe", "min", "max", "droid"];
+			var deniedBonusWords = ["storm", "bonus", "avg", "turret", "yakoiza", "grenade", "snipe", "min", "max", "droid", "structure"];
 			effects.each(function(e) {
 				var denied = false;
 				_(deniedBonusWords).each(function(word) { if (e.key.toLowerCase().indexOf(word) === 0) { denied = true; }});
@@ -506,7 +501,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				var specificDmg = (e.key).match(/(.+) damage/i);
 				var specificAS = (e.key).match(/(.+) attack speed/i);
 				if (specificDmg) bonusCheck.damage.push(specificDmg[1]);
-				if (specificAS)	bonusCheck.attackSpeed.push(specificAS[1]);
+				if (specificAS) bonusCheck.attackSpeed.push(specificAS[1]);
 			});
 			var totalDPS = dps ? +dps.value : 0;
 			var bonus = _.union(bonusCheck.damage, bonusCheck.attackSpeed); //in our example, contains "missile"
