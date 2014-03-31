@@ -220,8 +220,8 @@ leiminauts.Skill = Backbone.Model.extend({
 			_(upgrades).each(function(upgrade) {
 				var upgradeStages = String(upgrade).split(' > ');
 				var regexResults = [];
-				_(upgradeStages).each(function(u, i) {
-					regexResults[i] = upgradeRegex.exec(u);
+				_(upgradeStages).each(function(u) {
+					regexResults.push(upgradeRegex.exec(u));
 				});
 
 				if (effectStages.length == 1 && upgradeStages.length > 1) {
@@ -470,7 +470,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			}
 		}
 		var dps = effects.findWhere({key: "DPS"});
-		if (attackSpeedEffect && damageEffect) {
+		if (attackSpeedEffect && damage) {
 			dpsVal = leiminauts.utils.dps(damage, attackSpeedEffect.value);
 			if (dps) dps.value = dpsVal;
 			else {
