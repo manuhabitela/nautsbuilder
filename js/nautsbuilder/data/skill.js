@@ -309,7 +309,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 
 		if (this.get('name') == "Bubble Gun") {
-			bonusesDmg.push('yakoiza damage', 'godfish damage');
+			bonusesDmg.push('yakoiza damage', 'codfather damage');
 		}
 
 		if (this.get('name') == "Chain whack") {
@@ -523,7 +523,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				this.multiplyEffect(effect.value, effects, result[1]);
 
 				if (this.get('name') == "Bubble Gun") {
-					this.multiplyEffect(effect.value, effects, "godfish damage");
+					this.multiplyEffect(effect.value, effects, "codfather damage");
 					this.multiplyEffect(effect.value, effects, "yakoiza damage");
 				}
 			}
