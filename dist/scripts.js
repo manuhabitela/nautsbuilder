@@ -1,4 +1,4 @@
-/* Nautsbuilder - Awesomenauts build maker v0.13.0 - https://github.com/Leimi/nautsbuilder
+/* Nautsbuilder - Awesomenauts build maker v0.14.0 - https://github.com/Leimi/nautsbuilder
 * Copyright (c) 2014 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. *//* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -404,18 +404,45 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		_(effects).each(function(upgrades, key) {
 			var baseUpgrade = String(upgrades[0]);
-			var effect;
-			var effectNumber = 0;
+			var baseStages = baseUpgrade.split(' > ');
 
-			// Merge all upgrades into one effect
+			var effectStages = [];
+			var effectNumbers = [];
+			for (var i = 0; i < baseStages.length; ++i) {
+				effectStages[i] = "";
+				effectNumbers[i] = 0;
+			}
+
+			// Merge all upgrades into effectStages
 			_(upgrades).each(function(upgrade) {
-				var regexResult = upgradeRegex.exec(upgrade);
-				var result = this.applyUpgrade(upgrade, regexResult, effectNumber, baseUpgrade);
-				effect = result[0];
-				effectNumber = result[1];
+				var upgradeStages = String(upgrade).split(' > ');
+				var regexResults = [];
+				_(upgradeStages).each(function(u) {
+					regexResults.push(upgradeRegex.exec(u));
+				});
+
+				if (effectStages.length == 1 && upgradeStages.length > 1) {
+					// Split up effectStages so we can apply upgradeStages to every one of them
+					for (var i = 1; i < upgradeStages.length; ++i) {
+						effectStages.push(effectStages[0]);
+						effectNumbers.push(effectNumbers[0]);
+					}
+				}
+
+				_(effectStages).each(function(effect, i, stages) {
+					// Apply the upgrade stages pair-wise if there are multiple upgrade stages
+					var upgradeIndex = (upgradeStages.length == 1 ? 0 : i);
+
+					var upgrade = upgradeStages[upgradeIndex];
+					var regexResult = regexResults[upgradeIndex];
+					var effectNumber = effectNumbers[i];
+					var result = this.applyUpgrade(upgrade, regexResult, effectNumber, baseUpgrade);
+					stages[i] = result[0];
+					effectNumbers[i] = result[1];
+				}, this);
 			}, this);
 
-			this.get('effects').push({"key": key, value: effect});
+			this.get('effects').push({"key": key, value: effectStages.join(' > ')});
 		}, this);
 	},
 
@@ -524,22 +551,6 @@ leiminauts.Skill = Backbone.Model.extend({
 				effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
 		}
 
-		if (this.get('name') == "Bash") {
-			var punchsSequence = _(this.get('baseEffects')).findWhere({key:"damage"}).value.split(' > ');
-			var punchs = effects.filter(function(effect) {
-				return (/^punch [0-9]$/).test(effect.key);
-			});
-			_(punchs).each(function(punch) {
-				var number = parseInt(punch.key.substr(-1), 10)-1;
-				punchsSequence[number] = punchsSequence[number]*1 + parseInt(punch.value, 10);
-				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: punch.key }) ), 1 );
-			});
-
-			avgDmg = _(punchsSequence).reduce(function(memo, num){ return memo + num*1; }, 0) / punchsSequence.length;
-			effects.findWhere({key: "damage"}).value = punchsSequence.join(' > ');
-			effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
-		}
-
 		if (this.get('name') == "Slash") {
 			var clover = this.getActiveUpgrade("clover of honour");
 			var backstab = this.getActiveUpgrade("backstab blade");
@@ -611,22 +622,6 @@ leiminauts.Skill = Backbone.Model.extend({
 				}
 			}
 		}
-
-		if (this.get('name') == "Evil Eye") {
-			var toothbrush = this.getActiveUpgrade("toothbrush shank");
-			if (toothbrush) {
-				dmg = _(this.get('baseEffects')).findWhere({key:"damage"}).value.split(' > ');
-				toothbrushVal = toothbrush.get('current_step').get('level') > 0 ? toothbrush.get('current_step').get('attrs') : null;
-				if (toothbrushVal) {
-					var percentToAdd = parseInt(_(toothbrushVal).findWhere({key: "damage"}).value, 10);
-					var newDmg = [];
-					_(dmg).each(function(val) {
-						newDmg.push(((val*1)/100*(percentToAdd*1))+val*1);
-					});
-					effects.findWhere({key: "damage"}).value = newDmg.join(' > ');
-				}
-			}
-		}
 	},
 
 	setDPS: function() {
@@ -636,12 +631,27 @@ leiminauts.Skill = Backbone.Model.extend({
 		var effects = _(this.get('effects'));
 
 		//normal DPS
-		var attackSpeed = effects.findWhere({key: "attack speed"});
-		var damage = effects.findWhere({key: "avg damage"});
-		if (!damage) damage = effects.findWhere({key: "damage"});
+		var attackSpeedEffect = effects.findWhere({key: "attack speed"});
+
+		var damage;
+		var damageEffect = effects.findWhere({key: "avg damage"});
+		if (damageEffect) {
+			damage = damageEffect.value;
+		}
+		else {
+			// Calculate the average damage of 'damage'
+			damageEffect = effects.findWhere({key: "damage"});
+			if (damageEffect) {
+				var damageStages = damageEffect.value.split(' > ');
+				damage = damageStages.reduce(function(a, b) { return parseFloat(a) + parseFloat(b); }) / damageStages.length;
+				if (damageStages.length > 1) {
+					effects.push({key: "avg damage", value: leiminauts.utils.number(damage)});
+				}
+			}
+		}
 		var dps = effects.findWhere({key: "DPS"});
-		if (attackSpeed && damage) {
-			dpsVal = leiminauts.utils.dps(damage.value, attackSpeed.value);
+		if (attackSpeedEffect && damage) {
+			dpsVal = leiminauts.utils.dps(damage, attackSpeedEffect.value);
 			if (dps) dps.value = dpsVal;
 			else {
 				dps = {key: "DPS", value: dpsVal};
@@ -671,7 +681,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				var specificDmg = (e.key).match(/(.+) damage/i);
 				var specificAS = (e.key).match(/(.+) attack speed/i);
 				if (specificDmg) bonusCheck.damage.push(specificDmg[1]);
-				if (specificAS)	bonusCheck.attackSpeed.push(specificAS[1]);
+				if (specificAS) bonusCheck.attackSpeed.push(specificAS[1]);
 			});
 			var totalDPS = dps ? +dps.value : 0;
 			var bonus = _.union(bonusCheck.damage, bonusCheck.attackSpeed); //in our example, contains "missile"
