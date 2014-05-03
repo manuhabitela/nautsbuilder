@@ -9,10 +9,7 @@ leiminauts.InfoView = Backbone.View.extend({
 	className: 'char-info',
 
 	events: {
-		"click .forum-snippet": "focusForumSnippet",
-		"submit .fav-add": "addFavorite",
-		"click .fav-add-submit": "toggleFavorite",
-		"blur .fav-add-name": "addFavorite"
+		"click .forum-snippet": "focusForumSnippet"
 	},
 
 	initialize: function() {
@@ -21,21 +18,16 @@ leiminauts.InfoView = Backbone.View.extend({
 			this.model = this.character.model;
 		}
 
-		this.favorites = this.options.favorites;
-
 		this.template = _.template( $('#info-tpl').html() );
 
 		this.forum = this.options.forum || false;
 
 		this.listenTo(this.character.model, 'change:total_cost', this.render);
-		this.listenTo(this.favorites, 'change add remove', this.render);
 	},
 
 	render: function() {
 		var data = this.model.toJSON();
 		data.forum = this.forum;
-		data.favorite = this.favorites.findWhere({ hash: window.location.hash.substr(1) });
-		if (data.favorite) data.favorite = data.favorite.toJSON();
 		this.$el.html(this.template(data));
 
 		leiminauts.ev.trigger('update-specific-links');
@@ -44,23 +36,5 @@ leiminauts.InfoView = Backbone.View.extend({
 
 	focusForumSnippet: function() {
 		this.$('.forum-snippet').select();
-	},
-
-	getFavoriteData: function() {
-		return {
-			hash: window.location.hash.substr(1),
-			name: this.$('.fav-add-name').val(),
-			character: _(this.character.model.toJSON()).pick('name', 'icon')
-		};
-	},
-
-	toggleFavorite: function(e) {
-		e.preventDefault();
-		leiminauts.ev.trigger('toggle-favorite', this.getFavoriteData());
-	},
-
-	addFavorite: function(e) {
-		e.preventDefault();
-		leiminauts.ev.trigger('add-favorite', this.getFavoriteData());
 	}
 });

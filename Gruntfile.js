@@ -16,7 +16,6 @@ module.exports = function(grunt) {
 					'js/lib/jquery.min.js',
 					'js/lib/underscore.js',
 					'js/lib/backbone.js',
-					'js/lib/backbone.localStorage.js',
 					'js/lib/tabletop.js',
 					'js/lib/mousetooltip.js',
 					'js/lib/fastclick.js',
@@ -34,7 +33,6 @@ module.exports = function(grunt) {
 					'js/nautsbuilder/data/skill.js',
 					'js/nautsbuilder/data/upgrade.js',
 					'js/nautsbuilder/data/step.js',
-					'js/nautsbuilder/data/favorite.js',
 					'js/nautsbuilder/views/characters.js',
 					'js/nautsbuilder/views/character.js',
 					'js/nautsbuilder/views/character-build.js',
@@ -42,7 +40,6 @@ module.exports = function(grunt) {
 					'js/nautsbuilder/views/character-info.js',
 					'js/nautsbuilder/views/skill.js',
 					'js/nautsbuilder/views/upgrade.js',
-					'js/nautsbuilder/views/favorites.js',
 					'js/nautsbuilder/app.js',
 					'js/main.js',
 					'js/nautsbuilder/spreadsheet/update.js'

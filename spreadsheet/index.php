@@ -36,7 +36,6 @@
 		<script src="../js/lib/jquery.min.js?v=<?php echo $now ?>"></script>
 		<script src="../js/lib/underscore.js?v=<?php echo $now ?>"></script>
 		<script src="../js/lib/backbone.js?v=<?php echo $now ?>"></script>
-		<script src="../js/lib/backbone.localStorage.js?v=<?php echo $now ?>"></script>
 		<script src="../js/lib/tabletop.js?v=<?php echo $now ?>"></script>
 		<script src="../js/nautsbuilder/utils.js?v=<?php echo $now ?>"></script>
 		<script src="../data/last-update.js?v=<?php echo $now ?>"></script>

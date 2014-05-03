@@ -2,7 +2,7 @@
 	define('PROD', (!empty($_SERVER['SERVER_NAME']) && strpos($_SERVER['SERVER_NAME'], "nautsbuilder.com") !== false));
 	// define('PROD', true);
 	$now = time();
-	$v = "0.14.0";
+	$v = "0.14.1";
 ?>
 
 <!DOCTYPE html>
@@ -223,48 +223,12 @@
 			</div>
 		</script>
 
-		<script type="text/template" id="favs-tpl">
-		<div class="chars"></div>
-		<p class="warning">The favorites list, <a href="http://www.awesomenauts.com/forum/viewtopic.php?p=216258#p216258" target="_blank">being kinda useless</a>, will be totally removed at the end of August. Be sure to backup your builds in your browser's bookmarks or something.</p>
-		<p class="favs-header">These are your favorite builds. They are stored locally on your device. You can share them all at once easily by copy/pasting all the URLs at the bottom.</p>
-		<ul class="favs-list">
-		<% _.each(favorites, function(fav) { %>
-			<li class="fav <%= fav.console && fav.console == "1" ? 'console' : '' %>">
-				<img class="fav-icon" src="<%= fav.character.icon %>" alt="">
-				<a class="fav-name" href="#<%= fav.hash %>"><%= fav.character.name + (fav.name ? ' - ' + fav.name : '')  %></a>
-				<span class="fav-delete" title="Delete from favorites (without confirmation)">x</span>
-			</li>
-		<% }); %>
-		</ul>
-		<form action="#" class="favs-share">
-			<p>Share your builds
-			<select name="favs-text-list" class="favs-share-switch">
-				<option value="simple">with text</option>
-				<option value="html">with HTML links</option>
-				<option value="forum">on the forum</option>
-			</select>
-			</p>
-			<textarea rows=10><%= favoritesText %></textarea>
-		</form>
-		</script>
-
-		<script type="text/template" id="favs-list-simple-tpl">
-<% _.each(favorites, function(fav) { %><%= fav.character.name + (fav.name ? ' - ' + fav.name : '') + ': ' + root + '/#' + fav.hash %>&#13;&#10;<% }); %></script>
-
-		<script type="text/template" id="favs-list-html-tpl">
-<% _.each(favorites, function(fav) { %><a href="<%= root + '/#' + fav.hash %>" target="_blank"><%= fav.character.name + (fav.name ? ' - ' + fav.name : '') %></a><br/>&#13;&#10;<% }); %></script>
-
-		<script type="text/template" id="favs-list-forum-tpl">
-<% _.each(favorites, function(fav) { %>[url="<%= root + '/#' + fav.hash %>"]<%= fav.character.name + (fav.name ? ' - ' + fav.name : '') %>[/url]&#13;&#10;<% }); %></script>
-
-
 		<script src="data/last-update.js?v=<?php echo $now ?>"></script>
 		<script src="js/nautsbuilder/spreadsheet/last-update.js?v=<?php echo $now ?>"></script>
 		<?php if (!PROD): ?>
 		<script src="js/lib/jquery.min.js"></script>
 		<script src="js/lib/underscore.js"></script>
 		<script src="js/lib/backbone.js"></script>
-		<script src="js/lib/backbone.localStorage.js"></script>
 		<script src="js/lib/tabletop.js"></script>
 		<script src="js/lib/mousetooltip.js"></script>
 		<script src="js/lib/fastclick.js"></script>
@@ -274,7 +238,6 @@
 		<script src="js/nautsbuilder/data/skill.js?v=<?php echo $v ?>"></script>
 		<script src="js/nautsbuilder/data/upgrade.js?v=<?php echo $v ?>"></script>
 		<script src="js/nautsbuilder/data/step.js?v=<?php echo $v ?>"></script>
-		<script src="js/nautsbuilder/data/favorite.js?v=<?php echo $v ?>"></script>
 		<script src="js/nautsbuilder/views/characters.js?v=<?php echo $v ?>"></script>
 		<script src="js/nautsbuilder/views/character.js?v=<?php echo $v ?>"></script>
 		<script src="js/nautsbuilder/views/character-build.js?v=<?php echo $v ?>"></script>
@@ -282,7 +245,6 @@
 		<script src="js/nautsbuilder/views/character-info.js?v=<?php echo $v ?>"></script>
 		<script src="js/nautsbuilder/views/skill.js?v=<?php echo $v ?>"></script>
 		<script src="js/nautsbuilder/views/upgrade.js?v=<?php echo $v ?>"></script>
-		<script src="js/nautsbuilder/views/favorites.js?v=<?php echo $v ?>"></script>
 		<script src="js/nautsbuilder/app.js?v=<?php echo $v ?>"></script>
 		<script src="js/main.js?v=<?php echo $v ?>"></script>
 		<!-- ok so this is ugly - be sure to put the update.js script at the very end so that in cases of crash, it doesn't put down the whole app
