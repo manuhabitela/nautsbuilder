@@ -30,7 +30,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (this.get('selected') && this.get('upgrades').length <= 0) {
 			this.set('maxed_out', false);
 			this._originalEffects = this.get('effects');
-			this.prepareBaseEffects();
+			this.initBaseEffects();
 			this.initUpgrades();
 			this.set('total_cost', 0);
 			this.set('active', this.get('cost') !== undefined && this.get('cost') <= 0);
@@ -38,42 +38,70 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 	},
 
-	initUpgrades: function() {
-		var skillUpgrades = [];
-		//the jump skill has common upgrades, but also some custom ones sometimes
+	initBaseEffects: function() {
+		if (!this.get('selected'))
+			return false;
+		if (!_(this.get('effects')).isString())
+			return false;
+		
+		var baseEffects = leiminauts.utils.treatEffects(this.get('effects'));
+		
 		if (this.get('type') == "jump") {
-			skillUpgrades = _(leiminauts.upgrades).where({ skill: "Jump" });
-			//some chars have turbo pills, others have light, others have companion; we remove the ones unused
-			var jumpEffects = leiminauts.utils.treatEffects(this.get('effects'));
-			var pills = _(jumpEffects).findWhere({key: "pills"});
-			var unwantedPills = [];
-			if (pills && pills.value == "light")
-				unwantedPills = ["Power Pills Turbo", "Power Pills Companion"];
-			else if (pills && pills.value == "companion")
-				unwantedPills = ["Power Pills Light", "Power Pills Turbo"];
-			else
-				unwantedPills = ["Power Pills Light", "Power Pills Companion"];
-			_(unwantedPills).each(function(pill) {
-				skillUpgrades.splice( _(skillUpgrades).indexOf( _(skillUpgrades).findWhere({ name: pill }) ), 1 );
-			});
-
-			var effects = leiminauts.utils.treatEffects(this._originalEffects);
-			effects.splice( _(effects).indexOf( _(effects).findWhere({ key: 'pills' }) ), 1 );
-
-			//some chars have unique jump upgrades that replace common ones
-			var customJumpUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
-			_(skillUpgrades).each(function(upgrade, i) {
-				_(customJumpUpgrades).each(function(jupgrade) {
-					if (jupgrade.replaces == upgrade.name)
-						skillUpgrades[i] = _(jupgrade).clone();
-				});
-			});
-		} else {
-			skillUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
-			_(skillUpgrades).each(function(upgrade) {
-				upgrade.skill = this;
-			}, this);
+			var solar = _(baseEffects).findWhere({key: "solar"});
+			if (!solar)
+				baseEffects.push({key: "solar", value: 235});
+			
+			var solarPerMin = _(baseEffects).findWhere({key: "solar per min"});
+			if (!solarPerMin)
+				baseEffects.push({key: "solar per min", value: 30});
 		}
+		
+		this.set('baseEffects', baseEffects);
+	},
+
+	initUpgrades: function() {
+		// Use the common upgrades named Jump for the jump skill
+		var skillName = (this.get('type') == "jump" ? "Jump" : this.get('name'));
+		var skillUpgrades = _(leiminauts.upgrades).where({ skill: skillName });
+		
+		// Handle pills and unique character upgrades for the jump skill
+		if (skillName === "Jump") {
+			var upgradesObj = _(skillUpgrades);
+			
+			// Handle character specific pills
+			var baseEffects = this.get('baseEffects');
+			var pills = _(baseEffects).findWhere({key: "pills"});			
+			if (pills) {
+				// Remove pills value from baseEffects
+				var index = _(baseEffects).indexOf(pills);
+				baseEffects.splice(index, 1);
+				
+				// Remove unused pills from upgrades
+				var unwantedPills = {"turbo": "Power Pills Turbo", "light": "Power Pills Light", "companion": "Power Pills Companion"};
+				delete unwantedPills[pills.value];
+				
+				_(unwantedPills).each(function(pillsName) {
+					var pill = upgradesObj.findWhere({ name: pillsName });
+					var index = upgradesObj.indexOf(pill);
+					if (index >= 0)
+						skillUpgrades.splice(index, 1);
+				});
+			}
+
+			// Replace unique jump upgrades with common ones
+			var characterJumpUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
+			_(characterJumpUpgrades).each(function(newUpgrade) {
+				var oldUpgrade = upgradesObj.findWhere({ skill: "Jump", name: newUpgrade.replaces });
+				var index = upgradesObj.indexOf(oldUpgrade);
+				skillUpgrades[index] = _(newUpgrade).clone();
+			});
+		}
+		
+		// Link the upgrade to the skill to enable upgrade shortcut
+		_(skillUpgrades).each(function(upgrade) {
+			upgrade.skill = this;
+		}, this);
+		
 		this.get('upgrades').reset(skillUpgrades);
 		this.resetUpgradesState();
 	},
@@ -278,23 +306,6 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 
 		return number;
-	},
-
-	prepareBaseEffects: function() {
-		if (!this.get('selected')) return false;
-		if (!_(this.get('effects')).isString())
-			return false;
-		this.set('baseEffects', leiminauts.utils.treatEffects(this.get('effects')));
-		if (this.get('type') == "jump") {
-			var effects = _(this.get('baseEffects'));
-			effects.splice( _(effects).indexOf( _(effects).findWhere({ key: 'pills' }) ), 1 );
-			var solar = effects.findWhere({key: "solar"});
-			var solarPerMin = effects.findWhere({key: "solar per min"});
-			if (!solar)
-				effects.push({key: "solar", value: 235});
-			if (!solarPerMin)
-				effects.push({key: "solar per min", value: 30});
-		}
 	},
 
 	setSpecificEffects: function() {
