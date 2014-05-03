@@ -95,13 +95,13 @@ leiminauts.Skill = Backbone.Model.extend({
 				var index = upgradesObj.indexOf(oldUpgrade);
 				skillUpgrades[index] = _(newUpgrade).clone();
 			});
+		} else {
+			// Link the upgrade to the skill to enable upgrade shortcut
+			_(skillUpgrades).each(function(upgrade) {
+				upgrade.skill = this;
+			}, this);
 		}
-		
-		// Link the upgrade to the skill to enable upgrade shortcut
-		_(skillUpgrades).each(function(upgrade) {
-			upgrade.skill = this;
-		}, this);
-		
+
 		this.get('upgrades').reset(skillUpgrades);
 		this.resetUpgradesState();
 	},
