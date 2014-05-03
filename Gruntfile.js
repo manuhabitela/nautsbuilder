@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		meta: {
-			banner: "/* <%= pkg.title %> v<%= pkg.version %> - https://github.com/Leimi/awesomenauts-build-maker\n" +
+			banner: "/* <%= pkg.title %> v<%= pkg.version %> - https://github.com/Leimi/nautsbuilder\n" +
 			"* Copyright (c) <%= grunt.template.today('yyyy') %> Emmanuel Pelletier\n" +
 			"* This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */"
 		},

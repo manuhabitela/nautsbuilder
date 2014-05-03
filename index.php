@@ -2,7 +2,7 @@
 	define('PROD', (!empty($_SERVER['SERVER_NAME']) && strpos($_SERVER['SERVER_NAME'], "nautsbuilder.com") !== false));
 	// define('PROD', true);
 	$now = time();
-	$v = "0.12.0";
+	$v = "0.13.0";
 ?>
 
 <!DOCTYPE html>
