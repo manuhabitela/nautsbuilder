@@ -2,7 +2,9 @@
 
 You play Awesomenauts and want to try new builds? The Nautsbuilder is here. It allows you to create and share builds easily for each naut', directly on the web.
 
-## How it works
+## Dealing with data
+
+### How it works
 
 This JavaScript app is mostly built with Backbone.js. The particular thing is that it gets all its data from **a google spreadsheet** thanks to Tabletop.js.
 
@@ -10,7 +12,7 @@ This allows for everyone to quickly and easily change characters attributes and 
 
 And thanks to the community, all characters/skills/upgrades data is now in the spreadsheet :)
 
-## Filling the spreadsheet correctly
+### Filling the spreadsheet correctly
 
 There are two spreadsheets: one for PC data, one for console data.
 
@@ -28,7 +30,7 @@ It is pretty simple to fill but there are a few things to know.
 * Every image is a direct link to an external resource right now. It's usually image linked from the wiki.
 * Finally if you have trouble, don't hesitate to look at how is structured existing data, or ping me in the [forum](http://www.awesomenauts.com/forum/viewtopic.php?f=14&t=13663) (Leimi).
 
-### Characters
+#### Characters
 
 The Character sheet is easy. `name`, `icon` and `image` fields are required so the app works well, other ones are bonus.
 `icon` is the link to an image showing the character head in a square used in the characters list, while the `image` is the link to a big image of the entire character used on the homepage of the Nautsbuilder.
@@ -36,7 +38,7 @@ The `beta` flag is there for people who can't wait to see a new character in the
 
 Characters should be listed in the same order as they are in the character selection screen in the game.
 
-### Skills
+#### Skills
 
 * Each skill is tied to its character. Binding between the skill and the character is made on the `character` field: be sure to type a name listed in the Characters sheet. Ie, having a Skill tied to "Leon" will not work: the Character is "Leon Chameleon".
 * Skills should be listed in the order you want them to appear in the Nautsbuilder. This should match the order in the game (ie Leon has Tongue Snatch, then Cloaking Skin, then Slash, then Reptile Jump).
@@ -44,7 +46,7 @@ Characters should be listed in the same order as they are in the character selec
 * **Skill effects**. Each skill has one or more attributes: damage, cooldown, attack speed, etc. The `effect` field contains a list of the effects. Each element of the list is separated by `;`. One element of the list is composed of a key (ie "damage") and a value (ie "12"). Key and value are separated by a `:`. So, a clean list of effects is like `Damage: 8; Attack speed: 136; Range: 3.2`. Note that if a "damage" and a "attack speed" keys are detected, the Nautsbuilder will automatically show the DPS (Damage Per Second). Writing "damage" or "Damage" doesn't change anything. You can add a "damage multiplier" effect to split the damage a skill does. For example, Vinnie & Spike shoots 3 bullets that does 3 damage each with its Bubble Gun. You can write `Damage: 3; Damage multiplier: 3;` to let the Nautsbuilder calculates total damage and DPS accordingly. This actually works for damage stuff but also [any other effect](https://github.com/Leimi/nautsbuilder/pull/13#issuecomment-38432751).
 * Jump skill: the character's jump skill must not be forgotten! Be sure to type the custom jump name (for Leon, it's "Reptile Jump"). The jump effect list contains the characters stats (mostly health and movement). **Pills**: if the character has light power pills, you should note it in the jump effects list. Final effects list for Reptile Jump of Leon looks like `health: 130; Movement: 7.4; Height: 1.6; Pills: light`
 
-### Upgrades
+#### Upgrades
 
 * Each upgrade is tied to its skill. Binding between the upgrade and the skill is made on the `skill` field: be sure to type a name listed in the Skills sheet. Ie, having an Upgrade tied to "Tongue" will not work: the Skill is "Tongue Snatch".
 * Upgrades should be listed in the order you want them to appear in the Nautsbuilder. This should match the order in the game (ie Slash has Chainsaw Addon, then Enhanced Muscle Fibers, then Clover of Honour, etc).
@@ -53,6 +55,35 @@ Characters should be listed in the same order as they are in the character selec
 * Upgrade has multiple steps: describe them in `step1`, `step2`... fields. **Steps are formatted just like skill effects**: a `;` separated list of `key:value` pairs. The "keys" should match the ones of the skill. For example, if a skill has a `damage: 8`, and one of its upgrades adds 4 damage, make sure to write `damage: +4` in the step field, and not `damages: +4` or `adds 4 damage`.
 * Note that steps of the same upgrade don't stack. Imagine an upgrade which adds 2 damage to the auto attack at each step: you should write `damage: +2` in the `step1` field and `damage +4` in the `step2` field.
 * If a skill has multiple upgrades with similar effects, they stack by default. For example, Lonestar's Bull has two Slow upgrades. While the `Slowing Power` effect should take both upgrade values, the `Slow Duration` is 3 seconds whether you take only one or both upgrades. To prevent stacking of an effect, an effect value should be prefixed with a `@`. The effect of (Mature) Ribbit Snail Slime is, in the end, written like this `Slowing Power: +30%; Slow Duration: @3s`.
+
+## Dealing with code
+
+The Nautsbuilder is a web app built with the help of **Backbone.js**, **Sass & Compass** and **Grunt**. A micro-bit of PHP is used too, so be sure to have Compass, Grunt and PHP installed on your machine if you want to contribute without any problem.
+
+If you want to contribute, simply clone the project and start working on the JS and SCSS code. To easily have a local nautsbuilder instance, you can start a local web server with PHP:
+
+```bash
+cd /location/of/nautsbuilder/root
+php -S localhost:8000
+```
+
+### Making a new version
+
+*This part is obviously only useful for people maintaining the Nautsbuilder*.
+
+When you want to publish new code on the Nautsbuilder website, you have to make a new "build" (not Awesomenauts builds, but JS/CSS ones :P). This could be enhanced since I'm not that found of the process but it's not *that* bad.
+
+To make a new build, bump the version of the Nautsbuilder in both the `package.json` and `index.php` files.
+You can then build the production files with Grunt:
+
+```bash
+cd /location/of/nautsbuilder/root
+grunt
+````
+
+The production files are generated in the `dist` folder and have the new version number commented before the actual code they contain.
+
+You can then upload your updated `dist` folder, `index.php` file, and potential other necessary files for your update (new images, new font?) on the server to reflect the changes on the Nautsbuilder.
 
 ## License
 
