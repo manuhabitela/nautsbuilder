@@ -74,6 +74,9 @@ php -S localhost:8000
 When you want to publish new code on the Nautsbuilder website, you have to make a new "build" (not Awesomenauts builds, but JS/CSS ones :P). This could be enhanced since I'm not that found of the process but it's not *that* bad.
 
 To make a new build, bump the version of the Nautsbuilder in both the `package.json` and `index.php` files.
+
+If you added any JS files while developing (that your certainly added at the end of `ìndex.php`), be sure to add them in the list of files to concatenate in `Gruntfile.js`, or the Nautsbuilder will break in production.
+
 You can then build the production files with Grunt:
 
 ```bash
@@ -83,7 +86,9 @@ grunt
 
 The production files are generated in the `dist` folder and have the new version number commented before the actual code they contain.
 
-You can then upload your updated `dist` folder, `index.php` file, and potential other necessary files for your update (new images, new font?) on the server to reflect the changes on the Nautsbuilder.
+If you wanna test if your build will break in production before uploading things for realz, you can force the `PROD` constant to `true` at the top of `index.php` on your machine.
+
+If everything's ok, you can then upload your `dist` folder, `index.php` file, and potential other necessary files for your update (new images, new font?) on the server to reflect the changes on the Nautsbuilder.
 
 ## License
 
