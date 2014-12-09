@@ -432,7 +432,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 
 		if (this.get('name') == "Spike Dive") {
-			dmg = effects.findWhere({key: "damage"}).value;
+			dmg = +effects.findWhere({key: "damage"}).value;
 			var seahorse = this.getActiveUpgrade("dead seahorse head");
 			var seahorseEffect = null;
 			var seahorsePercent = effects.findWhere({key: "extra spike damage"});
