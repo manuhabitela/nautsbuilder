@@ -2807,26 +2807,39 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
   "use strict";
 
   var inNodeJS = false;
-  if (typeof process !== 'undefined') {
+  if (typeof module !== 'undefined' && module.exports) {
     inNodeJS = true;
     var request = require('request');
   }
 
-  if (!Array.prototype.indexOf) {
-    Array.prototype.indexOf = function (obj, fromIndex) {
-      if (fromIndex === null) {
-          fromIndex = 0;
-      } else if (fromIndex < 0) {
-          fromIndex = Math.max(0, this.length + fromIndex);
+  var supportsCORS = false;
+  var inLegacyIE = false;
+  try {
+    var testXHR = new XMLHttpRequest();
+    if (typeof testXHR.withCredentials !== 'undefined') {
+      supportsCORS = true;
+    } else {
+      if ("XDomainRequest" in window) {
+        supportsCORS = true;
+        inLegacyIE = true;
       }
-      for (var i = fromIndex, j = this.length; i < j; i++) {
-          if (this[i] === obj) {
-              return i;
-          }
-      }
-      return -1;
-    };
-  }
+    }
+  } catch (e) { }
+
+  // Create a simple indexOf function for support
+  // of older browsers.  Uses native indexOf if 
+  // available.  Code similar to underscores.
+  // By making a separate function, instead of adding
+  // to the prototype, we will not break bad for loops
+  // in older browsers
+  var indexOfProto = Array.prototype.indexOf;
+  var ttIndexOf = function(array, item) {
+    var i = 0, l = array.length;
+    
+    if (indexOfProto && array.indexOf === indexOfProto) return array.indexOf(item);
+    for (; i < l; i++) if (array[i] === item) return i;
+    return -1;
+  };
   
   /*
     Initialize with Tabletop.init( { key: '0AjAPaAU9MeLFdHUxTlJiVVRYNGRJQnRmSnQwTlpoUXc' } )
@@ -2836,7 +2849,7 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
     Initialize with Tabletop.init('0AjAPaAU9MeLFdHUxTlJiVVRYNGRJQnRmSnQwTlpoUXc')
   */
 
-  var Tabletop = global.Tabletop = function(options) {
+  var Tabletop = function(options) {
     // Make sure Tabletop is being used as a constructor no matter what.
     if(!this || !(this instanceof Tabletop)) {
       return new Tabletop(options);
@@ -2852,17 +2865,26 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
     this.simpleSheet = !!options.simpleSheet;
     this.parseNumbers = !!options.parseNumbers;
     this.wait = !!options.wait;
+    this.reverse = !!options.reverse;
     this.postProcess = options.postProcess;
     this.debug = !!options.debug;
     this.query = options.query || '';
+    this.orderby = options.orderby;
     this.endpoint = options.endpoint || "https://spreadsheets.google.com";
     this.singleton = !!options.singleton;
     this.simple_url = !!options.simple_url;
+    this.callbackContext = options.callbackContext;
+    // Default to on, unless there's a proxy, in which case it's default off
+    this.prettyColumnNames = typeof(options.prettyColumnNames) == 'undefined' ? !options.proxy : options.prettyColumnNames
     
     if(typeof(options.proxy) !== 'undefined') {
-      this.endpoint = options.proxy;
+      // Remove trailing slash, it will break the app
+      this.endpoint = options.proxy.replace(/\/$/,'');
       this.simple_url = true;
       this.singleton = true;
+      // Let's only use CORS (straight JSON request) when
+      // fetching straight from Google
+      supportsCORS = false;
     }
     
     this.parameterize = options.parameterize || false;
@@ -2876,8 +2898,13 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
     
     /* Be friendly about what you accept */
     if(/key=/.test(this.key)) {
-      this.log("You passed a key as a URL! Attempting to parse.");
-      this.key = this.key.match("key=(.*?)&")[1];
+      this.log("You passed an old Google Docs url as the key! Attempting to parse.");
+      this.key = this.key.match("key=(.*?)(&|#|$)")[1];
+    }
+
+    if(/pubhtml/.test(this.key)) {
+      this.log("You passed a new Google Spreadsheets url as the key! Attempting to parse.");
+      this.key = this.key.match("d\\/(.*?)\\/pubhtml")[1];
     }
 
     if(!this.key) {
@@ -2892,7 +2919,7 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 
     this.base_json_path = "/feeds/worksheets/" + this.key + "/public/basic?alt=";
 
-    if (inNodeJS) {
+    if (inNodeJS || supportsCORS) {
       this.base_json_path += 'json';
     } else {
       this.base_json_path += 'json-in-script';
@@ -2933,8 +2960,34 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
       if (inNodeJS) {
         this.serverSideFetch(path, callback);
       } else {
-        this.injectScript(path, callback);
+        //CORS only works in IE8/9 across the same protocol
+        //You must have your server on HTTPS to talk to Google, or it'll fall back on injection
+        var protocol = this.endpoint.split("//").shift() || "http";
+        if (supportsCORS && (!inLegacyIE || protocol === location.protocol)) {
+          this.xhrFetch(path, callback);
+        } else {
+          this.injectScript(path, callback);
+        }
       }
+    },
+
+    /*
+      Use Cross-Origin XMLHttpRequest to get the data in browsers that support it.
+    */
+    xhrFetch: function(path, callback) {
+      //support IE8's separate cross-domain object
+      var xhr = inLegacyIE ? new XDomainRequest() : new XMLHttpRequest();
+      xhr.open("GET", this.endpoint + path);
+      var self = this;
+      xhr.onload = function() {
+        try {
+          var json = JSON.parse(xhr.responseText);
+        } catch (e) {
+          console.error(e);
+        }
+        callback.call(self, json);
+      };
+      xhr.send();
     },
     
     /*
@@ -3011,7 +3064,7 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
       if(this.wanted.length === 0) {
         return true;
       } else {
-        return this.wanted.indexOf(sheetName) !== -1;
+        return (ttIndexOf(this.wanted, sheetName) !== -1);
       }
     },
     
@@ -3040,7 +3093,7 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
       Add another sheet to the wanted list
     */
     addWanted: function(sheet) {
-      if(this.wanted.indexOf(sheet) === -1) {
+      if(ttIndexOf(this.wanted, sheet) === -1) {
         this.wanted.push(sheet);
       }
     },
@@ -3062,12 +3115,22 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
         this.foundSheetNames.push(data.feed.entry[i].title.$t);
         // Only pull in desired sheets to reduce loading
         if( this.isWanted(data.feed.entry[i].content.$t) ) {
-          var sheet_id = data.feed.entry[i].link[3].href.substr( data.feed.entry[i].link[3].href.length - 3, 3);
-          var json_path = "/feeds/list/" + this.key + "/" + sheet_id + "/public/values?sq=" + this.query + '&alt='
-          if (inNodeJS) {
+          var linkIdx = data.feed.entry[i].link.length-1;
+          var sheet_id = data.feed.entry[i].link[linkIdx].href.split('/').pop();
+          var json_path = "/feeds/list/" + this.key + "/" + sheet_id + "/public/values?alt="
+          if (inNodeJS || supportsCORS) {
             json_path += 'json';
           } else {
             json_path += 'json-in-script';
+          }
+          if(this.query) {
+            json_path += "&sq=" + this.query;
+          }
+          if(this.orderby) {
+            json_path += "&orderby=column:" + this.orderby.toLowerCase();
+          }
+          if(this.reverse) {
+            json_path += "&reverse=true";
           }
           toLoad.push(json_path);
         }
@@ -3097,23 +3160,32 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
       }
     },
 
+    sheetReady: function(model) {
+      this.models[ model.name ] = model;
+      if(ttIndexOf(this.model_names, model.name) === -1) {
+        this.model_names.push(model.name);
+      }
+
+      this.sheetsToLoad--;
+      if(this.sheetsToLoad === 0)
+        this.doCallback();
+    },
+    
     /*
       Parse a single list-based worksheet, turning it into a Tabletop Model
 
       Used as a callback for the list-based JSON
     */
     loadSheet: function(data) {
+      var that = this;
       var model = new Tabletop.Model( { data: data, 
-                                    parseNumbers: this.parseNumbers,
-                                    postProcess: this.postProcess,
-                                    tabletop: this } );
-      this.models[ model.name ] = model;
-      if(this.model_names.indexOf(model.name) === -1) {
-        this.model_names.push(model.name);
-      }
-      this.sheetsToLoad--;
-      if(this.sheetsToLoad === 0)
-        this.doCallback();
+                                        parseNumbers: this.parseNumbers,
+                                        postProcess: this.postProcess,
+                                        tabletop: this,
+                                        prettyColumnNames: this.prettyColumnNames,
+                                        onReady: function() {
+                                          that.sheetReady(this);
+                                        } } );
     },
 
     /*
@@ -3147,12 +3219,16 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
     var i, j, ilen, jlen;
     this.column_names = [];
     this.name = options.data.feed.title.$t;
+    this.tabletop = options.tabletop;
     this.elements = [];
+    this.onReady = options.onReady;
     this.raw = options.data; // A copy of the sheet's raw data, for accessing minutiae
 
     if(typeof(options.data.feed.entry) === 'undefined') {
       options.tabletop.log("Missing data for " + this.name + ", make sure you didn't forget column headers");
+      this.original_columns = [];
       this.elements = [];
+      this.onReady.call(this);
       return;
     }
     
@@ -3161,6 +3237,8 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
         this.column_names.push( key.replace("gsx$","") );
     }
 
+    this.original_columns = this.column_names;
+    
     for(i = 0, ilen =  options.data.feed.entry.length ; i < ilen; i++) {
       var source = options.data.feed.entry[i];
       var element = {};
@@ -3181,7 +3259,11 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
         options.postProcess(element);
       this.elements.push(element);
     }
-
+    
+    if(options.prettyColumnNames)
+      this.fetchPrettyColumns();
+    else
+      this.onReady.call(this);
   };
 
   Tabletop.Model.prototype = {
@@ -3190,6 +3272,74 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
     */
     all: function() {
       return this.elements;
+    },
+    
+    fetchPrettyColumns: function() {
+      if(!this.raw.feed.link[3])
+        return this.ready();
+      var cellurl = this.raw.feed.link[3].href.replace('/feeds/list/', '/feeds/cells/').replace('https://spreadsheets.google.com', '');
+      var that = this;
+      this.tabletop.requestData(cellurl, function(data) {
+        that.loadPrettyColumns(data)
+      });
+    },
+    
+    ready: function() {
+      this.onReady.call(this);
+    },
+    
+    /*
+     * Store column names as an object
+     * with keys of Google-formatted "columnName"
+     * and values of human-readable "Column name"
+     */
+    loadPrettyColumns: function(data) {
+      var pretty_columns = {};
+
+      var column_names = this.column_names;
+
+      var i = 0;
+      var l = column_names.length;
+
+      for (; i < l; i++) {
+        if (typeof data.feed.entry[i].content.$t !== 'undefined') {
+          pretty_columns[column_names[i]] = data.feed.entry[i].content.$t;
+        } else {
+          pretty_columns[column_names[i]] = column_names[i];
+        }
+      }
+
+      this.pretty_columns = pretty_columns;
+
+      this.prettifyElements();
+      this.ready();
+    },
+    
+    /*
+     * Go through each row, substitutiting
+     * Google-formatted "columnName"
+     * with human-readable "Column name"
+     */
+    prettifyElements: function() {
+      var pretty_elements = [],
+          ordered_pretty_names = [],
+          i, j, ilen, jlen;
+
+      var ordered_pretty_names;
+      for(j = 0, jlen = this.column_names.length; j < jlen ; j++) {
+        ordered_pretty_names.push(this.pretty_columns[this.column_names[j]]);
+      }
+
+      for(i = 0, ilen = this.elements.length; i < ilen; i++) {
+        var new_element = {};
+        for(j = 0, jlen = this.column_names.length; j < jlen ; j++) {
+          var new_column_name = this.pretty_columns[this.column_names[j]];
+          new_element[new_column_name] = this.elements[i][this.column_names[j]];
+        }
+        pretty_elements.push(new_element);
+      }
+      this.elements = pretty_elements;
+      this.column_names = ordered_pretty_names;
     },
 
     /*
@@ -3209,7 +3359,17 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
     }
   };
 
-})(typeof process === 'undefined' ? this : module.exports);
+  if(inNodeJS) {
+    module.exports = Tabletop;
+  } else if (typeof define === 'function' && define.amd) {
+    define(function () {
+        return Tabletop;
+    });
+  } else {
+    global.Tabletop = Tabletop;
+  }
+
+})(this);
 
 //https://github.com/Leimi/mousetooltip.js
 (function(){

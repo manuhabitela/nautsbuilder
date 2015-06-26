@@ -1,5 +1,5 @@
-/* Nautsbuilder - Awesomenauts build maker v0.14.0 - https://github.com/Leimi/nautsbuilder
-* Copyright (c) 2014 Emmanuel Pelletier
+/* Nautsbuilder - Awesomenauts build maker v0.14.1 - https://github.com/Leimi/nautsbuilder
+* Copyright (c) 2015 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. *//* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -460,10 +460,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			var upgradeNumber = parseFloat(regexResult[2]);
 
 			var operation;
-			if (regexResult[3] && regexResult[3] == "%" && !baseIsPercent) {
-				operation = "%";
-			}
-			else if (regexResult[1] && regexResult[1] == "/") {
+			if (regexResult[1] && regexResult[1] == "/") {
 				operation = "/";
 			}
 			else if (regexResult[1] && regexResult[1] == "@") {
@@ -471,6 +468,10 @@ leiminauts.Skill = Backbone.Model.extend({
 			}
 			else if (regexResult[1] && regexResult[1] == "-") {
 				upgradeNumber = -upgradeNumber;
+			}
+
+			if (regexResult[3] && regexResult[3] == "%" && !baseIsPercent) {
+				operation = "%";
 			}
 
 			effectNumber = this.applyOperation(effectNumber, upgradeNumber, operation);
@@ -540,7 +541,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			});
 			_(missiles).each(function(missile) {
 				var number = parseInt(missile.key.substr(-1), 10)-1;
-				missilesSequence[number] = (baseDamage + (4*number))*parseInt(missile.value, 10);
+				missilesSequence[number] = (baseDamage + (40*number))*parseInt(missile.value, 10);
 				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: missile.key }) ), 1 );
 			});
 			while ((missilesSequence.length > 1) && (missilesSequence[missilesSequence.length-1] == baseDamage))
@@ -601,7 +602,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 
 		if (this.get('name') == "Spike Dive") {
-			dmg = effects.findWhere({key: "damage"}).value;
+			dmg = +effects.findWhere({key: "damage"}).value;
 			var seahorse = this.getActiveUpgrade("dead seahorse head");
 			var seahorseEffect = null;
 			var seahorsePercent = effects.findWhere({key: "extra spike damage"});
@@ -1649,7 +1650,9 @@ $(function() {
 	var forum = window.location.hash.indexOf('forum') !== -1;
 
 	var consolenauts = window.location.hash.indexOf('console') !== -1;
-	var dev = window.location.hostname === "localhost";
+	//dev determines whether nautsbuilder loads data from the dev or steam sheet.
+	//remove 'false &&' in order to enable the dev version on localhost
+	var dev = false && (window.location.hostname === "localhost");
 	var useLocalStorage = true;
 	leiminauts.sheets = [
 		{ name: "steam", key: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc" },
