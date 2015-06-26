@@ -21,7 +21,9 @@ $(function() {
 	var forum = window.location.hash.indexOf('forum') !== -1;
 
 	var consolenauts = window.location.hash.indexOf('console') !== -1;
-	var dev = window.location.hostname === "localhost";
+	//dev determines whether nautsbuilder loads data from the dev or steam sheet.
+	//remove 'false &&' in order to enable the dev version on localhost
+	var dev = false && (window.location.hostname === "localhost");
 	var useLocalStorage = true;
 	leiminauts.sheets = [
 		{ name: "steam", key: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc" },
