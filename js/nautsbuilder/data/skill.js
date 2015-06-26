@@ -291,10 +291,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			var upgradeNumber = parseFloat(regexResult[2]);
 
 			var operation;
-			if (regexResult[3] && regexResult[3] == "%" && !baseIsPercent) {
-				operation = "%";
-			}
-			else if (regexResult[1] && regexResult[1] == "/") {
+			if (regexResult[1] && regexResult[1] == "/") {
 				operation = "/";
 			}
 			else if (regexResult[1] && regexResult[1] == "@") {
@@ -302,6 +299,10 @@ leiminauts.Skill = Backbone.Model.extend({
 			}
 			else if (regexResult[1] && regexResult[1] == "-") {
 				upgradeNumber = -upgradeNumber;
+			}
+
+			if (regexResult[3] && regexResult[3] == "%" && !baseIsPercent) {
+				operation = "%";
 			}
 
 			effectNumber = this.applyOperation(effectNumber, upgradeNumber, operation);
