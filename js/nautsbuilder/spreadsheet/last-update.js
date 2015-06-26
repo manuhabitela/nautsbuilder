@@ -1,3 +1,3 @@
 window.leiminauts = window.leiminauts || {};
 
-leiminauts.lastSpreadsheetUpdate = 1399134330000; //2014-05-03 18:25:30
+leiminauts.lastSpreadsheetUpdate = 1435336207000; //2015-06-26 18:30:07
