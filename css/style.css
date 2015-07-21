@@ -1,4 +1,4 @@
-@font-face { font-family: "Zekton"; src: url('../fonts/zekton_rg-webfont.woff') format('woff'), url('../fonts/zekton_rg-webfont.ttf') format('truetype'), url('../fonts/zekton_rg-webfont.eot') format('embedded-opentype'), url('../fonts/zekton_rg-webfont.svg') format('svg'); }
+ @font-face { font-family: "Zekton"; src: url('../fonts/zekton_rg-webfont.woff') format('woff'), url('../fonts/zekton_rg-webfont.ttf') format('truetype'), url('../fonts/zekton_rg-webfont.eot') format('embedded-opentype'), url('../fonts/zekton_rg-webfont.svg') format('svg'); }
 
 .skill-icon, .upgrade-icon, .order-icon { width: 90px; height: 90px; }
 .forum .skill-icon, .forum .upgrade-icon, .forum .order-icon { width: 75px; height: 75px; }
@@ -38,7 +38,7 @@ html.page-red { height: 100%; min-height: 0; }
 
 a:focus { outline: thin dotted; }
 
-a:active, a:hover { outline: 0; }
+a:active, a:hover { outline: 1px; }
 
 h1 { font-size: 2em; margin: 0.67em 0; }
 
@@ -151,7 +151,11 @@ body, .page-blue body { background-color: #001D2F; background-image: -webkit-gra
 
 .page-red #container, .page-red .chars-list-container, .page-red .current-char { height: 100%; }
 
+#mobileHeader { display: none; font-size: 3em; text-align: center; }
+@media only screen and (max-width: 781px) { #mobileHeader { display: inherit !important;} }
+
 .current-char { padding-bottom: 100px; background-image: -webkit-gradient(radial, 50% -100px, 0, 50% -100px, 600, color-stop(0%, rgba(230, 202, 8, 0.8)), color-stop(100%, transparent)); background-image: -webkit-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px); background-image: -moz-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px); background-image: -o-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px); }
+@media only screen and (max-width: 781px) {.current-char {display:none;} }
 
 .current-char-box { padding: 10px; border-radius: 5px; background: rgba(0, 0, 0, 0.5); font-size: small; margin: 5px; }
 .current-char-box p:first-child { margin-top: 0; }
@@ -169,9 +173,9 @@ body, .page-blue body { background-color: #001D2F; background-image: -webkit-gra
 .current-char-name { position: absolute; bottom: 60px; left: 0; right: 0; font-size: 4em; margin: 0; line-height: 1; text-shadow: 0 2px 6px black; }
 @media only screen and (max-height: 780px) { .current-char-name { font-size: 3em; } }
 
-.current-char-right { float: right; }
+.current-char-right { float: right;}
 
-.current-char-image { height: auto; max-height: 100%; }
+.current-char-image { width: auto; max-width: 100%; }
 
 .current-char-skill-icon { float: left; margin: 10px; margin-left: 0; }
 .current-char-skill-icon img { width: 60px; }
@@ -180,11 +184,10 @@ body, .page-blue body { background-color: #001D2F; background-image: -webkit-gra
 .current-char-placeholder { height: 100%; max-width: 667px; margin: 0 auto; background: url('../img/nautsbuilder.png?1372168425') no-repeat center center; background-size: 100% auto; }
 
 .chars-list { list-style-type: none; margin: 0; padding: 0; }
-.chars-list-container .chars-list { position: fixed; left: 0; right: 0; bottom: 30px; height: 90px; text-align: center; }
-@media only screen and (max-width: 1350px) { .chars-list-container .chars-list { height: 70px; } }
-.chars-list .char { display: inline-block; cursor: pointer; padding: 0; margin: 3px 0; border: 5px solid transparent; }
-@media only screen and (max-width: 1350px) { .chars-list .char { margin: 1px 0; } }
-.chars-list .char:hover, .chars-list .char.active { border-color: #FFF292; border-radius: 5px; }
+.chars-list-container .chars-list { position: fixed; left: 0; right: 0; bottom: 30px; text-align: center; }
+@media only screen and (max-width: 781px) {.chars-list-container .chars-list {position: inherit;} }
+.chars-list .char { display: inline-block; cursor: pointer; padding: 0; margin: 3px 0; border: 2px solid transparent; }
+.chars-list .char:hover, .chars-list .char.active { border: solid 2px #FFF292; }
 .chars-list .char.active, .chars-list .char.beta.active { border-color: #ffec5f; }
 .chars-list .char.beta { border-color: rgba(255, 0, 0, 0.6); }
 .chars-list .char.beta:after { content: 'beta'; display: block; background: rgba(255, 0, 0, 0.6); pointer-events: none; }
@@ -194,8 +197,8 @@ body, .page-blue body { background-color: #001D2F; background-image: -webkit-gra
 .char-builder .chars-list .char.beta:after { display: none; content: 'currently in beta'; overflow: hidden; position: absolute; top: 120%; left: -56px; padding: 2px 4px; width: 120px; z-index: 200; border-radius: 5px; text-shadow: none; background: rgba(255, 0, 0, 0.6); font-size: 0.7em; pointer-events: none; }
 .char-builder .chars-list .char.beta:hover:after { display: block; }
 .char-builder .chars-list .char.active.beta:after { display: block; }
-.chars-list .char-icon { vertical-align: middle; width: 70px; }
-@media only screen and (max-width: 1350px) { .chars-list .char-icon { width: 50px; } }
+.chars-list .char-icon { vertical-align: middle; width: 55px; }
+@media only screen and (max-width: 781px) {.chars-list .char-icon {width: 100%;} }
 .chars-list.mini { margin-bottom: 20px; text-align: center; }
 .chars-list.mini .char { border-width: 1px; margin: 2px 0 2px -4px; }
 .chars-list.mini .char:hover, .chars-list.mini .char.active { border-radius: 0; }
