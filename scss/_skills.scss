@@ -1,6 +1,9 @@
 .skill-wrapper {
 	margin: 3px auto;
 	position: relative;
+	@include respond-to(mobile) {
+		display: inline-flex;
+	}
 	.forum & {
 		max-width: 575px;
 		// max-width: 345px;
@@ -44,6 +47,9 @@
 		@extend %box;
 		padding-top: 7px;
 		position: absolute;
+		@include respond-to(mobile) {
+			position: static;
+		}
 		top: 0;
 		right: 0;
 		text-align: left;

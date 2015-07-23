@@ -1,9 +1,20 @@
 .page-red {
 	#container, .chars-list-container, .current-char {
 		height: 100%;
+		@include respond-to(mobile) {
+			height: auto;
+		}
 	}
 }
 
+#mobileHeader {
+	display: none;
+	font-size: 3em;
+	text-align: center;
+	@include respond-to(mobile) {
+		display: inherit !important;
+	}
+}
 
 .current-char {
 	@extend .clearfix;
@@ -12,6 +23,9 @@
 	background-image: -webkit-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px);
 	background-image: -moz-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px);
 	background-image: -o-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px);
+	@include respond-to(mobile) {
+		display:none;
+	}
 }
 
 .current-char-box {
@@ -80,8 +94,8 @@
 }
 
 .current-char-image {
-	height: auto;
-	max-height: 100%;
+	width: auto;
+	max-width: 100%;
 }
 
 .current-char-skill {
@@ -122,10 +136,9 @@
 		left: 0;
 		right: 0;
 		bottom: 30px;
-		height: 90px;
 		text-align: center;
-		@media only screen and (max-width: 1350px) {
-			height: 70px;
+		@include respond-to(mobile) {
+			position: inherit;
 		}
 	}
 	list-style-type: none;
@@ -136,13 +149,9 @@
 		cursor: pointer;
 		padding: 0;
 		margin: 3px 0;
-		@media only screen and (max-width: 1350px) {
-			margin: 1px 0;
-		}
-		border: 5px solid transparent;
+		border: 2px solid transparent;
 		&:hover, &.active {
-			border-color: #FFF292;
-			border-radius: 5px;
+			border: solid 2px #FFF292;
 		}
 		&.active, &.beta.active {
 			border-color: darken(#FFF292, 10%);
@@ -194,9 +203,9 @@
 	}
 	.char-icon {
 		vertical-align: middle;
-		width: 70px;
-		@media only screen and (max-width: 1350px) {
-			width: 50px;
+		width: 55px;
+		@include respond-to(mobile) {
+			width: 100%;
 		}
 	}
 

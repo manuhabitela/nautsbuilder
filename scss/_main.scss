@@ -25,6 +25,9 @@
 			left: 0;
 			right: 0;
 		}
+		@include respond-to(mobile) {
+			margin:0;
+		}
 	}
 	text-align: center;
 	font-size: 12px;
