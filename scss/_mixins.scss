@@ -6,7 +6,7 @@
 	$break-large: 980px;
 	$break-xlarge: 1400px;
 	$break-small-height: 780px;
-	$break-mobile: 790px;
+	$break-mobile: 970px;
 	@if $media == small {
 		@media only screen and (max-width: $break-small) { @content; }
 	}

@@ -16,17 +16,16 @@
 	.forum & {
 		@extend .hidden;
 	}
-	margin: 0;
+	margin: 0 4%;
+	@include respond-to(mobile) {
+		margin: 2% 4%;
+	}
 	.page-blue & {
-		margin: 50px 0 0;
 		@media only screen and (min-height: 900px) {
 			position: fixed;
 			bottom: 10px;
 			left: 0;
 			right: 0;
-		}
-		@include respond-to(mobile) {
-			margin:0;
 		}
 	}
 	text-align: center;
@@ -59,7 +58,6 @@
 }
 
 #container {
-	padding-top: 10px;
 	.forum & {
 		padding-top: 0;
 		overflow: hidden;

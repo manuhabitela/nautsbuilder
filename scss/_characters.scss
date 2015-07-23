@@ -213,7 +213,7 @@
 		@extend .hidden;
 	}
 	&.mini {
-		margin-bottom: $build-margin;
+		margin: 10px 2% $build-margin 2%;
 		text-align: center;
 		.char {
 			border-width: 1px;
@@ -226,7 +226,7 @@
 			}
 		}
 		.char-icon {
-			height: 26px;
+			height: 30px;
 			width: auto;
 		}
 	}
