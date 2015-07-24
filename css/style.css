@@ -143,6 +143,7 @@ body, .page-blue body { background-color: #001D2F; background-image: url('data:i
 .forum #container { padding-top: 0; overflow: hidden; width: 760px; height: 500px; }
 
 .console-info { position: absolute; top: 10px; right: 10px; display: block; height: 26px; width: 40px; background: url('../img/pc_white_transparent.png?1434889272') no-repeat 99% 1%; }
+@media only screen and (max-width: 970px) { .console-info { display: none; } }
 .console .console-info { background: url('../img/gamepad_white_transparent.png?1434889272') no-repeat 99% 1%; }
 
 .forum * { cursor: default; }

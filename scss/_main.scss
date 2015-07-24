@@ -76,6 +76,9 @@
 	display: block;
 	height: 26px;
 	width: 40px;
+	@include respond-to(mobile) {
+		display: none;
+	}
 	background: image-url('pc_white_transparent.png') no-repeat 99% 1%;
 	.console & {
 		background: image-url('gamepad_white_transparent.png') no-repeat 99% 1%;
