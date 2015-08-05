@@ -180,7 +180,9 @@
 					<p class="cost">Cost: <span class="info"><%= cost %></span></p>
 					<p><strong>Effects:</strong><br>
 					<% _(baseEffects).each(function(effect) { %>
-						<%= _(effect.key).capitalized() %>: <%= effect.value %>;
+						<% if (!leiminauts.utils.effectNameContains(effect, 'multiplier')) { %>
+							<%= _(effect.key).capitalized() %>: <%= effect.value %>;
+						<% } %>
 					<% }) %>
 					</p>
 				</div>
@@ -217,7 +219,7 @@
 				<% steps.each(function(step) { if (step.get('level') > 0) { %>
 				<br>
 				<% if (_(current_step).isEqual(step)) { %><strong><% } %>
-					Stage <%= step.get('level') %>: <%= step.get('description') %>
+					Stage <%= step.get('level') %>: <%= leiminauts.utils.removeMultiplierEffects(step.get('description')) %>
 				<% if (_(current_step).isEqual(step)) { %></strong><% } %>
 				<% } }) %>
 			</div>

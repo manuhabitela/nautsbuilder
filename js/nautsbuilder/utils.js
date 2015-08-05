@@ -73,6 +73,33 @@ leiminauts.utils = {
 		return effects;
 	},
 
+	//inverse operation to treatEffects, returning an effects string
+	untreatEffects: function(effects) {
+		var attributes = _.map(effects, function(effect) {
+			return _(effect.key).capitalized() + ": " + effect.value;
+		});
+		return attributes.join("; ");
+	},
+
+	removeEffect: function(effects, name) {
+		var filtered = _.filter(effects, function(e) {
+		    // Only keep effects that do not contain the given effect
+		    return !leiminauts.utils.effectNameContains(e, name);
+		});
+		return filtered;
+	},
+
+	//removes any multiplier effect from an effects string
+	removeMultiplierEffects: function(effectsString) {
+		var effects = leiminauts.utils.treatEffects(effectsString);
+		var filtered = leiminauts.utils.removeEffect(effects, "multiplier");
+		return leiminauts.utils.untreatEffects(filtered);
+	},
+
+	effectNameContains: function(effect, value) {
+		return effect.key.toLowerCase().indexOf(value.toLowerCase()) > -1;
+	},
+
 	number: function(number, decimals) {
 		number = number*1;
 		if (_(number).isNaN()) return number;
