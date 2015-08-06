@@ -52,7 +52,7 @@
 
 		<script type="text/template" id="chars-tpl">
 			<% if (!mini) { %>
-				<h1 id="mobileHeader">NautsBuilder</h1>
+				<h1 id="mobileHeader">Nautsbuilder</h1>
 				<div class="console-info" title="Currently viewing <%= console ? 'Console Nautsbuilder' : 'PC Nautsbuilder' %>"></div>
 			<% } %>
 			<div class="current-char <%= mini ? 'mini' : '' %>">

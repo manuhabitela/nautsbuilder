@@ -1,4 +1,4 @@
-@font-face { font-family: "Zekton"; src: url('../fonts/zekton_rg-webfont.woff?1434889272') format('woff'), url('../fonts/zekton_rg-webfont.ttf?1434889272') format('truetype'), url('../fonts/zekton_rg-webfont.eot?1434889272') format('embedded-opentype'), url('../fonts/zekton_rg-webfont.svg?1434889272') format('svg'); }
+@font-face { font-family: "Zekton"; src: url('../fonts/zekton_rg-webfont.woff?1438875172') format('woff'), url('../fonts/zekton_rg-webfont.ttf?1438875172') format('truetype'), url('../fonts/zekton_rg-webfont.eot?1438875172') format('embedded-opentype'), url('../fonts/zekton_rg-webfont.svg?1438875172') format('svg'); }
 .skill-icon, .upgrade-icon, .order-icon { width: 90px; height: 90px; }
 .forum .skill-icon, .forum .upgrade-icon, .forum .order-icon { width: 75px; height: 75px; }
 .skill-icon img, .upgrade-icon img, .order-icon img { max-width: 100%; width: auto; vertical-align: middle; }
@@ -14,9 +14,9 @@
 .skill-icon, .upgrade { position: relative; z-index: 10; }
 .skill-icon:after, .upgrade:after { position: absolute; z-index: 20; display: block; top: 0; bottom: 0; left: 0; right: 0; content: ' '; background: black; opacity: 0.55; }
 
-#mouse-tooltip .cost, .char-info .char-total-cost .cost, .skill-effects dt.total_cost span, .upgrade-popup .cost { padding-left: 24px; min-height: 21px; background: url('../img/solar_small.png?1434889272') no-repeat center left; }
+#mouse-tooltip .cost, .char-info .char-total-cost .cost, .skill-effects dt.total_cost span, .upgrade-popup .cost { padding-left: 24px; min-height: 21px; background: url('../img/solar_small.png?1438875172') no-repeat center left; }
 
-.build-cancel, .skill-cancel { background: transparent url('../img/cancel.png?1434889272') no-repeat top left; color: rgba(217, 89, 38, 0.8); font-family: verdana; font-size: 24px; cursor: pointer; }
+.build-cancel, .skill-cancel { background: transparent url('../img/cancel.png?1438875172') no-repeat top left; color: rgba(217, 89, 38, 0.8); font-family: verdana; font-size: 24px; cursor: pointer; }
 
 #footer button, .forum .char-forum-switch button { display: inline-block; font-family: verdana; background: rgba(255, 255, 255, 0.2); border: none; border-radius: 3px; padding: 2px 4px; margin: 0; color: #ccc; text-decoration: none; }
 #footer button:hover, .forum .char-forum-switch button:hover, #footer button:focus, .forum .char-forum-switch button:focus { background: none; text-decoration: underline; }
@@ -142,9 +142,9 @@ body, .page-blue body { background-color: #001D2F; background-image: url('data:i
 
 .forum #container { padding-top: 0; overflow: hidden; width: 760px; height: 500px; }
 
-.console-info { position: absolute; top: 10px; right: 10px; display: block; height: 26px; width: 40px; background: url('../img/pc_white_transparent.png?1434889272') no-repeat 99% 1%; }
+.console-info { position: absolute; top: 10px; right: 10px; display: block; height: 26px; width: 40px; background: url('../img/pc_white_transparent.png?1438875172') no-repeat 99% 1%; }
 @media only screen and (max-width: 970px) { .console-info { display: none; } }
-.console .console-info { background: url('../img/gamepad_white_transparent.png?1434889272') no-repeat 99% 1%; }
+.console .console-info { background: url('../img/gamepad_white_transparent.png?1438875172') no-repeat 99% 1%; }
 
 .forum * { cursor: default; }
 
@@ -161,12 +161,12 @@ body, .page-blue body { background-color: #001D2F; background-image: url('data:i
 .current-char-box p:first-child { margin-top: 0; }
 .current-char-box p:last-child { margin-bottom: 0; }
 
-.current-char-left, .current-char-right { width: 30%; height: auto; max-height: 100%; overflow: auto; }
+.current-char-left, .current-char-right { width: 30%; height: auto; max-height: 85%; overflow: auto; }
 .current-char-left::-webkit-scrollbar, .current-char-right::-webkit-scrollbar { width: 12px; }
 .current-char-left::-webkit-scrollbar-track, .current-char-right::-webkit-scrollbar-track { -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); border-radius: 5px; }
 .current-char-left::-webkit-scrollbar-thumb, .current-char-right::-webkit-scrollbar-thumb { border-radius: 5px; background: rgba(0, 0, 0, 0.5); }
 
-.current-char-left { float: left; max-height: 100%; overflow: auto; }
+.current-char-left { float: left; }
 
 .current-char-info { float: left; width: 40%; text-align: center; position: relative; height: 100%; }
 
@@ -175,13 +175,13 @@ body, .page-blue body { background-color: #001D2F; background-image: url('data:i
 
 .current-char-right { float: right; }
 
-.current-char-image { width: auto; max-width: 100%; }
+.current-char-image { height: auto; max-height: 100%; max-width: 100%; }
 
 .current-char-skill-icon { float: left; margin: 10px; margin-left: 0; }
 .current-char-skill-icon img { width: 60px; }
 @media only screen and (max-height: 780px) { .current-char-skill-icon img { width: 40px; } }
 
-.current-char-placeholder { height: 100%; max-width: 667px; margin: 0 auto; background: url('../img/nautsbuilder.png?1434889272') no-repeat center center; background-size: 100% auto; }
+.current-char-placeholder { height: 100%; max-width: 667px; margin: 0 auto; background: url('../img/nautsbuilder.png?1438875172') no-repeat center center; background-size: 100% auto; }
 
 .chars-list { list-style-type: none; margin: 0; padding: 0; }
 .chars-list-container .chars-list { position: fixed; left: 0; right: 0; bottom: 30px; text-align: center; }
@@ -241,8 +241,8 @@ html:not(.forum) .char-builder.maxed-out .order { width: 614px; }
 .build-cancel.active { opacity: 1; }
 .build-cancel.active:hover { opacity: 0.9; }
 .char-builder.maxed-out .build-cancel { left: 420px; }
-.char-builder.maxed-out .build-cancel { background-image: url('../img/done.png?1434889272'); }
-.char-builder.maxed-out .build-cancel:hover { background-image: url('../img/cancel.png?1434889272'); }
+.char-builder.maxed-out .build-cancel { background-image: url('../img/done.png?1438875172'); }
+.char-builder.maxed-out .build-cancel:hover { background-image: url('../img/cancel.png?1438875172'); }
 
 .char-info { margin-left: 8px; padding-left: 0; padding-top: 0; margin-top: 0; max-width: 380px; }
 @media only screen and (max-width: 970px) { .char-info { max-width: 100%; margin: 2% 1%; padding-left: 12px; } }
@@ -283,7 +283,7 @@ html:not(.forum) .char-builder.maxed-out .char-info { max-width: 170px; }
 .skill-upgrades { overflow: hidden; }
 
 .skill-wrapper > .skill-effects { padding-top: 7px; position: absolute; top: 0; right: 0; text-align: left; border-radius: 0; font-size: 13px; line-height: 1.25em; width: 404px; max-height: 100px; min-height: 100px; overflow: hidden; -moz-transition-property: max-height, background, line-height; -o-transition-property: max-height, background, line-height; -webkit-transition-property: max-height, background, line-height; transition-property: max-height, background, line-height; -moz-transition-duration: 0.5s; -o-transition-duration: 0.5s; -webkit-transition-duration: 0.5s; transition-duration: 0.5s; z-index: 40; }
-@media only screen and (max-width: 970px) { .skill-wrapper > .skill-effects { position: static; } }
+@media only screen and (max-width: 970px) { .skill-wrapper > .skill-effects { position: static; overflow: overlay; } }
 .skill-effects dl { margin: 0; display: inline-block; width: 184px; vertical-align: top; }
 .skill-effects dt, .skill-effects dd { display: inline; margin: 0; }
 .skill-effects dt.total_cost span { display: inline-block; line-height: 21px; }
@@ -291,6 +291,7 @@ html:not(.forum) .char-builder.maxed-out .char-info { max-width: 170px; }
 .skill-effects dd:after { content: '\A'; white-space: pre; }
 
 .skill-wrapper:hover > .skill-effects, .skill-effects:hover { background-color: #1E8FBC; max-height: 600px; overflow: visible; z-index: 50; }
+@media only screen and (max-width: 970px) { .skill-wrapper:hover > .skill-effects, .skill-effects:hover { overflow: overlay; max-height: 100px; } }
 
 .skill-info { position: relative; }
 
@@ -304,8 +305,8 @@ html:not(.forum) .char-builder.maxed-out .char-info { max-width: 170px; }
 .skill.active .skill-icon:after { display: none; }
 
 .skill-cancel { margin-top: 32px; background-size: 24px 24px; width: 21px; height: 24px; opacity: 0.3; }
-.skill-maxed-out .skill-cancel { background-image: url('../img/done.png?1434889272'); }
-.skill-maxed-out .skill-cancel:hover { background-image: url('../img/cancel.png?1434889272'); }
+.skill-maxed-out .skill-cancel { background-image: url('../img/done.png?1438875172'); }
+.skill-maxed-out .skill-cancel:hover { background-image: url('../img/cancel.png?1438875172'); }
 .skill-cancel.active { opacity: 1; }
 .skill-cancel.active:hover { opacity: 0.9; }
 

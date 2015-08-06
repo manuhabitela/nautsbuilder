@@ -45,7 +45,7 @@
 .current-char-left, .current-char-right {
 	width: 30%;
 	height: auto;
-	max-height: 100%;
+	max-height: 85%;
 	overflow: auto;
 	&::-webkit-scrollbar {
 	    width: 12px;
@@ -63,8 +63,6 @@
 
 .current-char-left {
 	float: left;
-	max-height: 100%;
-	overflow: auto;
 }
 
 .current-char-info {
@@ -94,8 +92,9 @@
 }
 
 .current-char-image {
-	width: auto;
-	max-width: 100%;
+	height: auto;
+    max-height: 100%;
+    max-width: 100%;
 }
 
 .current-char-skill {

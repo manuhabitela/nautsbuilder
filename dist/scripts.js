@@ -1722,7 +1722,6 @@ $(function() {
 		}
 	}
 }());
-
 ;(function() {
 	//we update server data if it's obsolete or here since more than 2 days
 	var update = leiminauts.lastServerDataUpdate < leiminauts.lastSpreadsheetUpdate;
