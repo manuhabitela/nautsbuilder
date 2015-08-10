@@ -64,7 +64,7 @@
 							<% currentChar.get('skills').each(function(skill) { %>
 							<div class="current-char-skill">
 								<div class="current-char-skill-icon"><img src="<%= skill.get('icon') %>" alt=""></div>
-								<div class="current-char-skill-desc"><p><%= skill.get('description') %><p></div>
+								<div class="current-char-skill-desc"><%= _.paragraphed(skill.get('description')) %></div>
 							</div>
 							<% }) %>
 						</div>
@@ -75,7 +75,7 @@
 					</div>
 					<div class="current-char-right">
 						<div class="current-char-box current-char-desc">
-							<p><%= currentChar.get('description') %></p>
+							<%= _.paragraphed(currentChar.get('description')) %>
 						</div>
 					</div>
 				<% } else { %>

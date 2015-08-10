@@ -22,6 +22,12 @@ _.mixin({
 		return string.replace(/_/g, ' ');
 	},
 
+	//pass "A string\n\nlike this" and get "<p>A string</p><p>like this</p>"
+	paragraphed: function(string) {
+		if (!_.isString(string)) return false;
+		return "<p>" + string.replace(/\n\n/g, "</p><p>") + "</p>";
+	},
+
 	//http://stackoverflow.com/questions/3000649/trim-spaces-from-start-and-end-of-string
 	trim: function(string, characters) {
 		if (!string) return '';
