@@ -1,4 +1,4 @@
-/* Nautsbuilder - Awesomenauts build maker v0.14.1 - https://github.com/Leimi/nautsbuilder
+/* Nautsbuilder - Awesomenauts build maker v0.14.2 - https://github.com/Leimi/nautsbuilder
 * Copyright (c) 2015 Emmanuel Pelletier
 * This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. *//* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,6 +22,12 @@ _.mixin({
 	ununderscored: function(string) {
 		if (!_.isString(string)) return false;
 		return string.replace(/_/g, ' ');
+	},
+
+	//pass "A string\n\nlike this" and get "<p>A string</p><p>like this</p>"
+	paragraphed: function(string) {
+		if (!_.isString(string)) return false;
+		return "<p>" + string.replace(/\n\n/g, "</p><p>") + "</p>";
 	},
 
 	//http://stackoverflow.com/questions/3000649/trim-spaces-from-start-and-end-of-string
@@ -75,6 +81,33 @@ leiminauts.utils = {
 		return effects;
 	},
 
+	//inverse operation to treatEffects, returning an effects string
+	untreatEffects: function(effects) {
+		var attributes = _.map(effects, function(effect) {
+			return _(effect.key).capitalized() + ": " + effect.value;
+		});
+		return attributes.join("; ");
+	},
+
+	removeEffect: function(effects, name) {
+		var filtered = _.filter(effects, function(e) {
+		    // Only keep effects that do not contain the given effect
+		    return !leiminauts.utils.effectNameContains(e, name);
+		});
+		return filtered;
+	},
+
+	//removes any multiplier effect from an effects string
+	removeMultiplierEffects: function(effectsString) {
+		var effects = leiminauts.utils.treatEffects(effectsString);
+		var filtered = leiminauts.utils.removeEffect(effects, "multiplier");
+		return leiminauts.utils.untreatEffects(filtered);
+	},
+
+	effectNameContains: function(effect, value) {
+		return effect.key.toLowerCase().indexOf(value.toLowerCase()) > -1;
+	},
+
 	number: function(number, decimals) {
 		number = number*1;
 		if (_(number).isNaN()) return number;
@@ -86,6 +119,7 @@ leiminauts.utils = {
 		return leiminauts.utils.number( (parseFloat(speed)/60*parseFloat(damage)).toFixed(2) );
 	}
 };
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -674,7 +708,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			//if one part is not detected (ie we have a "missile damage" effect but no "missile attack speed") we take default attack speed and vice versa
 			//"Bonus Damage" or "Avg damage" are usually not calculated
 			var bonusCheck = { "damage": [], "attackSpeed": [] };
-			var deniedBonusWords = ["storm", "bonus", "avg", "turret", "yakoiza", "grenade", "snipe", "min", "max", "droid", "structure"];
+			var deniedBonusWords = ["storm", "bonus", "avg", "yakoiza", "grenade", "snipe", "max", "structure", "ability"];
 			effects.each(function(e) {
 				var denied = false;
 				_(deniedBonusWords).each(function(word) { if (e.key.toLowerCase().indexOf(word) === 0) { denied = true; }});
@@ -1722,6 +1756,7 @@ $(function() {
 		}
 	}
 }());
+
 ;(function() {
 	//we update server data if it's obsolete or here since more than 2 days
 	var update = leiminauts.lastServerDataUpdate < leiminauts.lastSpreadsheetUpdate;
