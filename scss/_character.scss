@@ -11,6 +11,7 @@
 	width: $build-width;
 	@include respond-to(mobile) {
 		width: auto;
+		max-width: 1150px;
 	}
 	margin-bottom: $build-margin;
 	.forum & {
