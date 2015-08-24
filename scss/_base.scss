@@ -186,6 +186,9 @@ body {
 		background-color: #6D0206;
 		@include background-image(radial-gradient(800px 800px, #6D0206, #220000));
 		@include background-image(radial-gradient(50% 50%, #6D0206, #220000));
+		@include respond-to(mobile) {
+			height: auto;
+		}
 	}
 	.forum & {
 		background: transparent;
