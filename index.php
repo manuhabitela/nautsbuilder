@@ -34,17 +34,7 @@
 		</div>
 
 		<div id="footer">
-			<p>Made by <a href="http://manu.habite.la" target="_blank">Leimi</a> - Like what you see?
-				<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-					<input type="hidden" name="cmd" value="_donations">
-					<input type="hidden" name="business" value="pelletier.emmanuel@gmail.com">
-					<input type="hidden" name="lc" value="FR">
-					<input type="hidden" name="item_name" value="A beer for Leimi">
-					<input type="hidden" name="no_note" value="0">
-					<input type="hidden" name="currency_code" value="EUR">
-					<input type="hidden" name="bn" value="PP-DonationsBF:btn_donate_SM.gif:NonHostedGuest">
-					<button>Buy me a beer! Or a pizza. Whatever.</button>
-				</form>
+			<p>Originally made by <a href="http://manu.habite.la" target="_blank">Leimi</a>, bravely maintained by <a href="http://www.awesomenauts.com/forum/memberlist.php?mode=viewprofile&amp;u=8761" target="_blank">r0estir0bbe</a> -
 				<a href="https://github.com/Leimi/nautsbuilder" target="_blank"><?php echo "v".$v ?></a> - <a style="color: #ccc" href="http://www.awesomenauts.com/forum/viewtopic.php?f=14&amp;t=13663" target="_blank">Forum topic</a> -
 				Data gathered from the <a href="http://www.awesomenauts.com" target="_blank">Awesomenauts game</a> and the <a href="http://awesomenauts.gamepedia.com/Awesomenauts_Wiki" target="_blank">Wiki</a> by the community.
 			</p>
