@@ -9,6 +9,10 @@
 .char-builder, .build, .skill-wrapper {
 	@include transition(width $compact-transition-time);
 	width: $build-width;
+	@include respond-to(mobile) {
+		width: auto;
+		max-width: 1150px;
+	}
 	margin-bottom: $build-margin;
 	.forum & {
 		margin-bottom: 0;
@@ -26,6 +30,16 @@
 
 html:not(.forum) .char-builder.maxed-out {
 	width: $build-width - ($skill-width - $skill-compact-width);
+	@include respond-to(mobile) {
+		width: auto;
+	}
+}
+
+.build {
+	@include respond-to(mobile) {
+		overflow-x: auto;
+		padding: 0 0 1% 1%;
+	}
 }
 
 .build, .order, .char-info {
@@ -37,6 +51,7 @@ html:not(.forum) .char-builder.maxed-out {
 			@include transform(translateX(-($build-width - ($build-width - ($skill-width - $skill-compact-width)))/2));
 			.char-builder.maxed-out & {
 				@include transform(translateX(0));
+
 			}
 		}
 	}
@@ -45,6 +60,9 @@ html:not(.forum) .char-builder.maxed-out {
 .build, .skill-wrapper {
 	html:not(.forum) .char-builder.maxed-out & {
 		width: $build-width - ($skill-width - $skill-compact-width);
+		@include respond-to(mobile) {
+			width: auto;
+		}
 	}
 }
 
@@ -58,8 +76,15 @@ html:not(.forum) .char-builder.maxed-out {
 
 .order {
 	width: $skill-width;
+	@include respond-to(mobile) {
+		width: auto;
+		margin: 0 2%;
+	}
 	html:not(.forum) .char-builder.maxed-out & {
 		width: $skill-compact-width + 200px - 4px - 12px;
+		@include respond-to(mobile) {
+			width: auto;
+		}
 	}
 	.forum & {
 		width: auto;
@@ -77,6 +102,10 @@ html:not(.forum) .char-builder.maxed-out {
 	position: absolute;
 	left: $skill-width - 10px;
 	top: -17px;
+	@include respond-to(mobile) {
+		left: 683px;
+		top: -3px;
+	}
 	z-index: 100;
 	opacity: 0.3;
 	@include transition(left $compact-transition-time);
@@ -111,8 +140,16 @@ html:not(.forum) .char-builder.maxed-out {
 	padding-top: 0;
 	margin-top: 0;
 	max-width: 380px;
+	@include respond-to(mobile) {
+		max-width: 100%;
+		margin: 2% 1%;
+		padding-left: 12px;
+	}
 	html:not(.forum) .char-builder.maxed-out & {
 		max-width: 170px;
+		@include respond-to(mobile) {
+			max-width: 100%;
+		}
 	}
 	.char-total-cost .cost {
 		@extend %cost;
@@ -140,6 +177,10 @@ html:not(.forum) .char-builder.maxed-out {
 .char-info, .order {
 	display: inline-block;
 	vertical-align: top;
+	@include respond-to(mobile) {
+		display: block;
+		text-align: center;
+	}
 }
 
 .forum .char-forum-switch {

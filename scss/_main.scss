@@ -16,9 +16,11 @@
 	.forum & {
 		@extend .hidden;
 	}
-	margin: 0;
+	margin: 0 4%;
+	@include respond-to(mobile) {
+		margin: 2% 4%;
+	}
 	.page-blue & {
-		margin: 50px 0 0;
 		@media only screen and (min-height: 900px) {
 			position: fixed;
 			bottom: 10px;
@@ -56,7 +58,6 @@
 }
 
 #container {
-	padding-top: 10px;
 	.forum & {
 		padding-top: 0;
 		overflow: hidden;
@@ -75,6 +76,9 @@
 	display: block;
 	height: 26px;
 	width: 40px;
+	@include respond-to(mobile) {
+		display: none;
+	}
 	background: image-url('pc_white_transparent.png') no-repeat 99% 1%;
 	.console & {
 		background: image-url('gamepad_white_transparent.png') no-repeat 99% 1%;

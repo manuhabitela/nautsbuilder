@@ -6,6 +6,8 @@
 	$break-large: 980px;
 	$break-xlarge: 1400px;
 	$break-small-height: 780px;
+	$break-mobile-width: 970px;
+	$break-mobile-height: 675px;
 	@if $media == small {
 		@media only screen and (max-width: $break-small) { @content; }
 	}
@@ -20,6 +22,9 @@
 	}
 	@else if $media == shrunken {
 		@media only screen and (max-height: $break-small-height) { @content; }
+	}
+	@else if $media == mobile {
+		@media only screen and (max-width: $break-mobile-width), only screen and (max-height: $break-mobile-height) { @content; }
 	}
 }
 
