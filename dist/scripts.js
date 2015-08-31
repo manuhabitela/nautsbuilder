@@ -617,15 +617,15 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		//monkey's avg dps and max dps. Avg dps is the dps including all charges but the last one.
 		if (this.get('name') == "Laser") {
-			var minDamage = effects.findWhere({key: "damage"}).value;
-			var maxDamage = effects.findWhere({key: "max damage"}).value;
+			var minDamage = effects.findWhere({key: "damage"}).value*1;
+			var maxDamage = effects.findWhere({key: "max damage"}).value*1;
 			var steps = [];
 			_(maxDamage - minDamage).times(function(i) { steps.push(i+minDamage); });
 			var attackPerSecond = effects.findWhere({key: "attack speed"}).value/60;
 			var tickPerSecond = effects.findWhere({key: "time to next charge"}).value.replace('s', '')*1;
 			var stepAttackPerSecond = attackPerSecond*tickPerSecond;
 			var time = 0;
-			dmg = 0;
+			var dmg = 0;
 			_(steps).each(function(step) {
 				dmg += stepAttackPerSecond*step;
 				time += tickPerSecond;
