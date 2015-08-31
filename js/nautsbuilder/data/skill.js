@@ -307,7 +307,7 @@ leiminauts.Skill = Backbone.Model.extend({
 
 			effectNumber = this.applyOperation(effectNumber, upgradeNumber, operation);
 
-			effect = (baseIsRelative ? regexResult[1] : "");
+			effect = (baseIsRelative ? "+" : "");
 			effect += leiminauts.utils.number(effectNumber);
 			if (regexResult[3] && (regexResult[3] == "s" || baseIsPercent)) {
 				effect += regexResult[3];
