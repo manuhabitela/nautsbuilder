@@ -599,19 +599,19 @@ leiminauts.Skill = Backbone.Model.extend({
 			}
 
 			if (clover) {
-				cloverDmg = this.bonusDamage(dmg, "3rd hit damage", effects);
-				avgDmg = (dmg.value*2+cloverDmg)/3;
-				dmg.value = [dmg.value*1, dmg.value*1, cloverDmg].join(' > ');
+				cloverDmg = this.bonusDamage(dmg, "2nd hit damage", effects);
+				avgDmg = (dmg.value*1+cloverDmg)/2;
+				dmg.value = [dmg.value*1, cloverDmg].join(' > ');
 				effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
 
 				if (backstab && bsEffect) {
-					cloverDmgBs = this.bonusDamage(backstabDmg, "3rd hit damage", effects);
-					bsEffect.value = [backstabDmg*1, backstabDmg*1, cloverDmgBs].join(' > ');
-					backstabDmg = (backstabDmg*2+cloverDmgBs)/3;
+					cloverDmgBs = this.bonusDamage(backstabDmg, "2nd hit damage", effects);
+					bsEffect.value = [backstabDmg*1, cloverDmgBs].join(' > ');
+					backstabDmg = (backstabDmg*1+cloverDmgBs)/2;
 					effects.push({key: "avg backstab damage", value: leiminauts.utils.number(backstabDmg)});
 				}
 
-				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "3rd hit damage" }) ), 1 );
+				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "2nd hit damage" }) ), 1 );
 			}
 		}
 
