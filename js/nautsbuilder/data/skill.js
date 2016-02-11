@@ -232,9 +232,6 @@ leiminauts.Skill = Backbone.Model.extend({
 
 	// For all effects, merges all steps into one value
 	applyUpgrades: function(effects) {
-		// Matches all possible values like: "8", "+8", "+8.8", "+8%", "-2s", "/1.5", "×2", etc
-		var valueRegex = /^(\+|-|\/|@|×)?([0-9]+[\.,]?[0-9]*)([%s])?$/i;
-
 		_(effects).each(function(steps, effectName) {
 			if (steps.length < 1) {
 				console.log("Empty array of steps, do nothing.");
@@ -244,21 +241,9 @@ leiminauts.Skill = Backbone.Model.extend({
 			// Split each step into stages and extract prefix, number and postfix
 			var stagedSteps = _(steps).map(function(step) {
 				var stagedStep = String(step).split(' > ');
-				var stages = _(stagedStep).map(function(stage) {
-					var trimmed = _.trim(stage);
-					var stageObj = new Object();
-					stageObj.str = trimmed;
-
-					var regexResults = valueRegex.exec(trimmed);
-					if (regexResults !== null) {
-						stageObj.prefix  = regexResults[1];
-						stageObj.number  = regexResults[2] !== undefined ? Number(regexResults[2]) : undefined;
-						stageObj.postfix = regexResults[3];
-					}
-					return stageObj;
-				});
+				var stages = _(stagedStep).map(this.parseNumberIntoObject);
 				return stages;
-			});
+			}, this);
 			console.log("stagedSteps");
 			console.log(stagedSteps);
 
@@ -320,6 +305,22 @@ leiminauts.Skill = Backbone.Model.extend({
 
 			this.get('effects').push({"key": effectName, value: resultValue});
 		}, this);
+	},
+
+	parseNumberIntoObject: function(valueString) {
+		var trimmed = _.trim(valueString);
+		var result = new Object();
+		result.str = trimmed;
+
+		// Matches all possible values like: "8", "+8", "+8.8", "+8%", "-2s", "/1.5", "×2", etc
+		var numberRegex = /^(\+|-|\/|@|×)?([0-9]+[\.,]?[0-9]*)([%s])?$/i;
+		var regexResults = numberRegex.exec(trimmed);
+		if (regexResults !== null) {
+			result.prefix  = regexResults[1];
+			result.number  = regexResults[2] !== undefined ? Number(regexResults[2]) : undefined;
+			result.postfix = regexResults[3];
+		}
+		return result;
 	},
 
 	// Merges the step object into result.
