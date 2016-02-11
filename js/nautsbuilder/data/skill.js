@@ -230,110 +230,133 @@ leiminauts.Skill = Backbone.Model.extend({
 		return effects;
 	},
 
+	// For all effects, merges all steps into one value
 	applyUpgrades: function(effects) {
-		var upgradeRegex = /^(\+|-|\/|@)?([0-9]+[\.,]?[0-9]*)([%s])?$/i; //matchs "+8", "+8,8", "+8.8", "+8s", "+8%", "-8", etc
+		// Matches all possible values like: "8", "+8", "+8.8", "+8%", "-2s", "/1.5", "×2", etc
+		var valueRegex = /^(\+|-|\/|@|×)?([0-9]+[\.,]?[0-9]*)([%s])?$/i;
 
-		_(effects).each(function(upgrades, key) {
-			var baseUpgrade = String(upgrades[0]);
-			var baseStages = baseUpgrade.split(' > ');
-
-			var effectStages = [];
-			var effectNumbers = [];
-			for (var i = 0; i < baseStages.length; ++i) {
-				effectStages[i] = "";
-				effectNumbers[i] = 0;
+		_(effects).each(function(steps, effectName) {
+			if (steps.length < 1) {
+				console.log("Empty array of steps, do nothing.");
+				return;
 			}
 
-			// Merge all upgrades into effectStages
-			_(upgrades).each(function(upgrade) {
-				var upgradeStages = String(upgrade).split(' > ');
-				var regexResults = [];
-				_(upgradeStages).each(function(u) {
-					regexResults.push(upgradeRegex.exec(u));
+			// Split each step into stages and extract prefix, number and postfix
+			var stagedSteps = _(steps).map(function(step) {
+				var stagedStep = String(step).split(' > ');
+				var stages = _(stagedStep).map(function(stage) {
+					var trimmed = _.trim(stage);
+					var stageObj = new Object();
+					stageObj.str = trimmed;
+
+					var regexResults = valueRegex.exec(trimmed);
+					if (regexResults !== null) {
+						stageObj.prefix  = regexResults[1];
+						stageObj.number  = regexResults[2] !== undefined ? Number(regexResults[2]) : undefined;
+						stageObj.postfix = regexResults[3];
+					}
+					return stageObj;
+				});
+				return stages;
+			});
+			console.log("stagedSteps");
+			console.log(stagedSteps);
+
+			var resultStages;
+			if (stagedSteps.length == 1) {
+				resultStages = stagedSteps[0];
+			} else { // stagedSteps.length > 1
+				var maxNrStages = _(stagedSteps).max(function(s) {
+					return s.length;
+				}).length;
+
+				// Expand each step (base and upgrades) by padding it with the first value
+				_(stagedSteps).each(function(stages) {
+					var nrStages = stages.length;
+					for (var i = 0; i < maxNrStages - nrStages; ++i) {
+						// Shallow-copy is fine, because obj only contains primitives
+						stages.push(_.clone(stages[0]));
+					}
 				});
 
-				if (effectStages.length == 1 && upgradeStages.length > 1) {
-					// Split up effectStages so we can apply upgradeStages to every one of them
-					for (var i = 1; i < upgradeStages.length; ++i) {
-						effectStages.push(effectStages[0]);
-						effectNumbers.push(effectNumbers[0]);
-					}
-				}
+				// Transpose stagedSteps from [steps] -> [stages] to [stages] -> [steps]
+				var steppedStages = _.zip.apply(_, stagedSteps);
+				console.log("steppedStages");
+				console.log(steppedStages);
 
-				_(effectStages).each(function(effect, i, stages) {
-					// Apply the upgrade stages pair-wise if there are multiple upgrade stages
-					var upgradeIndex = (upgradeStages.length == 1 ? 0 : i);
-
-					var upgrade = upgradeStages[upgradeIndex];
-					var regexResult = regexResults[upgradeIndex];
-					var effectNumber = effectNumbers[i];
-					var result = this.applyUpgrade(upgrade, regexResult, effectNumber, baseUpgrade);
-					stages[i] = result[0];
-					effectNumbers[i] = result[1];
+				// Merge all steps of each stage
+				resultStages = _(steppedStages).map(function (steps) {
+					var mergeFunc = this.mergeStep;
+					return _(steps).reduce(function(result, step) {
+						return mergeFunc(result, step);
+					});
 				}, this);
-			}, this);
 
-			this.get('effects').push({"key": key, value: effectStages.join(' > ')});
+				console.log("Merged result stages:");
+				console.log(resultStages);
+			}
+
+			// Merge resultStages into a single string
+			var resultValue = _(resultStages).map(function(stage) {
+				if (stage.number !== undefined) {
+					var str = "";
+					if (stage.prefix  !== undefined && stage.prefix !== "@") str += stage.prefix;
+					str += leiminauts.utils.number(stage.number);
+					if (stage.postfix !== undefined) str += stage.postfix;
+					return str;
+				} else {
+					return stage.str;
+				}
+			}).join(' > ');
+
+			console.log("Base:");
+			var base = _.head(stagedSteps);
+			console.log(_(base).each( function(step) { console.log(step); } ));
+			console.log("Upgrades:");
+			var upgrades = _.tail(stagedSteps);
+			console.log(_(upgrades).each(function(step) {console.log(step);} ));
+			console.log("Result:");
+			console.log(effectName + ": " + resultValue);
+
+			this.get('effects').push({"key": effectName, value: resultValue});
 		}, this);
 	},
 
-	applyUpgrade: function(upgrade, regexResult, effectNumber, baseUpgrade) {
-		var baseIsPercent = baseUpgrade.charAt(baseUpgrade.length-1) == "%";
-		var baseIsRelative = baseUpgrade.charAt(0) == "+";
-
-		var effect;
-		var effectNumber;
-
-		if (regexResult === null) {
-			effect = upgrade;
+	// Merges the step object into result.
+	// Depending on the prefix and postfix of both it performs a relative or absolute addition or multiplication.
+	mergeStep: function(result, step) {
+		var number = step.number;
+		if (step.prefix === "@") {
+			result.number = number;
+			return result;
 		}
-		else {
-			var upgradeNumber = parseFloat(regexResult[2]);
 
-			var operation;
-			if (regexResult[1] && regexResult[1] == "/") {
-				operation = "/";
+		if (step.postfix === "%" && result.postfix !== "%") {
+			// Adapt number to reflect relative calculation to base
+			number /= 100;
+		}
+
+		if (step.prefix === "×" || step.prefix === "/") {
+			// Adapt divison to handle like multiplication
+			if (step.prefix === "/") {
+				number = 1/number;
 			}
-			else if (regexResult[1] && regexResult[1] == "@") {
-				operation = "@";
-			}
-			else if (regexResult[1] && regexResult[1] == "-") {
-				upgradeNumber = -upgradeNumber;
-			}
-
-			if (regexResult[3] && regexResult[3] == "%" && !baseIsPercent) {
-				operation = "%";
+			result.number *= number;
+		} else {
+			// step.prefix is either "+", "-" or undefined (assume "+")
+			// Adapt substraction to handle like addition
+			if (step.prefix === "-") {
+				number = -number;
 			}
 
-			effectNumber = this.applyOperation(effectNumber, upgradeNumber, operation);
-
-			effect = (baseIsRelative ? "+" : "");
-			effect += leiminauts.utils.number(effectNumber);
-			if (regexResult[3] && (regexResult[3] == "s" || baseIsPercent)) {
-				effect += regexResult[3];
+			if (step.postfix === "%" && result.postfix !== "%") {
+				// Make number relative to result
+				number *= result.number;
 			}
-		}
 
-		return [effect, effectNumber];
-	},
-
-	applyOperation: function(number, operand, operation) {
-		operation = operation || "";
-
-		if (operation == "%") {
-			number *= 1 + operand/100;
+			result.number += number;
 		}
-		else if (operation == "/") {
-			number /= operand;
-		}
-		else if (operation == "@") {
-			number = operand;
-		}
-		else {
-			number += operand;
-		}
-
-		return number;
+		return result;
 	},
 
 	setSpecificEffects: function() {
