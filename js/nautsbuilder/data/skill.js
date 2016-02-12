@@ -238,12 +238,13 @@ leiminauts.Skill = Backbone.Model.extend({
 				return;
 			}
 
-			// Split each step into stages and extract prefix, number and postfix
+			// Split each step into stages and parse number
 			var stagedSteps = _(steps).map(function(step) {
 				var stagedStep = String(step).split(' > ');
 				var stages = _(stagedStep).map(this.parseNumberIntoObject);
 				return stages;
 			}, this);
+
 			console.log("stagedSteps");
 			console.log(stagedSteps);
 
@@ -251,48 +252,18 @@ leiminauts.Skill = Backbone.Model.extend({
 			if (stagedSteps.length == 1) {
 				resultStages = stagedSteps[0];
 			} else { // stagedSteps.length > 1
-				var maxNrStages = _(stagedSteps).max(function(s) {
-					return s.length;
-				}).length;
-
-				// Expand each step (base and upgrades) by padding it with the first value
-				_(stagedSteps).each(function(stages) {
-					var nrStages = stages.length;
-					for (var i = 0; i < maxNrStages - nrStages; ++i) {
-						// Shallow-copy is fine, because obj only contains primitives
-						stages.push(_.clone(stages[0]));
-					}
-				});
-
+				this.padStages(stagedSteps);
 				// Transpose stagedSteps from [steps] -> [stages] to [stages] -> [steps]
 				var steppedStages = _.zip.apply(_, stagedSteps);
+				resultStages = mergeSteps(steppedStages);
+
 				console.log("steppedStages");
 				console.log(steppedStages);
-
-				// Merge all steps of each stage
-				resultStages = _(steppedStages).map(function (steps) {
-					var mergeFunc = this.mergeStep;
-					return _(steps).reduce(function(result, step) {
-						return mergeFunc(result, step);
-					});
-				}, this);
-
 				console.log("Merged result stages:");
 				console.log(resultStages);
 			}
 
-			// Merge resultStages into a single string
-			var resultValue = _(resultStages).map(function(stage) {
-				if (stage.number !== undefined) {
-					var str = "";
-					if (stage.prefix  !== undefined && stage.prefix !== "@") str += stage.prefix;
-					str += leiminauts.utils.number(stage.number);
-					if (stage.postfix !== undefined) str += stage.postfix;
-					return str;
-				} else {
-					return stage.str;
-				}
-			}).join(' > ');
+			var resultValue = this.mergeResultStages(resultStages);
 
 			console.log("Base:");
 			var base = _.head(stagedSteps);
@@ -321,6 +292,31 @@ leiminauts.Skill = Backbone.Model.extend({
 			result.postfix = regexResults[3];
 		}
 		return result;
+	},
+
+	// Padds each step (base and upgrades) with the respective first value to the maximum number of stages found
+	padStages: function(stagedSteps) {
+		var maxNrStages = _(stagedSteps).max(function(s) {
+			return s.length;
+		}).length;
+
+		_(stagedSteps).each(function(stages) {
+			var nrStages = stages.length;
+			for (var i = 0; i < maxNrStages - nrStages; ++i) {
+				// Shallow-copy is fine, because obj only contains primitives
+				stages.push(_.clone(stages[0]));
+			}
+		});
+	},
+
+	// Merges all steps of each stage into one
+	mergeSteps: function(steppedStages) {
+		var mergeStep = this.mergeStep; // Workaround to access this.mergeStep inside the functions
+		return _(steppedStages).map(function (steps) {
+			return _(steps).reduce(function(result, step) {
+				return mergeStep(result, step);
+			});
+		});
 	},
 
 	// Merges the step object into result.
@@ -358,6 +354,20 @@ leiminauts.Skill = Backbone.Model.extend({
 			result.number += number;
 		}
 		return result;
+	},
+
+	mergeResultStages: function(resultStages) {
+		return _(resultStages).map(function(stage) {
+			if (stage.number !== undefined) {
+				var str = "";
+				if (stage.prefix  !== undefined && stage.prefix !== "@") str += stage.prefix;
+				str += leiminauts.utils.number(stage.number);
+				if (stage.postfix !== undefined) str += stage.postfix;
+				return str;
+			} else {
+				return stage.str;
+			}
+		}).join(' > ');
 	},
 
 	setSpecificEffects: function() {
