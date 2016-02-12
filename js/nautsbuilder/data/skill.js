@@ -255,7 +255,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				this.padStages(stagedSteps);
 				// Transpose stagedSteps from [steps] -> [stages] to [stages] -> [steps]
 				var steppedStages = _.zip.apply(_, stagedSteps);
-				resultStages = mergeSteps(steppedStages);
+				resultStages = this.mergeSteps(steppedStages);
 
 				console.log("steppedStages");
 				console.log(steppedStages);
