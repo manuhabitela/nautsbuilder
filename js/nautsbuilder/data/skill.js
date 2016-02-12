@@ -234,7 +234,7 @@ leiminauts.Skill = Backbone.Model.extend({
 	applyUpgrades: function(effects) {
 		_(effects).each(function(steps, effectName) {
 			if (steps.length < 1) {
-				console.log("Empty array of steps, do nothing.");
+				console.info("Empty array of steps, do nothing.");
 				return;
 			}
 
@@ -245,9 +245,6 @@ leiminauts.Skill = Backbone.Model.extend({
 				return stages;
 			}, this);
 
-			console.log("stagedSteps");
-			console.log(stagedSteps);
-
 			var resultStages;
 			if (stagedSteps.length == 1) {
 				resultStages = stagedSteps[0];
@@ -256,24 +253,9 @@ leiminauts.Skill = Backbone.Model.extend({
 				// Transpose stagedSteps from [steps] -> [stages] to [stages] -> [steps]
 				var steppedStages = _.zip.apply(_, stagedSteps);
 				resultStages = this.mergeSteps(steppedStages);
-
-				console.log("steppedStages");
-				console.log(steppedStages);
-				console.log("Merged result stages:");
-				console.log(resultStages);
 			}
 
 			var resultValue = this.mergeResultStages(resultStages);
-
-			console.log("Base:");
-			var base = _.head(stagedSteps);
-			console.log(_(base).each( function(step) { console.log(step); } ));
-			console.log("Upgrades:");
-			var upgrades = _.tail(stagedSteps);
-			console.log(_(upgrades).each(function(step) {console.log(step);} ));
-			console.log("Result:");
-			console.log(effectName + ": " + resultValue);
-
 			this.get('effects').push({"key": effectName, value: resultValue});
 		}, this);
 	},
