@@ -276,6 +276,8 @@ leiminauts.Skill = Backbone.Model.extend({
 			result.number  = regexResults[2] !== undefined ? Number(regexResults[2]) : undefined;
 			result.postfix = regexResults[3];
 		}
+		result.isNumber = function() { return this.number !== undefined; };
+		result.isRelative = function() { return this.postfix === "%"; };
 		return result;
 	},
 
@@ -286,7 +288,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 
 		_(baseStages).each(function(stage) {
-			if (stage.number !== undefined && stage.postfix !== "%" &&
+			if (stage.isNumber() && !stage.isRelative() &&
 					1 <= currentLevel && currentLevel <= 20) {
 				stage.number *= (1 + (currentLevel-1)*scalingValue);
 			}
@@ -361,7 +363,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			return result;
 		}
 
-		if (step.postfix === "%" && result.postfix !== "%") {
+		if (step.isRelative() && !result.isRelative()) {
 			// Adapt number to reflect relative calculation to base
 			number /= 100;
 		}
@@ -379,7 +381,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				number = -number;
 			}
 
-			if (step.postfix === "%" && result.postfix !== "%") {
+			if (step.isRelative() && !result.isRelative()) {
 				// Make number relative to result
 				number *= result.number;
 			}
