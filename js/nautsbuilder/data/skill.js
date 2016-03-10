@@ -232,6 +232,7 @@ leiminauts.Skill = Backbone.Model.extend({
 
 	// For all effects, merges all steps into one value
 	applyUpgrades: function(effects) {
+		var currentLevel = 20; // FIXME FIXME FIXME variable from UI
 		_(effects).each(function(steps, effectName) {
 			if (steps.length < 1) {
 				console.info("Empty array of steps, do nothing.");
@@ -244,6 +245,8 @@ leiminauts.Skill = Backbone.Model.extend({
 				var stages = _(stagedStep).map(this.parseNumberIntoObject);
 				return stages;
 			}, this);
+
+			this.applyScaling(stagedSteps[0], effectName, currentLevel);
 
 			var resultStages;
 			if (stagedSteps.length == 1) {
@@ -274,6 +277,54 @@ leiminauts.Skill = Backbone.Model.extend({
 			result.postfix = regexResults[3];
 		}
 		return result;
+	},
+
+	applyScaling: function(baseStages, effectName, currentLevel) {
+		var scalingValue = this.getEffectScalingValue(effectName);
+		if (scalingValue === undefined) {
+			return;
+		}
+
+		_(baseStages).each(function(stage) {
+			if (stage.number !== undefined && stage.postfix !== "%" &&
+					1 <= currentLevel && currentLevel <= 20) {
+				stage.number *= (1 + (currentLevel-1)*scalingValue);
+			}
+		}, this);
+	},
+
+	getEffectScalingValue: function(effectName) {
+		var regexMatchesEffect = function(regex) { return regex.test(effectName); };
+		// TODO: Get regex & scaling values from spreadsheet
+		var damageRegex = [
+			/^damage$/,
+			/^([A-Za-z0-9_ ]+) damage$/,
+			/^damage over time$/
+		];
+		var survivabilityRegex = [
+			/^health$/,
+			/^([a-z0-9_ ]+) health$/,
+			/^health per ([a-z]+)$/,
+			/^heal$/,
+			/^([a-z0-9_ ]+) heal$/,
+			/^heal over time$/,
+			/^heal per ([a-z]+)$/,
+			/^shield$/,
+			/^([a-z0-9_ ]+) shield$/,
+			/^lifesteal$/,
+			/^damage immunity above$/
+		];
+
+		if (_(damageRegex).some(regexMatchesEffect)) {
+			console.log("Scaling " + effectName + " as damage...");
+			return 0.03;
+		} else if (_(survivabilityRegex).some(regexMatchesEffect)) {
+			console.log("Scaling " + effectName + " as survivability...");
+			return 0.04;
+		} else {
+			console.log("Not scaling " + effectName + "...");
+			return undefined;
+		}
 	},
 
 	// Padds each step (base and upgrades) with the respective first value to the maximum number of stages found
@@ -430,11 +481,12 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		//monkey's avg dps and max dps. Avg dps is the dps including all charges but the last one.
 		if (this.get('name') == "Laser") {
-			var minDamage = effects.findWhere({key: "damage"}).value*1;
-			var maxDamage = effects.findWhere({key: "max damage"}).value*1;
-			var steps = [];
-			_(maxDamage - minDamage).times(function(i) { steps.push(i+minDamage); });
 			var attackPerSecond = effects.findWhere({key: "attack speed"}).value/60;
+			var maxDamage = effects.findWhere({key: "max damage"}).value*1;
+			/* Average DPS calculation breaks because of non-integer numbers of XP system.
+			var minDamage = effects.findWhere({key: "damage"}).value*1;
+			var steps = _(maxDamage - minDamage).times(function(i) { return i+minDamage; });
+
 			var tickPerSecond = effects.findWhere({key: "time to next charge"}).value.replace('s', '')*1;
 			var stepAttackPerSecond = attackPerSecond*tickPerSecond;
 			var time = 0;
@@ -445,6 +497,7 @@ leiminauts.Skill = Backbone.Model.extend({
 			});
 			var avgDPS = dmg/time;
 			effects.push({key: "DPS until max", value: leiminauts.utils.number(avgDPS)});
+			*/
 			effects.push({key: "DPS max", value: leiminauts.utils.number(attackPerSecond*maxDamage)});
 		}
 
