@@ -264,13 +264,11 @@ leiminauts.Skill = Backbone.Model.extend({
 	},
 
 	parseNumberIntoObject: function(valueString) {
-		var trimmed = _.trim(valueString);
-		var result = new Object();
-		result.str = trimmed;
+		var result = {str: _.trim(valueString)};
 
 		// Matches all possible values like: "8", "+8", "+8.8", "+8%", "-2s", "/1.5", "×2", etc
 		var numberRegex = /^(\+|-|\/|@|×)?([0-9]+[\.,]?[0-9]*)([%s])?$/i;
-		var regexResults = numberRegex.exec(trimmed);
+		var regexResults = numberRegex.exec(result.str);
 		if (regexResults !== null) {
 			result.prefix  = regexResults[1];
 			result.number  = regexResults[2] !== undefined ? Number(regexResults[2]) : undefined;
