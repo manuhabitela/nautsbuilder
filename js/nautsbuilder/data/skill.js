@@ -19,10 +19,14 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (this.get('selected')) {
 			this.upgrades.on('change', this.updateEffects, this);
 			this.on('change:active', this.updateEffects, this);
+			this.listenTo(this.character, 'change:xp_level', this.updateEffects);
+
 			this.on('change:active', this.resetUpgradesState, this);
 		} else {
 			this.upgrades.off('change', this.updateEffects, this);
 			this.off('change:active', this.updateEffects, this);
+			this.stopListening(this.character, 'change:xp_level');
+
 			this.off('change:active', this.resetUpgradesState, this);
 		}
 
@@ -232,7 +236,6 @@ leiminauts.Skill = Backbone.Model.extend({
 
 	// For all effects, merges all steps into one value
 	applyUpgrades: function(effects) {
-		var currentLevel = 20; // FIXME FIXME FIXME variable from UI
 		_(effects).each(function(steps, effectName) {
 			if (steps.length < 1) {
 				console.info("Empty array of steps, do nothing.");
@@ -246,7 +249,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				return stages;
 			}, this);
 
-			this.applyScaling(stagedSteps[0], effectName, currentLevel);
+			this.applyScaling(stagedSteps[0], effectName);
 
 			var resultStages;
 			if (stagedSteps.length == 1) {
@@ -279,12 +282,13 @@ leiminauts.Skill = Backbone.Model.extend({
 		return result;
 	},
 
-	applyScaling: function(baseStages, effectName, currentLevel) {
+	applyScaling: function(baseStages, effectName) {
 		var scalingValue = this.getEffectScalingValue(effectName);
 		if (scalingValue === undefined) {
 			return;
 		}
 
+		var currentLevel = this.character.get('xp_level');
 		_(baseStages).each(function(stage) {
 			if (stage.isNumber() && !stage.isRelative() &&
 					1 <= currentLevel && currentLevel <= 20) {
@@ -316,13 +320,10 @@ leiminauts.Skill = Backbone.Model.extend({
 		];
 
 		if (_(damageRegex).some(regexMatchesEffect)) {
-			console.log("Scaling " + effectName + " as damage...");
 			return 0.03;
 		} else if (_(survivabilityRegex).some(regexMatchesEffect)) {
-			console.log("Scaling " + effectName + " as survivability...");
 			return 0.04;
 		} else {
-			console.log("Not scaling " + effectName + "...");
 			return undefined;
 		}
 	},

@@ -8,6 +8,7 @@ leiminauts.Character = Backbone.Model.extend({
 		this.skills = this.get('skills');
 		this.set('total_cost', 0);
 		this.set('maxed_out', false);
+		this.set('xp_level', 1);
 		this.listenTo(this.skills, 'change:total_cost', this.onCostChange);
 		this.listenTo(this.skills, 'change:maxed_out', this.onSkillComplete);
 
@@ -71,7 +72,15 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 				_.each(leiminauts.characters, function(character) {
 					var charSkills = _(leiminauts.skills).where({ character: character.name });
 					character.skills = new leiminauts.Skills(charSkills);
-					this.add(character);
+					var characterModel = new leiminauts.Character(character);
+
+					// Set reference from each skill back to character
+					character.skills.each(function(skill) {
+						skill.set('character', characterModel);
+						skill.character = skill.get('character');
+					});
+
+					this.add(characterModel);
 				}, this);
 			}
 		}

@@ -9,7 +9,8 @@ leiminauts.InfoView = Backbone.View.extend({
 	className: 'char-info',
 
 	events: {
-		"click .forum-snippet": "focusForumSnippet"
+		"click .forum-snippet": "focusForumSnippet",
+		"input .xp-slider": "xpSliderChange"
 	},
 
 	initialize: function() {
@@ -19,10 +20,10 @@ leiminauts.InfoView = Backbone.View.extend({
 		}
 
 		this.template = _.template( $('#info-tpl').html() );
-
 		this.forum = this.options.forum || false;
 
 		this.listenTo(this.character.model, 'change:total_cost', this.render);
+		this.listenTo(this.character.model, 'change:xp_level', this.render);
 	},
 
 	render: function() {
@@ -36,5 +37,10 @@ leiminauts.InfoView = Backbone.View.extend({
 
 	focusForumSnippet: function() {
 		this.$('.forum-snippet').select();
+	},
+
+	xpSliderChange: function() {
+		var level = Number(this.$('.xp-slider').val());
+		this.model.set('xp_level', level);
 	}
 });
