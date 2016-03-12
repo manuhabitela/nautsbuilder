@@ -120,7 +120,6 @@
 
 		<script type="text/template" id="info-tpl">
 			<p class="char-total-cost"><span class="cost">Total cost</span>: <span class="info"><%= total_cost %></span></p>
-			<p class="char-level"><span>Required level</span>: <span class="info"><%= level %></span></p>
 			<% if (!forum) { %>
 			<label>Embed on the forum:
 				<textarea rows=1 class="forum-snippet" readonly>
@@ -149,7 +148,6 @@
 							<p><strong><%= item.upgrade ? item.upgrade.name + ' (stage ' + item.level + ')' : item.name %></strong></p>
 							<p class="cost">Cost: <span class="info"><%= item.upgrade ? item.upgrade.cost : item.cost %></span></p>
 							<p class="cost"><strong>Total cost</strong> at this time: <span class="info"><%= item.order_total_cost %></span></p>
-							<p><strong>Required level</strong> at this time: <span class="info"><%= item.order_req_lvl %></span></p>
 							<% if (item.upgrade) { %>
 							<p>Stage <%= item.level %>: <%= item.description %></p>
 							<% } %>
