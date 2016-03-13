@@ -58,46 +58,68 @@ Characters should be listed in the same order as they are in the character selec
 
 ## Dealing with code
 
-The Nautsbuilder is a web app built with the help of **Backbone.js**, **Sass & Compass** and **Grunt**. A micro-bit of PHP is used too, so be sure to have Compass, Grunt and PHP installed on your machine if you want to contribute without any problem.
+The Nautbuilders is a web application built with the help of *Backbone.js*, *Sass & Compass*, *Grunt* and *PHP*.
 
-If you want to contribute, simply clone the project and start working on the JS and SCSS code. To easily have a local nautsbuilder instance, you can start a local web server with PHP:
+### Requirements
 
+In order to build and run your own (local) instance of Nautsbuilder, you need to the following software:
+
+* [PHP 5](http://php.net/)
+* [Grunt](http://gruntjs.com)
+* [Compass](http://compass-style.org)
+
+For Ubuntu, you can run the following commands:
 ```bash
-cd /location/of/nautsbuilder/root
-php -S localhost:8000
+sudo apt-get install php5 nodejs npm ruby ruby-dev
+sudo npm update -g npm
+sudo npm install -g grunt-cli
+sudo gem update --system
+sudo gem install compass
 ```
 
-### Making a new version
+### Running Nautsbuilder locally
 
-*This part is obviously only useful for people maintaining the Nautsbuilder*.
-
-When you want to publish new code on the Nautsbuilder website, you have to make a new "build" (not Awesomenauts builds, but JS/CSS ones :P). This could be enhanced since I'm not that found of the process but it's not *that* bad.
-
-To make a new build, bump the version of the Nautsbuilder in both the `package.json` and `index.php` files.
-
-If you added any JS files while developing (that your certainly added at the end of `ìndex.php`), be sure to add them in the list of files to concatenate in `Gruntfile.js`, or the Nautsbuilder will break in production.
-
-You can then build the production files with Grunt:
+To debug and test new versions locally, change into your Nautsbuilder directory and start a local PHP web server:
 
 ```bash
-cd /location/of/nautsbuilder/root
+cd nautsbuilder
+php -S localhost:8080
+```
+
+Then, open your preferred browser and navigate to http://localhost:8080.
+
+### Building a new version
+
+1. Increase the version of the Nautsbilder in both `package.json` and `index.php`.
+
+2. Add all newly added Javascript files to both `index.php` and `Gruntfile.js`.
+
+3. Generate the production files with Grunt inside the Nautsbuilder directory:
+   ```bash
+cd nautsbuilder
 grunt
-````
+   ```
+   Grunt generates the files in the `dist` directory.
 
-The production files are generated in the `dist` folder and have the new version number commented before the actual code they contain.
+4. Test the production by manually setting the PHP variable `PROD` at the top in `index.php` to `true`:
+   ```php
+   define('PROD', true);
+   ```
 
-If you wanna test if your build will break in production before uploading things for realz, you can force the `PROD` constant to `true` at the top of `index.php` on your machine.
-
-If everything's ok, you can then upload your `dist` folder, `index.php` file, and potential other necessary files for your update (new images, new font?) on the server to reflect the changes on the Nautsbuilder.
+5. Upload all updated files to the webserver:
+   * `index.php`
+   * `dist` directory
+   * other files like new images, fonts, etc.
 
 ## License
 
-Licensed under MPL v2 http://mozilla.org/MPL/2.0/
+Licensed under MPL v2 http://mozilla.org/MPL/2.0/.
 
-That pretty much means you can take the code and integrate it in your app (open-sourced or not). Remember you must open-source the changes you make to the Nautsbuilder code.
+This means that anyone can integrate the code into his/her own application, open-sourced or not. All changes made to the Nautsbuilder code *must be made open-sourced*.
 
-## Third party stuff used
-Code:
+## Third party material
+
+Nautsbuilder uses the following libraries:
 
 * [Underscore & Backbone.js](http://backbonejs.org/)
 * [jQuery](jquery.com)
@@ -106,15 +128,16 @@ Code:
 * [Fastclick](https://github.com/ftlabs/fastclick)
 * [HTML5 Sortable](http://farhadi.ir/projects/html5sortable/)
 
-Icons:
+and the following icons & images:
 
-* blue tick and red cancel buttons from the Awesomenauts Game,
-* [Home](http://thenounproject.com/noun/home/#icon-No293) from The Noun Project * [Gamepad menu icon](http://thenounproject.com/noun/video-game-controller/#icon-No17531) by [Vardan Stepanian](http://thenounproject.com/vardst)
-* [Keyboard](http://thenounproject.com/noun/keyboard/#icon-No783) by [Paul te Kortschot](http://thenounproject.com/Kortschot)
+* Blue tick and red cancel buttons from the Awesomenauts game, © Ronimo games
+* [Home icon](http://thenounproject.com/noun/home/#icon-No293) from [The Noun Project](https://thenounproject.com/)
+* [Gamepad menu icon](http://thenounproject.com/noun/video-game-controller/#icon-No17531) by [Vardan Stepanian](http://thenounproject.com/vardst)
+* [Keyboard icon](http://thenounproject.com/noun/keyboard/#icon-No783) by [Paul te Kortschot](http://thenounproject.com/Kortschot)
 * [Star icon](http://www.iconfinder.com/icondetails/1935/32/bookmark_star_icon) by [Alexandre Moore](http://sa-ki.deviantart.com/)
 
 ## Credits
 
-I want to sincerely thank my awesomenauts partners, Antoine, J and Fifou, who didn't help me at all to make this thing.
+I want to sincerely thank my Awesomenauts partners, Antoine, J and Fifou, who didn't help me at all to make this thing.
 
-Big thanks to Carty1234, boxtoy, nokos, Devenger, Riyita and MikalMirkas, who, certainly among others, filled the spreadsheet with the data really fast. Thanks to the Ronimo team for the facebook/twitter posts and the cool logo.
+Big thanks to Carty1234, boxtoy, nokos, Devenger, Riyita, MikalMirkas and Xelrog, who, certainly among others, filled the spreadsheet with the data really fast. Thanks to the Ronimo team for the Facebook/Twitter posts and the cool logo.
