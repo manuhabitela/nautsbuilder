@@ -431,26 +431,6 @@ leiminauts.Skill = Backbone.Model.extend({
 			}
 		}, this);
 
-		if (this.get('name') == "Missiles") {
-			var missilesSequence = [];
-			var baseDamage = parseInt(effects.findWhere({key: "damage"}).value, 10);
-			_(4).times(function() { missilesSequence.push(baseDamage); });
-			var missiles = effects.filter(function(effect) {
-				return (/^missile [0-9]$/).test(effect.key);
-			});
-			_(missiles).each(function(missile) {
-				var number = parseInt(missile.key.substr(-1), 10)-1;
-				missilesSequence[number] = (baseDamage + (40*number))*parseInt(missile.value, 10);
-				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: missile.key }) ), 1 );
-			});
-			while ((missilesSequence.length > 1) && (missilesSequence[missilesSequence.length-1] == baseDamage))
-				missilesSequence.pop();
-			avgDmg = _(missilesSequence).reduce(function(memo, num){ return memo + num; }, 0) / missilesSequence.length;
-			effects.findWhere({key: "damage"}).value = missilesSequence.join(' > ');
-			if (missilesSequence.length !== 1 && avgDmg !== missilesSequence[0])
-				effects.push({key: "avg damage", value: leiminauts.utils.number(avgDmg)});
-		}
-
 		if (this.get('name') == "Slash") {
 			var clover = this.getActiveUpgrade("clover of honour");
 			var backstab = this.getActiveUpgrade("backstab blade");
