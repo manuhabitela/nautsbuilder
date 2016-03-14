@@ -158,6 +158,20 @@ html:not(.forum) .char-builder.maxed-out {
 		@extend %info;
 		font-size: $base-font-size;
 	}
+	.xp-level {
+		.xp {
+			@extend %xp;
+			vertical-align: middle;
+		}
+		.info {
+			@extend %info;
+			font-size: $base-font-size;
+			vertical-align: middle;
+		}
+		.xp-slider {
+			vertical-align: middle;
+		}
+	}
 	.forum & {
 		margin: 0;
 		padding: 0;

@@ -68,6 +68,13 @@
 	background: image-url('solar_small.png') no-repeat center left;
 }
 
+%xp {
+	padding-left: 28px;
+	min-height: 21px;
+	background: image-url('xp.svg') no-repeat center left;
+	background-size: 26px auto;
+}
+
 %cancel {
 	@extend .ir;
 	background: transparent image-url("cancel.png") no-repeat top left;
