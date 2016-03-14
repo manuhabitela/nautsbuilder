@@ -121,7 +121,8 @@
 		<script type="text/template" id="info-tpl">
 			<p class="char-total-cost"><span class="cost">Total cost</span>: <span class="info"><%= total_cost %></span></p>
 			<p class="xp-level">
-				<span class="xp">Level</span>: <span class="info"><%= xp_level %></span>
+				<span class="xp">Level</span>:
+				<input class="xp-number" type="number" min="1" max="20" step="1" value=<%= xp_level %> />
 				<input class="xp-slider" type="range" min="1" max="20" step="1" value=<%= xp_level %> />
 			</p>
 			<% if (!forum) { %>

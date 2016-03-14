@@ -163,9 +163,12 @@ html:not(.forum) .char-builder.maxed-out {
 			@extend %xp;
 			vertical-align: middle;
 		}
-		.info {
+		.xp-number {
 			@extend %info;
 			font-size: $base-font-size;
+			width: 3em;
+			border: none;
+			text-align: right;
 			vertical-align: middle;
 		}
 		.xp-slider {

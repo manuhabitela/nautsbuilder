@@ -10,7 +10,8 @@ leiminauts.InfoView = Backbone.View.extend({
 
 	events: {
 		"click .forum-snippet": "focusForumSnippet",
-		"input .xp-slider": "xpSliderChange"
+		"input .xp-slider": "xpSliderChange",
+		"input .xp-number": "xpNumberChange",
 	},
 
 	initialize: function() {
@@ -41,6 +42,11 @@ leiminauts.InfoView = Backbone.View.extend({
 
 	xpSliderChange: function() {
 		var level = Number(this.$('.xp-slider').val());
+		this.model.set('xp_level', level);
+	},
+
+	xpNumberChange: function() {
+		var level = Number(this.$('.xp-number').val());
 		this.model.set('xp_level', level);
 	}
 });

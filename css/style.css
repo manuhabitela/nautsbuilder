@@ -7,7 +7,7 @@
 #mouse-tooltip p:first-child, .char-info p:first-child, .skill-wrapper > .skill-effects p:first-child { margin-top: 0; }
 #mouse-tooltip p:last-child, .char-info p:last-child, .skill-wrapper > .skill-effects p:last-child { margin-bottom: 0; }
 
-#mouse-tooltip .info, .icon-details, .char-info .info, .char-info .xp-level .info, .skill-effects dd { font-size: 11px; padding: 2px 4px; border-radius: 5px; font-weight: bold; background: black; background: rgba(0, 0, 0, 0.5); color: #fff; z-index: 30; white-space: nowrap; }
+#mouse-tooltip .info, .icon-details, .char-info .info, .char-info .xp-level .xp-number, .skill-effects dd { font-size: 11px; padding: 2px 4px; border-radius: 5px; font-weight: bold; background: black; background: rgba(0, 0, 0, 0.5); color: #fff; z-index: 30; white-space: nowrap; }
 
 #mouse-tooltip { max-width: 300px; font-size: small; z-index: 999; background: rgba(255, 246, 142, 0.95); color: #222; border: none; }
 
@@ -253,7 +253,7 @@ html:not(.forum) .char-builder.maxed-out .char-info { max-width: 170px; }
 @media only screen and (max-width: 970px), only screen and (max-height: 675px) { html:not(.forum) .char-builder.maxed-out .char-info { max-width: 100%; } }
 .char-info .info { font-size: 1em; }
 .char-info .xp-level .xp { vertical-align: middle; }
-.char-info .xp-level .info { font-size: 1em; vertical-align: middle; }
+.char-info .xp-level .xp-number { font-size: 1em; width: 3em; border: none; text-align: right; vertical-align: middle; }
 .char-info .xp-level .xp-slider { vertical-align: middle; }
 .forum .char-info { margin: 0; padding: 0; display: block; float: right; }
 .forum .char-info > p { display: inline-block; margin: 0; padding: 2px 4px; }
