@@ -76,7 +76,7 @@ sudo npm install -g grunt-cli
 sudo gem update --system
 sudo gem install compass
 cd nautsbuilder
-npm install
+sudo npm install
 ```
 
 ### Running Nautsbuilder locally
