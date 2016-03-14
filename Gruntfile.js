@@ -2,6 +2,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
+	grunt.loadNpmTasks('grunt-contrib-compass');
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -62,6 +63,9 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+		compass: {
+			dist: {}
+		},
 		cssmin: {
 			dist: {
 				files: {
@@ -70,5 +74,5 @@ module.exports = function(grunt) {
 			}
 		}
 	});
-	grunt.registerTask('default', ['concat', 'uglify', 'cssmin']);
+	grunt.registerTask('default', ['concat', 'uglify', 'compass', 'cssmin']);
 };
