@@ -10,8 +10,8 @@ leiminauts.InfoView = Backbone.View.extend({
 
 	events: {
 		"click .forum-snippet": "focusForumSnippet",
-		"input .xp-slider": "xpSliderChange",
-		"input .xp-number": "xpNumberChange",
+		"change .xp-slider": "xpSliderChange",
+		"change .xp-number": "xpNumberChange",
 	},
 
 	initialize: function() {
