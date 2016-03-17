@@ -290,8 +290,7 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		var currentLevel = this.character.get('xp_level');
 		_(baseStages).each(function(stage) {
-			if (stage.isNumber() && !stage.isRelative() &&
-					1 <= currentLevel && currentLevel <= 20) {
+			if (this.effectStageIsScaling(stage) && 1 <= currentLevel && currentLevel <= 20) {
 				stage.number *= (1 + (currentLevel-1)*scalingValue);
 			}
 		}, this);
@@ -326,6 +325,10 @@ leiminauts.Skill = Backbone.Model.extend({
 		} else {
 			return undefined;
 		}
+	},
+
+	effectStageIsScaling: function(stage) {
+		return stage.isNumber() && !stage.isRelative() && stage.prefix !== "×" && stage.prefix !== "/";
 	},
 
 	// Padds each step (base and upgrades) with the respective first value to the maximum number of stages found
