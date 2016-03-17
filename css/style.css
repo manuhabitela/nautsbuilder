@@ -16,7 +16,7 @@
 
 #mouse-tooltip .cost, .char-info .char-total-cost .cost, .skill-effects dt.total_cost span, .upgrade-popup .cost { padding-left: 24px; min-height: 21px; background: url('../img/solar_small.png?1457698554') no-repeat center left; }
 
-.char-info .xp-level .xp { padding-left: 28px; min-height: 21px; background: url('../img/xp.svg?1457970845') no-repeat center left; background-size: 26px auto; }
+.char-info .xp-level .xp { padding-left: 28px; min-height: 21px; background: url('../img/xp.png?1457969757') no-repeat center left; background-size: 26px auto; }
 
 .build-cancel, .skill-cancel { background: transparent url('../img/cancel.png?1457698554') no-repeat top left; color: rgba(217, 89, 38, 0.8); font-family: verdana; font-size: 24px; cursor: pointer; }
 
