@@ -65,8 +65,8 @@ The Nautbuilders is a web application built with the help of *Backbone.js*, *Sas
 In order to build and run your own (local) instance of Nautsbuilder, you need to the following software:
 
 * [PHP 5](http://php.net/)
-* [Grunt](http://gruntjs.com)
-* [Compass](http://compass-style.org)
+* [Grunt](http://gruntjs.com) (requires [Node.js](https://nodejs.org))
+* [Compass](http://compass-style.org) (requires [Ruby](https://www.ruby-lang.org))
 
 For Ubuntu, you can run the following commands:
 ```bash
