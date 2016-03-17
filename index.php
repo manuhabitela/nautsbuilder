@@ -120,12 +120,12 @@
 
 		<script type="text/template" id="info-tpl">
 			<p class="char-total-cost"><span class="cost">Total cost</span>: <span class="info"><%= total_cost %></span></p>
+			<% if (!forum) { %>
 			<p class="xp-level">
 				<span class="xp">Level</span>:
 				<input class="xp-number" type="number" min="1" max="20" step="1" oninput="$('.xp-slider').val(this.value);" value=<%= xp_level %> />
 				<input class="xp-slider" type="range" min="1" max="20" step="1" oninput="$('.xp-number').val(this.value);" value=<%= xp_level %> />
 			</p>
-			<% if (!forum) { %>
 			<label>Embed on the forum:
 				<textarea rows=1 class="forum-snippet" readonly>
 
