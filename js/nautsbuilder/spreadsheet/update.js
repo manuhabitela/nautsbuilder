@@ -36,17 +36,18 @@
 
 		notifyUser("Updating data...");
 
+		var updateSheet = function(sheet) {
+			Tabletop.init({
+				key: sheets[sheet],
+				debug: true,
+				callback: function(dataz, tabletop) {
+					updateDataFromSheet(sheet, dataz, tabletop);
+				}
+			});
+		};
+
 		for (var i = sheetsKey.length - 1; i >= 0; i--) {
-			var sheet = sheetsKey[i];
-			(function(sheet) {
-				Tabletop.init({
-					key: sheets[sheet],
-					debug: true,
-					callback: function(dataz, tabletop) {
-						updateDataFromSheet(sheet, dataz, tabletop);
-					}
-				});
-			})(sheet);
+			updateSheet(sheetsKey[i]);
 		}
 	}
 })();
