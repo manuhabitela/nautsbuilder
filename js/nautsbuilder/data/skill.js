@@ -211,7 +211,7 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		addToEffects(baseEffects);
 		_(activeSteps).each(function(step) {
-			addToEffects(step.get('attrs'))
+			addToEffects(step.get('attrs'));
 		});
 
 		// Sort each array so that divison values always come last
