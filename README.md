@@ -58,21 +58,21 @@ Characters should be listed in the same order as they are in the character selec
 
 ## Dealing with code
 
-The Nautbuilders is a web application built with the help of *Backbone.js*, *Sass & Compass*, *Grunt* and *PHP*.
+The Nautbuilders is a web application built with the help of *Backbone.js*, *Sass* and *PHP*.
 
 ### Requirements
 
 In order to build and run your own (local) instance of Nautsbuilder, you need to the following software:
 
-* [PHP 5](http://php.net/)
-* [Grunt](http://gruntjs.com) (requires [Node.js](https://nodejs.org))
-* [Compass](http://compass-style.org) (requires [Ruby](https://www.ruby-lang.org))
+* [PHP 5](https://php.net/)
+* [Grunt](http://gruntjs.com) and [npm](https://npmjs.org/)
+* [Compass](http://compass-style.org) and [SCSS-Lint](https://github.com/brigade/scss-lint)
 
 For Ubuntu, you can run the following commands:
 ```bash
 sudo apt-get install php5 nodejs nodejs-legacy npm ruby ruby-dev
 sudo gem update --system
-sudo gem install compass
+sudo gem install compass scss_lint
 sudo npm update -g npm
 sudo npm install -g grunt-cli
 cd nautsbuilder

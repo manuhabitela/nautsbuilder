@@ -1,8 +1,5 @@
 module.exports = function(grunt) {
-	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	grunt.loadNpmTasks('grunt-contrib-compass');
+	require('load-grunt-tasks')(grunt);
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -11,8 +8,31 @@ module.exports = function(grunt) {
 			"* Copyright (c) <%= grunt.template.today('yyyy') %> Emmanuel Pelletier\n" +
 			"* This Source Code Form is subject to the terms of the Mozilla Public License, v2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/. */"
 		},
+
+		compass: {
+			dist: {}
+		},
+
+		jshint: {
+			files: ['Gruntfile.js', 'js/main.js', 'js/nautsbuilder/**/*.js'],
+			options: {
+				globals: {
+					jQuery: true
+				}
+			}
+		},
+
+		scsslint: {
+			allFiles: ['scss/**/*.scss'],
+			options: {
+				colorizeOutput: true,
+				compact: true,
+				force: true
+			}
+		},
+
 		concat: {
-			lib: {
+			libs: {
 				src: [
 					'js/lib/jquery.min.js',
 					'js/lib/underscore.js',
@@ -48,10 +68,11 @@ module.exports = function(grunt) {
 				dest: 'dist/scripts.js'
 			}
 		},
+
 		uglify: {
 			libs: {
 				files: {
-					'dist/libs.min.js': ['dist/libs.js']
+					'dist/libs.min.js': ['<%= concat.libs.dest %>']
 				}
 			},
 			app: {
@@ -59,20 +80,42 @@ module.exports = function(grunt) {
 					banner: "<%= meta.banner %>"
 				},
 				files: {
-					'dist/scripts.min.js': 'dist/scripts.js'
+					'dist/scripts.min.js': ['<%= concat.app.dest %>']
 				}
 			}
 		},
-		compass: {
-			dist: {}
-		},
+
 		cssmin: {
 			dist: {
 				files: {
 					'dist/styles.min.css': ['css/style.css']
 				}
 			}
+		},
+
+		php: {
+			test: {
+				options: {
+					hostname: 'localhost',
+					port: 8080,
+					keepalive: true,
+					open: true,
+					silent: true
+				}
+			}
 		}
 	});
-	grunt.registerTask('default', ['concat', 'uglify', 'compass', 'cssmin']);
+
+	grunt.loadNpmTasks('grunt-contrib-compass');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-scss-lint');
+
+	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-cssmin');
+
+	grunt.registerTask('build', ['compass', 'jshint', 'scsslint']);
+	grunt.registerTask('dist', ['concat', 'uglify', 'cssmin']);
+	grunt.registerTask('test', ['php:test']);
+	grunt.registerTask('default', ['build', 'dist']);
 };
