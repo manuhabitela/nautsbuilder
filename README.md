@@ -71,10 +71,10 @@ In order to build and run your own (local) instance of Nautsbuilder, you need to
 For Ubuntu, you can run the following commands:
 ```bash
 sudo apt-get install php5 nodejs nodejs-legacy npm ruby ruby-dev
-npm update -g npm
-npm install -g grunt-cli
-gem update --system
-gem install compass
+sudo gem update --system
+sudo gem install compass
+sudo npm update -g npm
+sudo npm install -g grunt-cli
 cd nautsbuilder
 npm install
 ```
