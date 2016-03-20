@@ -10,7 +10,7 @@ vendor
 composer.lock
 composer.phar
 
-node_modules
+node_modules/
 
 .htaccess
 .htpasswd
@@ -19,3 +19,8 @@ sftp-config*.json
 
 img/data/*.png
 img/data/*.PNG
+
+data/*.json
+data/last-update.js
+js/nautsbuilder/spreadsheet/last-update.js
+dist/
