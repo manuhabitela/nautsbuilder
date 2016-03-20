@@ -116,6 +116,6 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('build', ['compass', 'jshint', 'scsslint']);
 	grunt.registerTask('dist', ['concat', 'uglify', 'cssmin']);
-	grunt.registerTask('test', ['php:test']);
+	grunt.registerTask('test', ['build', 'php:test']);
 	grunt.registerTask('default', ['build', 'dist']);
 };
