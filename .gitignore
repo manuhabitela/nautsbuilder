@@ -20,7 +20,8 @@ sftp-config*.json
 img/data/*.png
 img/data/*.PNG
 
+css/style.css
 data/*.json
 data/last-update.js
-js/nautsbuilder/spreadsheet/last-update.js
 dist/
+js/nautsbuilder/spreadsheet/last-update.js
