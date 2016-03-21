@@ -18,7 +18,8 @@
 			var characters = JSON.stringify(tabletop.sheets('Characters').all());
 			var skills = JSON.stringify(tabletop.sheets('Skills').all());
 			var upgrades = JSON.stringify(tabletop.sheets('Upgrades').all());
-			var data = {sheet: sheet, characters: characters, skills: skills, upgrades: upgrades};
+			var scaling = JSON.stringify(tabletop.sheets('Scaling').all());
+			var data = {sheet: sheet, characters: characters, skills: skills, upgrades: upgrades, scaling: scaling};
 			$.ajax({
 				type: 'POST',
 				url: '../../../data/update.php',

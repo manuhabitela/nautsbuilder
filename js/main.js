@@ -46,13 +46,15 @@ $(function() {
 		$.when(
 			$.ajax({url: dataUrl('characters'), dataType: "json"}),
 			$.ajax({url: dataUrl('upgrades'), dataType: "json"}),
-			$.ajax({url: dataUrl('skills'), dataType: "json"})
-		).done(function(chars, ups, sks) {
-			var data = { characters: chars[0], skills: sks[0], upgrades: ups[0] };
+			$.ajax({url: dataUrl('skills'), dataType: "json"}),
+			$.ajax({url: dataUrl('scaling'), dataType: "json"})
+		).done(function(chars, ups, sks, scl) {
+			var data = { characters: chars[0], skills: sks[0], upgrades: ups[0], scaling: scl[0] };
 			if (Modernizr.localstorage && useLocalStorage) {
 				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.characters', JSON.stringify(data.characters));
 				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.skills', JSON.stringify(data.skills));
 				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.upgrades', JSON.stringify(data.upgrades));
+				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.scaling', JSON.stringify(data.scaling));
 				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.date', new Date().getTime());
 			}
 			leiminauts.init({ data: data });
@@ -73,6 +75,7 @@ $(function() {
 			var characters = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.characters');
 			var skills = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.skills');
 			var upgrades = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.upgrades');
+			var scaling = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.scaling');
 			_([characters, skills, upgrades]).each(function(data) {
 				if (!data || data === "undefined") {
 					dataOk = false;
@@ -84,6 +87,7 @@ $(function() {
 				data.characters = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.characters'));
 				data.skills = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.skills'));
 				data.upgrades = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.upgrades'));
+				data.scaling = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.scaling'));
 
 				leiminauts.init({ data: data });
 			}

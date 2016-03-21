@@ -68,6 +68,7 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 				leiminauts.characters = this.data.characters;
 				leiminauts.skills = this.data.skills;
 				leiminauts.upgrades = this.data.upgrades;
+				leiminauts.scaling = this.data.scaling;
 
 				_.each(leiminauts.characters, function(character) {
 					var charSkills = _(leiminauts.skills).where({ character: character.name });
