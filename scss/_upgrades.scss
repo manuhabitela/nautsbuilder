@@ -1,87 +1,87 @@
 .upgrade {
-	display: inline-block;
-	vertical-align: top;
-	@extend %dark-box;
-	margin: 0 2px;
-	.skill.jump &:after {
-		border-radius: 8px 8px 25px 25px / #{$icon-width} $icon-width 20px 20px;
-	}
-	.forum .skill.jump &:after {
-		border-radius: 8px 8px 25px 25px / #{$forum-icon-width} $forum-icon-width 20px 20px;
-	}
-	&.active:after {
-		display: none;
-	}
-	cursor: pointer;
-	.skill.active &.locked {
-		cursor: not-allowed;
-	}
+  display: inline-block;
+  vertical-align: top;
+  @extend %dark-box;
+  margin: 0 2px;
+  .skill.jump &:after {
+    border-radius: 8px 8px 25px 25px / #{$icon-width} $icon-width 20px 20px;
+  }
+  .forum .skill.jump &:after {
+    border-radius: 8px 8px 25px 25px / #{$forum-icon-width} $forum-icon-width 20px 20px;
+  }
+  &.active:after {
+    display: none;
+  }
+  cursor: pointer;
+  .skill.active &.locked {
+    cursor: not-allowed;
+  }
 
-	@include transition-property(width, opacity, margin);
-	@include transition-duration($compact-transition-time);
-	width: $icon-width;
-	.forum & {
-		width: $forum-icon-width;
-	}
-	opacity: 1;
-	.char-builder.maxed-out .build &:not(.active) {
-		html.csstransitions:not(.forum) & {
-			width: 0;
-			margin: 0;
-			opacity: 0;
-			overflow: hidden;
-		}
-		html.nocsstransitions:not(.forum) & {
-			display: none;
-		}
-	}
+  @include transition-property(width, opacity, margin);
+  @include transition-duration($compact-transition-time);
+  width: $icon-width;
+  .forum & {
+    width: $forum-icon-width;
+  }
+  opacity: 1;
+  .char-builder.maxed-out .build &:not(.active) {
+    html.csstransitions:not(.forum) & {
+      width: 0;
+      margin: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+    html.nocsstransitions:not(.forum) & {
+      display: none;
+    }
+  }
 
-	// &:not(.active) {
-	// 	html.csstransitions.forum & {
-	// 		width: 0;
-	// 		margin: 0;
-	// 		opacity: 0;
-	// 		overflow: hidden;
-	// 	}
-	// 	html.nocsstransitions.forum & {
-	// 		display: none;
-	// 	}
-	// }
-	-webkit-tap-highlight-color: rgba(0,0,0,0);
+  // &:not(.active) {
+  //   html.csstransitions.forum & {
+  //     width: 0;
+  //     margin: 0;
+  //     opacity: 0;
+  //     overflow: hidden;
+  //   }
+  //   html.nocsstransitions.forum & {
+  //     display: none;
+  //   }
+  // }
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 .upgrade-icon {
-	@extend %icon;
-	max-width: 100%;
+  @extend %icon;
+  max-width: 100%;
 }
 
 .upgrade-cost, .upgrade-step {
-	opacity: 1;
-	@include transition(opacity $compact-transition-time);
+  opacity: 1;
+  @include transition(opacity $compact-transition-time);
 }
 
 .upgrade-cost {
-	right: 0;
-	.char-builder.maxed-out & {
-		opacity: 0;
-	}
+  right: 0;
+  .char-builder.maxed-out & {
+    opacity: 0;
+  }
 }
 
 .upgrade-step {
-	left: 0;
-	opacity: 0;
-	background-color: #B07C06;
-	&.max {
-		background-color: #07AF26;
-	}
-	.upgrade.active & {
-		opacity: 1;
-	}
-	.char-builder.maxed-out & {
-		opacity: 0;
-	}
+  left: 0;
+  opacity: 0;
+  background-color: #B07C06;
+  &.max {
+    background-color: #07AF26;
+  }
+  .upgrade.active & {
+    opacity: 1;
+  }
+  .char-builder.maxed-out & {
+    opacity: 0;
+  }
 }
 
 .upgrade-popup .cost {
-	@extend %cost;
+  @extend %cost;
 }

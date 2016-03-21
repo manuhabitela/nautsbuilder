@@ -1,233 +1,233 @@
 .page-red {
-	#container, .chars-list-container, .current-char {
-		height: 100%;
-		@include respond-to(mobile) {
-			height: auto;
-		}
-	}
+  #container, .chars-list-container, .current-char {
+    height: 100%;
+    @include respond-to(mobile) {
+      height: auto;
+    }
+  }
 }
 
 #mobileHeader {
-	display: none;
-	font-size: 3em;
-	text-align: center;
-	@include respond-to(mobile) {
-		display: inherit !important;
-	}
+  display: none;
+  font-size: 3em;
+  text-align: center;
+  @include respond-to(mobile) {
+    display: inherit !important;
+  }
 }
 
 .current-char {
-	@extend .clearfix;
-	padding-bottom: 100px;
-	background-image: -webkit-gradient(radial, 50% -100px, 0, 50% -100px, 600, color-stop(0%, rgba(230, 202, 8, 0.8)), color-stop(100%, transparent));
-	background-image: -webkit-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px);
-	background-image: -moz-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px);
-	background-image: -o-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px);
-	@include respond-to(mobile) {
-		display:none;
-	}
+  @extend .clearfix;
+  padding-bottom: 100px;
+  background-image: -webkit-gradient(radial, 50% -100px, 0, 50% -100px, 600, color-stop(0%, rgba(230, 202, 8, 0.8)), color-stop(100%, transparent));
+  background-image: -webkit-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px);
+  background-image: -moz-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px);
+  background-image: -o-radial-gradient(50% -100px, rgba(230, 202, 8, 0.8), transparent 600px);
+  @include respond-to(mobile) {
+    display:none;
+  }
 }
 
 .current-char-box {
-	padding: 10px;
-	border-radius: 5px;
-	background: rgba(black, 0.5);
-	font-size: small;
-	margin: 5px;
-	p:first-child {
-		margin-top: 0;
-	}
-	p:last-child {
-		margin-bottom: 0;
-	}
+  padding: 10px;
+  border-radius: 5px;
+  background: rgba(black, 0.5);
+  font-size: small;
+  margin: 5px;
+  p:first-child {
+    margin-top: 0;
+  }
+  p:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .current-char-left, .current-char-right {
-	width: 30%;
-	height: auto;
-	max-height: 85%;
-	overflow: auto;
-	&::-webkit-scrollbar {
-	    width: 12px;
-	}
-	&::-webkit-scrollbar-track {
-	    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-	    border-radius: 5px;
-	}
-	&::-webkit-scrollbar-thumb {
-	    border-radius: 5px;
-	    background: rgba(black, 0.5);
-	    // -webkit-box-shadow: inset 0 0 12px rgba(0,0,0,0.8);
-	}
+  width: 30%;
+  height: auto;
+  max-height: 85%;
+  overflow: auto;
+  &::-webkit-scrollbar {
+      width: 12px;
+  }
+  &::-webkit-scrollbar-track {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+      border-radius: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+      border-radius: 5px;
+      background: rgba(black, 0.5);
+      // -webkit-box-shadow: inset 0 0 12px rgba(0,0,0,0.8);
+  }
 }
 
 .current-char-left {
-	float: left;
+  float: left;
 }
 
 .current-char-info {
-	float: left;
-	width: 100%-(30%*2);
-	text-align: center;
-	position: relative;
-	height: 100%;
+  float: left;
+  width: 100%-(30%*2);
+  text-align: center;
+  position: relative;
+  height: 100%;
 }
 
 .current-char-name {
-	position: absolute;
-	bottom: 60px;
-	left: 0;
-	right: 0;
-	font-size: 4em;
-	margin: 0;
-	line-height: 1;
-	text-shadow: 0 2px 6px black;
-	@include respond-to(shrunken) {
-		font-size: 3em;
-	}
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  font-size: 4em;
+  margin: 0;
+  line-height: 1;
+  text-shadow: 0 2px 6px black;
+  @include respond-to(shrunken) {
+    font-size: 3em;
+  }
 }
 
 .current-char-right {
-	float: right;
+  float: right;
 }
 
 .current-char-image {
-	height: auto;
+  height: auto;
     max-height: 70%;
     max-width: 100%;
     margin-top: 10%
 }
 
 .current-char-skill {
-	@extend .clearfix;
-	// @include respond-to(shrunken) {
-	// 	font-size: 11px;
-	// }
+  @extend .clearfix;
+  // @include respond-to(shrunken) {
+  //   font-size: 11px;
+  // }
 }
 
 .current-char-skill-icon {
-	float: left;
-	margin: 10px;
-	margin-left: 0;
-	img {
-		width: 60px;
-		@include respond-to(shrunken) {
-			width: 40px;
-		}
-	}
+  float: left;
+  margin: 10px;
+  margin-left: 0;
+  img {
+    width: 60px;
+    @include respond-to(shrunken) {
+      width: 40px;
+    }
+  }
 }
 
 
 .current-char.mini {
-	@extend .hidden;
+  @extend .hidden;
 }
 
 .current-char-placeholder {
-	height: 100%;
-	max-width: 667px;
-	margin: 0 auto;
-	background: image-url('nautsbuilder.png') no-repeat center center;
-	background-size: 100% auto;
+  height: 100%;
+  max-width: 667px;
+  margin: 0 auto;
+  background: image-url('nautsbuilder.png') no-repeat center center;
+  background-size: 100% auto;
 }
 
 .chars-list {
-	.chars-list-container & {
-		position: fixed;
-		left: 0;
-		right: 0;
-		bottom: 30px;
-		text-align: center;
-		@include respond-to(mobile) {
-			position: inherit;
-		}
-	}
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	.char {
-		display: inline-block;
-		cursor: pointer;
-		padding: 0;
-		margin: 3px 0;
-		border: 2px solid transparent;
-		&:hover, &.active {
-			border: solid 2px #FFF292;
-		}
-		&.active, &.beta.active {
-			border-color: darken(#FFF292, 10%);
-		}
-		&.beta {
-			border-color: rgba(red, 0.6);
-			&:after {
-				content: 'beta';
-				display: block;
-				background: rgba(#FF0000, 0.6);
-				pointer-events: none;
-			}
-		}
-		.chars-list-container &.beta {
-			position: relative;
-			border-radius: 5px;
-			&:after {
-				position: absolute;
-				bottom: 0;
-				left: 0;
-				right: 0;
-			}
-		}
-		.char-builder &.beta {
-			position: relative;
-			&:after {
-				display: none;
-				content: 'currently in beta';
-				overflow: hidden;
-				position: absolute;
-				top: 120%;
-				left: -56px;
-				padding: 2px 4px;
-				width: 120px;
-				z-index: 200;
-				border-radius: 5px;
-				text-shadow: none;
-				background: rgba(#FF0000, 0.6);
-				font-size: 0.7em;
-				pointer-events: none;
-			}
-			&:hover:after {
-				display: block;
-			}
-		}
-		.char-builder &.active.beta:after {
-			display: block;
-		}
-	}
-	.char-icon {
-		vertical-align: middle;
-		width: 55px;
-		@include respond-to(mobile) {
-			width: 80px;
-		}
-	}
+  .chars-list-container & {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 30px;
+    text-align: center;
+    @include respond-to(mobile) {
+      position: inherit;
+    }
+  }
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  .char {
+    display: inline-block;
+    cursor: pointer;
+    padding: 0;
+    margin: 3px 0;
+    border: 2px solid transparent;
+    &:hover, &.active {
+      border: solid 2px #FFF292;
+    }
+    &.active, &.beta.active {
+      border-color: darken(#FFF292, 10%);
+    }
+    &.beta {
+      border-color: rgba(red, 0.6);
+      &:after {
+        content: 'beta';
+        display: block;
+        background: rgba(#FF0000, 0.6);
+        pointer-events: none;
+      }
+    }
+    .chars-list-container &.beta {
+      position: relative;
+      border-radius: 5px;
+      &:after {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+    }
+    .char-builder &.beta {
+      position: relative;
+      &:after {
+        display: none;
+        content: 'currently in beta';
+        overflow: hidden;
+        position: absolute;
+        top: 120%;
+        left: -56px;
+        padding: 2px 4px;
+        width: 120px;
+        z-index: 200;
+        border-radius: 5px;
+        text-shadow: none;
+        background: rgba(#FF0000, 0.6);
+        font-size: 0.7em;
+        pointer-events: none;
+      }
+      &:hover:after {
+        display: block;
+      }
+    }
+    .char-builder &.active.beta:after {
+      display: block;
+    }
+  }
+  .char-icon {
+    vertical-align: middle;
+    width: 55px;
+    @include respond-to(mobile) {
+      width: 80px;
+    }
+  }
 
-	.forum & {
-		@extend .hidden;
-	}
-	&.mini {
-		margin: 10px 2% $build-margin 2%;
-		text-align: center;
-		.char {
-			border-width: 1px;
-			margin: 2px 0 2px -4px;
-			&:hover, &.active {
-				border-radius: 0;
-			}
-			&.home-button, &.console-button {
-				&:hover, &.active { border-color: transparent; opacity: 0.8; }
-			}
-		}
-		.char-icon {
-			height: 30px;
-			width: auto;
-		}
-	}
+  .forum & {
+    @extend .hidden;
+  }
+  &.mini {
+    margin: 10px 2% $build-margin 2%;
+    text-align: center;
+    .char {
+      border-width: 1px;
+      margin: 2px 0 2px -4px;
+      &:hover, &.active {
+        border-radius: 0;
+      }
+      &.home-button, &.console-button {
+        &:hover, &.active { border-color: transparent; opacity: 0.8; }
+      }
+    }
+    .char-icon {
+      height: 30px;
+      width: auto;
+    }
+  }
 }

@@ -2,96 +2,96 @@
 //certains mixins sont tirés des classes helpers du h5bp http://html5boilerplate.com/
 
 @mixin respond-to($media) {
-	$break-small: 640px;
-	$break-large: 980px;
-	$break-xlarge: 1400px;
-	$break-small-height: 780px;
-	$break-mobile-width: 970px;
-	$break-mobile-height: 675px;
-	@if $media == small {
-		@media only screen and (max-width: $break-small) { @content; }
-	}
-	@else if $media == medium {
-		@media only screen and (min-width: $break-small + 1) and (max-width: $break-large - 1) { @content; }
-	}
-	@else if $media == large {
-		@media only screen and (min-width: $break-large) { @content; }
-	}
-	@else if $media == xlarge {
-		@media only screen and (min-width: $break-xlarge) { @content; }
-	}
-	@else if $media == shrunken {
-		@media only screen and (max-height: $break-small-height) { @content; }
-	}
-	@else if $media == mobile {
-		@media only screen and (max-width: $break-mobile-width), only screen and (max-height: $break-mobile-height) { @content; }
-	}
+  $break-small: 640px;
+  $break-large: 980px;
+  $break-xlarge: 1400px;
+  $break-small-height: 780px;
+  $break-mobile-width: 970px;
+  $break-mobile-height: 675px;
+  @if $media == small {
+    @media only screen and (max-width: $break-small) { @content; }
+  }
+  @else if $media == medium {
+    @media only screen and (min-width: $break-small + 1) and (max-width: $break-large - 1) { @content; }
+  }
+  @else if $media == large {
+    @media only screen and (min-width: $break-large) { @content; }
+  }
+  @else if $media == xlarge {
+    @media only screen and (min-width: $break-xlarge) { @content; }
+  }
+  @else if $media == shrunken {
+    @media only screen and (max-height: $break-small-height) { @content; }
+  }
+  @else if $media == mobile {
+    @media only screen and (max-width: $break-mobile-width), only screen and (max-height: $break-mobile-height) { @content; }
+  }
 }
 
 @mixin display-ib {
-	display: inline-block;
-	*display: inline;
-	*zoom: 1;
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
 }
 
 @mixin image-replacement($img: none, $x: 50%, $y: 50%) {
-	border: 0;
-	overflow: hidden;
-	*text-indent: -9999px;
-	&:before {
-		content: "";
-		display: block;
-		width: 0;
-		height: 100%;
-	}
-	@if $img != none {
-		background-image: image-url($img);
-		background-position: $x $y;
-	}
+  border: 0;
+  overflow: hidden;
+  *text-indent: -9999px;
+  &:before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 100%;
+  }
+  @if $img != none {
+    background-image: image-url($img);
+    background-position: $x $y;
+  }
 }
 
 @mixin sized-image-replacement($img, $x: 50%, $y: 50%) {
-	@include image-replacement($img, $x, $y);
-	width: image-width($img);
-	height: image-height($img);
+  @include image-replacement($img, $x, $y);
+  width: image-width($img);
+  height: image-height($img);
 }
 
 // Hide from both screenreaders and browsers: h5bp.com/u
 @mixin hidden {
-	display: none !important;
-	visibility: hidden;
+  display: none !important;
+  visibility: hidden;
 }
 
 // Hide only visually, but have it available for screenreaders: h5bp.com/v
 @mixin visually-hidden {
-	border: 0;
-	clip: rect(0 0 0 0);
-	height: 1px;
-	margin: -1px;
-	overflow: hidden;
-	padding: 0;
-	position: absolute;
-	width: 1px;
-	&.focusable:active, &.focusable:focus {
-		clip: auto;
-		height: auto;
-		margin: 0;
-		overflow: visible;
-		position: static;
-		width: auto;
-	}
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  &.focusable:active, &.focusable:focus {
+    clip: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    position: static;
+    width: auto;
+  }
 }
 
 // Hide visually and from screenreaders, but maintain layout
 @mixin invisible {
-	visibility: hidden;
+  visibility: hidden;
 }
 
 @mixin micro-clearfix {
-	&:before, &:after {
-		content: " "; // 1
-		display: table; // 2
-	}
-	&:after { clear: both; }
-	& { *zoom: 1; }
+  &:before, &:after {
+    content: " "; // 1
+    display: table; // 2
+  }
+  &:after { clear: both; }
+  & { *zoom: 1; }
 }

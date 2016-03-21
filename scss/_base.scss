@@ -2,195 +2,195 @@
 //utilisation notable de normalize.css http://necolas.github.com/normalize.css/
 
 * {
-	@include box-sizing(border-box);
+  @include box-sizing(border-box);
 }
 
 audio, canvas, video {
-	display: inline-block;
+  display: inline-block;
 }
 
 audio:not([controls]) {
-	display: none;
-	height: 0;
+  display: none;
+  height: 0;
 }
 
 [hidden] {
-	display: none;
+  display: none;
 }
 
 html {
-	font-family: sans-serif;
-	-webkit-text-size-adjust: 100%;
-	-ms-text-size-adjust: 100%;
-	min-height: 100%;
-	&.page-red {
-		height: 100%;
-		min-height: 0;
-	}
+  font-family: sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  min-height: 100%;
+  &.page-red {
+    height: 100%;
+    min-height: 0;
+  }
 }
 
 a:focus {
-	outline: thin dotted;
+  outline: thin dotted;
 }
 
 a:active, a:hover {
-	outline: 1px;
+  outline: 1px;
 }
 
 h1 {
-	font-size: 2em;
-	margin: 0.67em 0;
+  font-size: 2em;
+  margin: 0.67em 0;
 }
 
 abbr[title] {
-	border-bottom: 1px dotted;
+  border-bottom: 1px dotted;
 }
 
 b, strong {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 code, kbd, pre, samp {
-	font-family: monospace, serif;
-	font-size: 1em;
+  font-family: monospace, serif;
+  font-size: 1em;
 }
 
 pre {
-	white-space: pre-wrap;
+  white-space: pre-wrap;
 }
 
 q {
-	quotes: "\201C" "\201D" "\2018" "\2019";
+  quotes: "\201C" "\201D" "\2018" "\2019";
 }
 
 small {
-	font-size: 80%;
+  font-size: 80%;
 }
 
 sub, sup {
-	font-size: 75%;
-	line-height: 0;
-	position: relative;
-	vertical-align: baseline;
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
 }
 
 sup {
-	top: -0.5em;
+  top: -0.5em;
 }
 
 sub {
-	bottom: -0.25em;
+  bottom: -0.25em;
 }
 
 img {
-	border: 0;
+  border: 0;
 }
 
 svg:not(:root) {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 fieldset {
-	border: 1px solid #c0c0c0;
-	margin: 0 2px;
-	padding: 0.35em 0.625em 0.75em;
+  border: 1px solid #c0c0c0;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em;
 }
 
 legend {
-	border: 0;
-	padding: 0;
+  border: 0;
+  padding: 0;
 }
 
 button, input, select, textarea {
-	font-family: inherit;
-	font-size: 100%;
-	margin: 0;
+  font-family: inherit;
+  font-size: 100%;
+  margin: 0;
 }
 
 button, input {
-	line-height: normal;
+  line-height: normal;
 }
 
 button, select {
-	text-transform: none;
+  text-transform: none;
 }
 
 button, html input[type="button"], input[type="reset"], input[type="submit"] {
-	-webkit-appearance: button;
-	cursor: pointer;
+  -webkit-appearance: button;
+  cursor: pointer;
 }
 
 button[disabled], html input[disabled] {
-	cursor: default;
+  cursor: default;
 }
 
 input[type=text], textarea {
-	border: 0;
-	background: transparent;
-	background: rgba(white, 0.2);
-	font-family: verdana;
-	font-size: small;
+  border: 0;
+  background: transparent;
+  background: rgba(white, 0.2);
+  font-family: verdana;
+  font-size: small;
 }
 
 input[type="checkbox"], input[type="radio"] {
-	box-sizing: border-box;
-	padding: 0;
+  box-sizing: border-box;
+  padding: 0;
 }
 
 input[type="search"] {
-	-webkit-appearance: textfield;
-	-moz-box-sizing: content-box;
-	-webkit-box-sizing: content-box;
-	box-sizing: content-box;
+  -webkit-appearance: textfield;
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
 }
 
 input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-decoration {
-	-webkit-appearance: none;
+  -webkit-appearance: none;
 }
 
 button::-moz-focus-inner, input::-moz-focus-inner {
-	border: 0;
-	padding: 0;
+  border: 0;
+  padding: 0;
 }
 
 textarea {
-	overflow: auto;
-	vertical-align: top;
+  overflow: auto;
+  vertical-align: top;
 }
 
 table {
-	border-collapse: collapse;
-	border-spacing: 0;
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 
 body, button, select, input, textarea, label {
-	color: $base-color;
-	font-family: $base-font-family;
-	line-height: $base-line-height;
-	.forum & {
-		color: #222;
-	}
+  color: $base-color;
+  font-family: $base-font-family;
+  line-height: $base-line-height;
+  .forum & {
+    color: #222;
+  }
 }
 
 body {
-	margin: 0;
-	padding-bottom: 30px;
-	height: 100%;
-	background-position: top left;
-	&, .page-blue & {
-		background-color: #001D2F;
-		@include background-image(radial-gradient(800px 800px, #02526D, #001322));
-		@include background-image(radial-gradient(50% 50%, #02526D, #001322));
-	}
-	.page-red & {
-		background-color: #6D0206;
-		@include background-image(radial-gradient(800px 800px, #6D0206, #220000));
-		@include background-image(radial-gradient(50% 50%, #6D0206, #220000));
-		@include respond-to(mobile) {
-			height: auto;
-		}
-	}
-	.forum & {
-		background: transparent;
-	}
+  margin: 0;
+  padding-bottom: 30px;
+  height: 100%;
+  background-position: top left;
+  &, .page-blue & {
+    background-color: #001D2F;
+    @include background-image(radial-gradient(800px 800px, #02526D, #001322));
+    @include background-image(radial-gradient(50% 50%, #02526D, #001322));
+  }
+  .page-red & {
+    background-color: #6D0206;
+    @include background-image(radial-gradient(800px 800px, #6D0206, #220000));
+    @include background-image(radial-gradient(50% 50%, #6D0206, #220000));
+    @include respond-to(mobile) {
+      height: auto;
+    }
+  }
+  .forum & {
+    background: transparent;
+  }
 }

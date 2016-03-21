@@ -1,61 +1,61 @@
 .order-title {
-	font-size: 1.2em;
-	margin-top: 0;
-	em {
-		font-size: .8em;
-	}
+  font-size: 1.2em;
+  margin-top: 0;
+  em {
+    font-size: .8em;
+  }
 }
 
 .order > ul {
-	margin: 0;
-	padding: 0;
-	list-style-type: none;
-	.forum & {
-		// background-color: lighten(#001D2F, 10%);
-		// @include background-image(radial-gradient(800px 800px, #02526D, lighten(#001322, 10%)));
-		// @include background-image(radial-gradient(50% 50%, #02526D, lighten(#001322, 10%)));
-		padding: 10px;
-		border-radius: 7px;
-		background-color: rgba($blue, 0.5);
-	}
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  .forum & {
+    // background-color: lighten(#001D2F, 10%);
+    // @include background-image(radial-gradient(800px 800px, #02526D, lighten(#001322, 10%)));
+    // @include background-image(radial-gradient(50% 50%, #02526D, lighten(#001322, 10%)));
+    padding: 10px;
+    border-radius: 7px;
+    background-color: rgba($blue, 0.5);
+  }
 }
 
 .order-item, .sortable-placeholder {
-	html:not(.forum) & {
-		cursor: move;
-	}
-	display: inline-block;
-	vertical-align: top;
-	position: relative;
-	margin-right: 9px;
-	margin-bottom: 9px;
-	&:after {
-		position: absolute;
-		content: ' ';
-		display: block;
-		width: 0;
-		height: 0;
-		border: 5px solid transparent;
-		border-left-color: #fed508;
-		top: 50%;
-		right: -14px;
-		margin-top: -2px;
-	}
-	&:last-child:after {
-		display: none;
-	}
+  html:not(.forum) & {
+    cursor: move;
+  }
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+  margin-right: 9px;
+  margin-bottom: 9px;
+  &:after {
+    position: absolute;
+    content: ' ';
+    display: block;
+    width: 0;
+    height: 0;
+    border: 5px solid transparent;
+    border-left-color: #fed508;
+    top: 50%;
+    right: -14px;
+    margin-top: -2px;
+  }
+  &:last-child:after {
+    display: none;
+  }
 }
 
 .sortable-placeholder {
-	width: 60px;
-	height: 60px;
-	border: 1px dashed gray;
+  width: 60px;
+  height: 60px;
+  border: 1px dashed gray;
 }
 
 .order-icon {
-	@extend %icon;
-	&, .forum & {
-		width: 60px;
-		height: 60px;
-	}
+  @extend %icon;
+  &, .forum & {
+    width: 60px;
+    height: 60px;
+  }
 }

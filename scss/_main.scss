@@ -1,90 +1,90 @@
 #mouse-tooltip {
-	@extend %tooltip;
-	position: absolute;
-	top: 0;
-	left: 0;
-	pointer-events: none;
-	.cost {
-		@extend %cost;
-	}
-	.info {
-		@extend %info;
-	}
+  @extend %tooltip;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  .cost {
+    @extend %cost;
+  }
+  .info {
+    @extend %info;
+  }
 }
 
 #footer {
-	.forum & {
-		@extend .hidden;
-	}
-	margin: 0 4%;
-	@include respond-to(mobile) {
-		margin: 2% 4%;
-	}
-	.page-blue & {
-		@media only screen and (min-height: 900px) {
-			position: fixed;
-			bottom: 10px;
-			left: 0;
-			right: 0;
-		}
-	}
-	text-align: center;
-	font-size: 12px;
-	font-family: verdana;
-	line-height: 13px;
-	p {
-		margin: 0 5px 0 0;
-		display: inline-block;
-	}
-	a {
-		color: #ccc;
-		&:hover, &:focus {
-			text-decoration: none;
-		}
-	}
-	form {
-		display: inline;
-		margin-left: -4px;
-	}
-	button {
-		@extend %light-button;
-	}
+  .forum & {
+    @extend .hidden;
+  }
+  margin: 0 4%;
+  @include respond-to(mobile) {
+    margin: 2% 4%;
+  }
+  .page-blue & {
+    @media only screen and (min-height: 900px) {
+      position: fixed;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+    }
+  }
+  text-align: center;
+  font-size: 12px;
+  font-family: verdana;
+  line-height: 13px;
+  p {
+    margin: 0 5px 0 0;
+    display: inline-block;
+  }
+  a {
+    color: #ccc;
+    &:hover, &:focus {
+      text-decoration: none;
+    }
+  }
+  form {
+    display: inline;
+    margin-left: -4px;
+  }
+  button {
+    @extend %light-button;
+  }
 }
 
 .icon-details {
-	@extend %info;
-	position: absolute;
-	bottom: 0;
+  @extend %info;
+  position: absolute;
+  bottom: 0;
 }
 
 #container {
-	.forum & {
-		padding-top: 0;
-		overflow: hidden;
-		width: 760px;
-		height: 500px;
-	}
+  .forum & {
+    padding-top: 0;
+    overflow: hidden;
+    width: 760px;
+    height: 500px;
+  }
 }
 
 .console-info {
-	.forum & {
-		@extend .hidden;
-	}
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	display: block;
-	height: 26px;
-	width: 40px;
-	@include respond-to(mobile) {
-		display: none;
-	}
-	background: image-url('pc_white_transparent.png') no-repeat 99% 1%;
-	.console & {
-		background: image-url('gamepad_white_transparent.png') no-repeat 99% 1%;
-	}
+  .forum & {
+    @extend .hidden;
+  }
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: block;
+  height: 26px;
+  width: 40px;
+  @include respond-to(mobile) {
+    display: none;
+  }
+  background: image-url('pc_white_transparent.png') no-repeat 99% 1%;
+  .console & {
+    background: image-url('gamepad_white_transparent.png') no-repeat 99% 1%;
+  }
 }
 
 .forum * {
-	cursor: default;
+  cursor: default;
 }
