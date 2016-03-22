@@ -298,30 +298,24 @@ leiminauts.Skill = Backbone.Model.extend({
 
 	getEffectScalingValue: function(effectName) {
 		var regexMatchesEffect = function(regex) { return regex.test(effectName); };
-		// TODO: Get regex & scaling values from spreadsheet
-		var damageRegex = [
-			/^damage$/,
-			/^([A-Za-z0-9_ ]+) damage$/,
-			/^damage over time$/
-		];
-		var survivabilityRegex = [
-			/^health$/,
-			/^([a-z0-9_ ]+) health$/,
-			/^health per ([a-z]+)$/,
-			/^heal$/,
-			/^([a-z0-9_ ]+) heal$/,
-			/^heal over time$/,
-			/^heal per ([a-z]+)$/,
-			/^shield$/,
-			/^([a-z0-9_ ]+) shield$/,
-			/^lifesteal$/,
-			/^damage immunity above$/
-		];
 
-		if (_(damageRegex).some(regexMatchesEffect)) {
-			return 0.03;
-		} else if (_(survivabilityRegex).some(regexMatchesEffect)) {
-			return 0.04;
+		var matchingRow = _(leiminauts.scaling).find(function(row) {
+			var filterKeys = _(Object.keys(row)).filter(function (s) { return s.indexOf("filter") === 0; });
+			var filters = _(filterKeys).map(function (key) {
+				return row[key];
+			}).filter(function (str) {
+				return str && str.length > 0;
+			});
+
+			// Return true if one of the filters matches the effect
+			return _(filters).some(function (filter) {
+				var regex = new RegExp("^" + filter + "$", "i"); // Case-insensitive
+				return regex.test(effectName);
+			});
+		});
+
+		if (matchingRow !== undefined) {
+			return new Number(matchingRow.value);
 		} else {
 			return undefined;
 		}
