@@ -315,7 +315,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		});
 
 		if (matchingRow !== undefined) {
-			return new Number(matchingRow.value);
+			return Number(matchingRow.value);
 		} else {
 			return undefined;
 		}
