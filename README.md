@@ -129,6 +129,7 @@ Nautsbuilder uses the following libraries:
 * [Tabletop](https://github.com/jsoma/tabletop)
 * [Fastclick](https://github.com/ftlabs/fastclick)
 * [HTML5 Sortable](http://farhadi.ir/projects/html5sortable/)
+* [Input-range-sass](https://github.com/darlanrod/input-range-sass)
 
 and the following icons & images:
 
