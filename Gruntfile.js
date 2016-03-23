@@ -91,6 +91,20 @@ module.exports = function(grunt) {
 			}
 		},
 
+		replace: {
+			indexProdTrue: {
+				src: ['index.php'],
+				dest: 'index-dist.php',
+				replacements: [{
+					from: /^(\s*define\('PROD'.*)$/gm,
+					to: '//$1'
+				},{
+					from: /^(\s*)\/\/\s*(define\('PROD',\s*true\);)$/gm,
+					to: '$1$2'
+				}]
+			},
+		},
+
 		php: {
 			test: {
 				options: {
@@ -107,24 +121,10 @@ module.exports = function(grunt) {
 					hostname: 'localhost',
 					port: 8080,
 					keepalive: true,
-					open: 'index-dist.php',
+					open: '<%= replace.indexProdTrue.dest %>',
 					silent: true
 				}
 			}
-		},
-
-		replace: {
-			indexProdTrue: {
-				src: ['index.php'],
-				dest: 'index-dist.php',
-				replacements: [{
-					from: /^(\s*define\('PROD'.*)$/gm,
-					to: '//$1'
-				},{
-					from: /^(\s*)\/\/\s*(define\('PROD',\s*true\);)$/gm,
-					to: '$1$2'
-				}]
-			},
 		}
 	});
 
