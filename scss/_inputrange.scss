@@ -51,6 +51,7 @@ $contrast: 50%;
 
 [type=range] {
   -webkit-appearance: none;
+  -moz-appearance: none;
   margin: ($thumb-height - $track-height) / 2 0;
   width: $track-width;
 
