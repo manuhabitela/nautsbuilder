@@ -20,6 +20,18 @@ module.exports = function(grunt) {
 			}
 		},
 
+		csslint: {
+			lax: {
+				options: {
+					"box-sizing": false, // affects IE6,7
+					"adjoining-classes": false, // affect IE6
+					"fallback-colors": false // affects IE6,7,8
+				},
+				formatters: ["text"],
+				src: ['css/style.css']
+			}
+		},
+
 		scsslint: {
 			allFiles: ['scss/**/*.scss'],
 			options: {
@@ -135,7 +147,9 @@ module.exports = function(grunt) {
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-compass');
+
 	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-contrib-csslint');
 	grunt.loadNpmTasks('grunt-scss-lint');
 
 	grunt.loadNpmTasks('grunt-contrib-concat');
@@ -147,8 +161,10 @@ module.exports = function(grunt) {
 
 	grunt.loadNpmTasks('grunt-contrib-clean');
 
-	grunt.registerTask('build', ['compass', 'jshint', 'scsslint']);
+	grunt.registerTask('build', ['compass']);
 	grunt.registerTask('dist', ['build', 'concat', 'uglify', 'cssmin']);
+
+	grunt.registerTask('lint', ['build', 'csslint', 'scsslint', 'jshint']);
 	grunt.registerTask('test', ['build', 'php:test']);
 	grunt.registerTask('testdist', ['dist', 'replace:indexProdTrue', 'php:testdist']);
 

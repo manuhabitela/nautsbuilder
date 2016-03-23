@@ -8,6 +8,7 @@
 
     "grunt-contrib-compass": "^1.1.1",
     "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-csslint": "^1.0.0",
     "grunt-scss-lint": "~0.3.8",
 
     "grunt-contrib-concat": "^1.0.0",
