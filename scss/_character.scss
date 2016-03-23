@@ -159,10 +159,23 @@ html:not(.forum) .char-builder.maxed-out {
     font-size: $base-font-size;
   }
   .xp-level {
+    .xp-label-float {
+      float: left;
+      line-height: 30px;
+    }
+
+    .xp-slider-float {
+      display: block;
+      overflow: hidden;
+      padding-left: 5px;
+      line-height: 30px;
+    }
+
     .xp {
       @extend %xp;
       vertical-align: middle;
     }
+
     .xp-number {
       @extend %info;
       font-size: $base-font-size;
@@ -171,6 +184,7 @@ html:not(.forum) .char-builder.maxed-out {
       text-align: right;
       vertical-align: middle;
     }
+
     .xp-slider {
       vertical-align: middle;
     }
