@@ -12,8 +12,8 @@
     "grunt-contrib-concat": "^1.0.0",
     "grunt-contrib-uglify": "^1.0.1",
     "grunt-contrib-cssmin": "^1.0.1",
+    "grunt-text-replace": "~0.4.0",
 
-    "grunt-php": "~1.5.1",
-    "load-grunt-tasks": "~3.4.1"
+    "grunt-php": "~1.5.1"
   }
 }

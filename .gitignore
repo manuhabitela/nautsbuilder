@@ -20,6 +20,7 @@ sftp-config*.json
 img/data/*.png
 img/data/*.PNG
 
+index-dist.php
 css/style.css
 data/*.json
 data/last-update.js

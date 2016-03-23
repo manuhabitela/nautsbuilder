@@ -1,6 +1,4 @@
 module.exports = function(grunt) {
-	require('load-grunt-tasks')(grunt);
-
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		meta: {
@@ -102,7 +100,31 @@ module.exports = function(grunt) {
 					open: true,
 					silent: true
 				}
+			},
+
+			testdist: {
+				options: {
+					hostname: 'localhost',
+					port: 8080,
+					keepalive: true,
+					open: 'index-dist.php',
+					silent: true
+				}
 			}
+		},
+
+		replace: {
+			indexProdTrue: {
+				src: ['index.php'],
+				dest: 'index-dist.php',
+				replacements: [{
+					from: /^(\s*define\('PROD'.*)$/gm,
+					to: '//$1'
+				},{
+					from: /^(\s*)\/\/\s*(define\('PROD',\s*true\);)$/gm,
+					to: '$1$2'
+				}]
+			},
 		}
 	});
 
@@ -114,8 +136,12 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 
+	grunt.loadNpmTasks('grunt-text-replace');
+	grunt.loadNpmTasks('grunt-php');
+
 	grunt.registerTask('build', ['compass', 'jshint', 'scsslint']);
-	grunt.registerTask('dist', ['concat', 'uglify', 'cssmin']);
+	grunt.registerTask('dist', ['build', 'concat', 'uglify', 'cssmin']);
 	grunt.registerTask('test', ['build', 'php:test']);
-	grunt.registerTask('default', ['build', 'dist']);
+	grunt.registerTask('testdist', ['dist', 'replace:indexProdTrue', 'php:testdist']);
+	grunt.registerTask('default', ['dist']);
 };
