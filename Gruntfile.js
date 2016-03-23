@@ -125,6 +125,12 @@ module.exports = function(grunt) {
 					silent: true
 				}
 			}
+		},
+
+		clean: {
+			build: ["css/"],
+			dist: ["dist/", "index-dist.php"],
+			data: ["data/*.json", "data/last-update.js", "js/nautsbuilder/spreadsheet/last-update.js"]
 		}
 	});
 
@@ -139,9 +145,12 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-text-replace');
 	grunt.loadNpmTasks('grunt-php');
 
+	grunt.loadNpmTasks('grunt-contrib-clean');
+
 	grunt.registerTask('build', ['compass', 'jshint', 'scsslint']);
 	grunt.registerTask('dist', ['build', 'concat', 'uglify', 'cssmin']);
 	grunt.registerTask('test', ['build', 'php:test']);
 	grunt.registerTask('testdist', ['dist', 'replace:indexProdTrue', 'php:testdist']);
+
 	grunt.registerTask('default', ['dist']);
 };
