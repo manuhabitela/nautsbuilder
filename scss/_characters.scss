@@ -251,9 +251,17 @@
         &:hover, &.active { border-color: transparent; opacity: 0.8; }
       }
     }
+
     .char-icon {
       height: 30px;
       width: auto;
+    }
+
+    .expansion-icon {
+      width: 16px;
+      height: 16px;
+      top: -4px;
+      right: -4px;
     }
   }
 }
