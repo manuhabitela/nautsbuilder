@@ -78,6 +78,9 @@
 			<% } %>
 			<% _.each(characters, function(charac) { %>
 				<li title="<%= charac.name %>" data-char="<%= charac.name %>" class="char <%= charac.beta && charac.beta == "1" ? 'beta' : '' %> <%= character && character.name == charac.name ? 'active' : '' %> <%= !character && currentChar && currentChar.get('name') == charac.name ? 'active' : '' %>">
+					<% if (charac.expansion && (charac.expansion === "starstorm" || charac.expansion === "overdrive")) { %>
+						<img class="expansion-icon" src="img/<%= charac.expansion %>.png" alt="">
+					<% } %>
 					<a href="#<%= _.underscored(charac.name) %><%= console ? '/console' : '' %>"><img class="char-icon" src="<%= charac.icon %>" alt=""></a>
 				</li>
 			<% }); %>
