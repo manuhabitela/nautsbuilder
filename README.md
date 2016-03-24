@@ -133,7 +133,7 @@ Nautsbuilder uses the following libraries:
 
 and the following icons & images:
 
-* Blue tick icon, red cancel icon and XP symbol from the Awesomenauts game, ©Ronimo games
+* Blue tick icon, red cancel icon, XP symbol, Starstorm and Overdrive icon from the Awesomenauts game, ©Ronimo games
 * [Home icon](http://thenounproject.com/noun/home/#icon-No293) from [The Noun Project](https://thenounproject.com/)
 * [Gamepad menu icon](http://thenounproject.com/noun/video-game-controller/#icon-No17531) by [Vardan Stepanian](http://thenounproject.com/vardst)
 * [Keyboard icon](http://thenounproject.com/noun/keyboard/#icon-No783) by [Paul te Kortschot](http://thenounproject.com/Kortschot)
