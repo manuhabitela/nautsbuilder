@@ -60,6 +60,8 @@ module.exports = function(grunt) {
 				},
 				src: [
 					'js/nautsbuilder/utils.js',
+					'js/nautsbuilder/data/effectvalue.js',
+					'js/nautsbuilder/data/effect.js',
 					'js/nautsbuilder/data/character.js',
 					'js/nautsbuilder/data/skill.js',
 					'js/nautsbuilder/data/upgrade.js',

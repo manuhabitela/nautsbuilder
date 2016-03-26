@@ -236,6 +236,8 @@
 		<script src="js/lib/fastclick.js"></script>
 		<script src="js/lib/jquery.sortable.js"></script>
 		<script src="js/nautsbuilder/utils.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/data/effectvalue.js?v=<?php echo $v ?>"></script>
+		<script src="js/nautsbuilder/data/effect.js?v=<?php echo $v ?>"></script>
 		<script src="js/nautsbuilder/data/character.js?v=<?php echo $v ?>"></script>
 		<script src="js/nautsbuilder/data/skill.js?v=<?php echo $v ?>"></script>
 		<script src="js/nautsbuilder/data/upgrade.js?v=<?php echo $v ?>"></script>

@@ -115,5 +115,27 @@ leiminauts.utils = {
 
 	dps: function(damage, speed) {
 		return leiminauts.utils.number( (parseFloat(speed)/60*parseFloat(damage)).toFixed(2) );
+	},
+
+	sum: function(list) {
+		var sum = 0;
+		var n = list.length;
+		for (var i = 0; i < n; ++i) {
+			sum += list[i];
+		}
+		return sum;
+	},
+
+	prod: function(list) {
+		var prod = 1;
+		var n = list.length;
+		for (var i = 0; i < n; ++i) {
+			prod *= list[i];
+		}
+		return prod;
+	},
+
+	transpose: function(arrayOfArrays) {
+		return _.zip.apply(_, arrayOfArrays)
 	}
 };

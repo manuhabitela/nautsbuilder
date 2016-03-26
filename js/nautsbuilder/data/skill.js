@@ -215,7 +215,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		});
 
 		// Sort each array so that divison values always come last
-		_(effects).each(function(arr, key, map) {
+		/*_(effects).each(function(arr, key, map) {
 			map[key].sort(function(left, right) {
 				var leftIsDivison = left.toString().charAt(0) == "/";
 				var rightIsDivison = right.toString().charAt(0) == "/";
@@ -229,7 +229,7 @@ leiminauts.Skill = Backbone.Model.extend({
 					return false;
 				}
 			});
-		});
+		});*/
 
 		return effects;
 	},
@@ -241,59 +241,36 @@ leiminauts.Skill = Backbone.Model.extend({
 				console.info("Empty array of steps, do nothing.");
 				return;
 			}
-
-			// Split each step into stages and parse number
-			var stagedSteps = _(steps).map(function(step) {
-				var stagedStep = String(step).split(' > ');
-				var stages = _(stagedStep).map(this.parseNumberIntoObject);
-				return stages;
-			}, this);
-
-			this.applyScaling(stagedSteps[0], effectName);
-
-			var resultStages;
-			if (stagedSteps.length == 1) {
-				resultStages = stagedSteps[0];
-			} else { // stagedSteps.length > 1
-				this.padStages(stagedSteps);
-				// Transpose stagedSteps from [steps] -> [stages] to [stages] -> [steps]
-				var steppedStages = _.zip.apply(_, stagedSteps);
-				resultStages = this.mergeSteps(steppedStages);
+			var effect = leiminauts.effect.effectFromValues(effectName, steps);
+			if (effect === undefined) {
+				return;
 			}
-
-			var resultValue = this.mergeResultStages(resultStages);
-			this.get('effects').push({"key": effectName, value: resultValue});
+			this.applyScaling(effect);
+			this.get('effects').push({"key": effect.name, value: effect.value()});
 		}, this);
 	},
 
-	parseNumberIntoObject: function(valueString) {
-		var result = {str: _.trim(valueString)};
-
-		// Matches all possible values like: "8", "+8", "+8.8", "+8%", "-2s", "/1.5", "×2", etc
-		var numberRegex = /^(\+|-|\/|@|×)?([0-9]+[\.,]?[0-9]*)([%s])?$/i;
-		var regexResults = numberRegex.exec(result.str);
-		if (regexResults !== null) {
-			result.prefix  = regexResults[1];
-			result.number  = regexResults[2] !== undefined ? Number(regexResults[2]) : undefined;
-			result.postfix = regexResults[3];
+	applyScaling: function(effect) {
+		if (!this.effectIsScaling(effect)) {
+			return;
 		}
-		result.isNumber = function() { return this.number !== undefined; };
-		result.isRelative = function() { return this.postfix === "%"; };
-		return result;
-	},
 
-	applyScaling: function(baseStages, effectName) {
-		var scalingValue = this.getEffectScalingValue(effectName);
+		var scalingValue = this.getEffectScalingValue(effect.name);
 		if (scalingValue === undefined) {
 			return;
 		}
 
 		var currentLevel = this.character.get('xp_level');
-		_(baseStages).each(function(stage) {
-			if (this.effectStageIsScaling(stage) && 1 <= currentLevel && currentLevel <= 20) {
-				stage.number *= (1 + (currentLevel-1)*scalingValue);
-			}
-		}, this);
+		if (currentLevel < 1) { currentLevel = 1; }
+		if (currentLevel > 20) { currentLevel = 20; }
+		var scalingMultiplier = (1 + (currentLevel-1)*scalingValue);
+		_(effect.effectStages).each(function(ev) {
+			ev.addMultiplier(scalingMultiplier);
+		});
+	},
+
+	effectIsScaling: function(effect) {
+		return effect.isNumeric() && !effect.isRelative() && !effect.isMultiplicative();
 	},
 
 	getEffectScalingValue: function(effectName) {
@@ -319,86 +296,6 @@ leiminauts.Skill = Backbone.Model.extend({
 		} else {
 			return undefined;
 		}
-	},
-
-	effectStageIsScaling: function(stage) {
-		return stage.isNumber() && !stage.isRelative() && stage.prefix !== "×" && stage.prefix !== "/";
-	},
-
-	// Padds each step (base and upgrades) with the respective first value to the maximum number of stages found
-	padStages: function(stagedSteps) {
-		var maxNrStages = _(stagedSteps).max(function(s) {
-			return s.length;
-		}).length;
-
-		_(stagedSteps).each(function(stages) {
-			var nrStages = stages.length;
-			for (var i = 0; i < maxNrStages - nrStages; ++i) {
-				// Shallow-copy is fine, because obj only contains primitives
-				stages.push(_.clone(stages[0]));
-			}
-		});
-	},
-
-	// Merges all steps of each stage into one
-	mergeSteps: function(steppedStages) {
-		var mergeStep = this.mergeStep; // Workaround to access this.mergeStep inside the functions
-		return _(steppedStages).map(function (steps) {
-			return _(steps).reduce(function(result, step) {
-				return mergeStep(result, step);
-			});
-		});
-	},
-
-	// Merges the step object into result.
-	// Depending on the prefix and postfix of both it performs a relative or absolute addition or multiplication.
-	mergeStep: function(result, step) {
-		var number = step.number;
-		if (step.prefix === "@") {
-			result.number = number;
-			return result;
-		}
-
-		if (step.isRelative() && !result.isRelative()) {
-			// Adapt number to reflect relative calculation to base
-			number /= 100;
-		}
-
-		if (step.prefix === "×" || step.prefix === "/") {
-			// Adapt divison to handle like multiplication
-			if (step.prefix === "/") {
-				number = 1/number;
-			}
-			result.number *= number;
-		} else {
-			// step.prefix is either "+", "-" or undefined (assume "+")
-			// Adapt substraction to handle like addition
-			if (step.prefix === "-") {
-				number = -number;
-			}
-
-			if (step.isRelative() && !result.isRelative()) {
-				// Make number relative to result
-				number *= result.number;
-			}
-
-			result.number += number;
-		}
-		return result;
-	},
-
-	mergeResultStages: function(resultStages) {
-		return _(resultStages).map(function(stage) {
-			if (stage.number !== undefined) {
-				var str = "";
-				if (stage.prefix  !== undefined && stage.prefix !== "@") str += stage.prefix;
-				str += leiminauts.utils.number(stage.number);
-				if (stage.postfix !== undefined) str += stage.postfix;
-				return str;
-			} else {
-				return stage.str;
-			}
-		}).join(' > ');
 	},
 
 	setSpecificEffects: function() {
