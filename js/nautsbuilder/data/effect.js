@@ -21,7 +21,7 @@ leiminauts.effect.NumericEffect = function(name, prefix, postfix, baseNumbers) {
   this.postfix = postfix;
 
   this.effectStages = _(baseNumbers).map(function(baseNumber) {
-    return new leiminauts.EffectValue(baseNumber);
+    return new leiminauts.EffectNumber(baseNumber);
   });
 }
 
@@ -216,14 +216,14 @@ leiminauts.effect.applyUpgrades = function(effect, upgradesMatches) {
   // [stage_0: [upgrades], ..., stage_n: [upgrades]]
   var upgradesPerStages = leiminauts.utils.transpose(upgradesMatches);
   _(upgradesPerStages).each(function(upgrades, index) {
-    var effectValue = effect.effectStages[index];
+    var effectNumber = effect.effectStages[index];
     _(upgrades).each(function(upgradeMatch) {
-      leiminauts.effect.addUpgradeToEffectValue(effectValue, upgradeMatch, effect.isRelative());
+      leiminauts.effect.addUpgradeToEffectNumber(effectNumber, upgradeMatch, effect.isRelative());
     });
   });
 }
 
-leiminauts.effect.addUpgradeToEffectValue = function(effectValue, upgradeMatch, baseIsRelative) {
+leiminauts.effect.addUpgradeToEffectNumber = function(effectNumber, upgradeMatch, baseIsRelative) {
   var number = upgradeMatch.number;
   if (upgradeMatch.prefix === "@") {
     // Do nothing, because base is fixed
@@ -236,14 +236,14 @@ leiminauts.effect.addUpgradeToEffectValue = function(effectValue, upgradeMatch, 
   }
 
   if (upgradeMatch.prefix === "×") {
-    effectValue.addMultiplicative(number - 1);
+    effectNumber.addMultiplicative(number - 1);
   } else if (upgradeMatch.prefix === "/") {
-    effectValue.addMultiplicative(1/number - 1);
+    effectNumber.addMultiplicative(1/number - 1);
   } else {
     if (upgradeMatch.postfix === "%" && !baseIsRelative) {
-      effectValue.addRelativeAdditive(number);
+      effectNumber.addRelativeAdditive(number);
     } else {
-      effectValue.addAbsoluteAdditive(number);
+      effectNumber.addAbsoluteAdditive(number);
     }
   }
 }

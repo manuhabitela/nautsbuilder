@@ -6,10 +6,10 @@
 
 // TODO: rename to EffectNumber
 leiminauts = leiminauts || {};
-leiminauts.EffectValue = function(baseValue) {
-  this.baseValue = Number(baseValue);
+leiminauts.EffectNumber = function(number) {
+  this.baseValue = Number(number);
   if (Number.isNaN(this.baseValue)) {
-    console.log("Warning: " + baseValue + " is not a number.");
+    console.log("Warning: " + number + " is not a number.");
   }
 
   this.additiveValues = [];
@@ -17,36 +17,36 @@ leiminauts.EffectValue = function(baseValue) {
   this.multipliers = [];
 }
 
-leiminauts.EffectValue.prototype.toNumber = function(value) {
-  var result = Number(value);
-  if (Number.isNaN(result)) {
+leiminauts.EffectNumber.prototype.toNumber = function(value) {
+  var number = Number(value);
+  if (Number.isNaN(number)) {
     console.log("Warning: " + value + " is not a number."); //FIXME: duplicate
   }
-  return result;
+  return number;
 }
 
-leiminauts.EffectValue.prototype.addRelativeAdditive = function(num) {
+leiminauts.EffectNumber.prototype.addRelativeAdditive = function(num) {
   var number = this.toNumber(num);
   var absolute = this.baseValue * number;
   this.addAbsoluteAdditive(absolute);
 }
 
-leiminauts.EffectValue.prototype.addAbsoluteAdditive = function(num) {
+leiminauts.EffectNumber.prototype.addAbsoluteAdditive = function(num) {
   var number = this.toNumber(num);
   this.additiveValues.push(number);
 }
 
-leiminauts.EffectValue.prototype.addMultiplicative = function(num) {
+leiminauts.EffectNumber.prototype.addMultiplicative = function(num) {
   var number = this.toNumber(num);
   this.multiplicativeValues.push(number);
 }
 
-leiminauts.EffectValue.prototype.addMultiplier = function(num) {
+leiminauts.EffectNumber.prototype.addMultiplier = function(num) {
   var number = this.toNumber(num);
   this.multipliers.push(number);
 }
 
-leiminauts.EffectValue.prototype.clone = function() {
+leiminauts.EffectNumber.prototype.clone = function() {
   var result = new leiminauts.EffectValue(this.baseValue);
   result.additiveValues = this.additiveValues.slice();
   result.multiplicativeValues = this.multiplicativeValues.slice();
@@ -54,7 +54,7 @@ leiminauts.EffectValue.prototype.clone = function() {
   return result;
 }
 
-leiminauts.EffectValue.prototype.value = function() {
+leiminauts.EffectNumber.prototype.value = function() {
   // value = (base + additives + ...) * (1 + multiplicatives + ...) * multipliers * ...
   var additives = leiminauts.utils.sum(this.additiveValues);
   var multiplicatives = leiminauts.utils.sum(this.multiplicativeValues);
