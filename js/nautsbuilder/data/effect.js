@@ -36,7 +36,7 @@ leiminauts.effect.NumericEffect.prototype.value = function() {
   return _(this.effectStages).map(function(ev) {
     var str = "";
     if (this.prefix !== "@") str += this.prefix;
-    str += leiminauts.utils.number(ev.value());
+    str += leiminauts.utils.number(ev.getValue());
     str += this.postfix;
     return str;
   }, this).join(' > ');
