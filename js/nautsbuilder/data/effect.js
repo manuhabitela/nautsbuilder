@@ -20,10 +20,10 @@ leiminauts.effect.NumericEffect = function(name, prefix, postfix, baseValues) {
   this.postfix = postfix;
 
   this.effectStages = _(baseValues).map(function(baseValue) {
-    if (baseValue instanceof leiminauts.EffectNumber) {
-      return new leiminauts.ExtendedEffectNumber(baseValue);
+    if (baseValue instanceof leiminauts.effectnumber.EffectNumber) {
+      return new leiminauts.effectnumber.ExtendedEffectNumber(baseValue);
     } else {
-      return new leiminauts.EffectNumber(baseValue);
+      return new leiminauts.effectnumber.EffectNumber(baseValue);
     }
   });
 }

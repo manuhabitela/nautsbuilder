@@ -4,10 +4,11 @@
  * copyright (c) 2013, Emmanuel Pelletier
  */
 
-// TODO: make part of 'leiminauts.effect' namespace
 leiminauts = leiminauts || {};
-leiminauts.ensureNumber = function(value) {
-  if (value instanceof leiminauts.EffectNumber) {
+leiminauts.effectnumber = leiminauts.effectnumber || {};
+
+leiminauts.effectnumber.ensureNumber = function(value) {
+  if (value instanceof leiminauts.effectnumber.EffectNumber) {
     return value;
   }
 
@@ -17,16 +18,16 @@ leiminauts.ensureNumber = function(value) {
   }
   return number;
 }
-leiminauts.getNumber = function(value) {
-  if (value instanceof leiminauts.EffectNumber) {
+leiminauts.effectnumber.getNumber = function(value) {
+  if (value instanceof leiminauts.effectnumber.EffectNumber) {
     return value.getValue();
   } else {
     return value;
   }
 }
 
-leiminauts.EffectNumber = function(number) {
-  this.baseNumber = leiminauts.ensureNumber(number);
+leiminauts.effectnumber.EffectNumber = function(number) {
+  this.baseNumber = leiminauts.effectnumber.ensureNumber(number);
 
   this.absoluteAdditives = [];
   this.relativeAdditives = [];
@@ -34,81 +35,81 @@ leiminauts.EffectNumber = function(number) {
   this.multipliers = [];
 }
 
-leiminauts.EffectNumber.prototype.getValue = function() {
-  var base = leiminauts.getNumber(this.baseNumber);
-  var relativeAdditives = _.chain(this.getRelativeAdditives()).map(leiminauts.getNumber).sum().value();
-  var absoluteAdditives = _.chain(this.getAbsoluteAdditives()).map(leiminauts.getNumber).sum().value();
-  var multiplicatives = _.chain(this.getMultiplicatives()).map(leiminauts.getNumber).sum().value();
-  var multipliers = _.chain(this.getMultipliers()).map(leiminauts.getNumber).prod().value();
+leiminauts.effectnumber.EffectNumber.prototype.getValue = function() {
+  var base = leiminauts.effectnumber.getNumber(this.baseNumber);
+  var relativeAdditives = _.chain(this.getRelativeAdditives()).map(leiminauts.effectnumber.getNumber).sum().value();
+  var absoluteAdditives = _.chain(this.getAbsoluteAdditives()).map(leiminauts.effectnumber.getNumber).sum().value();
+  var multiplicatives = _.chain(this.getMultiplicatives()).map(leiminauts.effectnumber.getNumber).sum().value();
+  var multipliers = _.chain(this.getMultipliers()).map(leiminauts.effectnumber.getNumber).prod().value();
 
   return (base * (1 + relativeAdditives) + absoluteAdditives) * (1 + multiplicatives) * multipliers;
 }
 
-leiminauts.EffectNumber.prototype.getRelativeAdditives = function() {
+leiminauts.effectnumber.EffectNumber.prototype.getRelativeAdditives = function() {
   return this.relativeAdditives;
 }
 
-leiminauts.EffectNumber.prototype.getAbsoluteAdditives = function() {
+leiminauts.effectnumber.EffectNumber.prototype.getAbsoluteAdditives = function() {
   return this.absoluteAdditives;
 }
 
-leiminauts.EffectNumber.prototype.getMultiplicatives = function() {
+leiminauts.effectnumber.EffectNumber.prototype.getMultiplicatives = function() {
   return this.multiplicatives;
 }
 
-leiminauts.EffectNumber.prototype.getMultipliers = function() {
+leiminauts.effectnumber.EffectNumber.prototype.getMultipliers = function() {
   return this.multipliers;
 }
 
-leiminauts.EffectNumber.prototype.toString = function() {
+leiminauts.effectnumber.EffectNumber.prototype.toString = function() {
   return this.getValue().toString();
 }
 
-leiminauts.EffectNumber.prototype.addRelativeAdditive = function(num) {
-  var number = leiminauts.ensureNumber(num);
+leiminauts.effectnumber.EffectNumber.prototype.addRelativeAdditive = function(num) {
+  var number = leiminauts.effectnumber.ensureNumber(num);
   this.relativeAdditives.push(number);
   return this;
 }
 
-leiminauts.EffectNumber.prototype.addAbsoluteAdditive = function(num) {
-  var number = leiminauts.ensureNumber(num);
+leiminauts.effectnumber.EffectNumber.prototype.addAbsoluteAdditive = function(num) {
+  var number = leiminauts.effectnumber.ensureNumber(num);
   this.absoluteAdditives.push(number);
   return this;
 }
 
-leiminauts.EffectNumber.prototype.addMultiplicative = function(num) {
-  var number = leiminauts.ensureNumber(num);
+leiminauts.effectnumber.EffectNumber.prototype.addMultiplicative = function(num) {
+  var number = leiminauts.effectnumber.ensureNumber(num);
   this.multiplicatives.push(number);
   return this;
 }
 
-leiminauts.EffectNumber.prototype.addMultiplier = function(num) {
-  var number = leiminauts.ensureNumber(num);
+leiminauts.effectnumber.EffectNumber.prototype.addMultiplier = function(num) {
+  var number = leiminauts.effectnumber.ensureNumber(num);
   this.multipliers.push(number);
   return this;
 }
 
 
-leiminauts.ExtendedEffectNumber = function(baseEffectNumber) {
-  leiminauts.EffectNumber.call(this, baseEffectNumber.baseNumber);
+leiminauts.effectnumber.ExtendedEffectNumber = function(baseEffectNumber) {
+  leiminauts.effectnumber.EffectNumber.call(this, baseEffectNumber.baseNumber);
   this.base = baseEffectNumber;
 }
 
-leiminauts.ExtendedEffectNumber.prototype = Object.create(leiminauts.EffectNumber.prototype);
-leiminauts.ExtendedEffectNumber.prototype.constructor = leiminauts.ExtendedEffectNumber;
+leiminauts.effectnumber.ExtendedEffectNumber.prototype = Object.create(leiminauts.effectnumber.EffectNumber.prototype);
+leiminauts.effectnumber.ExtendedEffectNumber.prototype.constructor = leiminauts.effectnumber.ExtendedEffectNumber;
 
-leiminauts.ExtendedEffectNumber.prototype.getRelativeAdditives = function() {
+leiminauts.effectnumber.ExtendedEffectNumber.prototype.getRelativeAdditives = function() {
   return this.base.getRelativeAdditives().concat(this.relativeAdditives);
 }
 
-leiminauts.ExtendedEffectNumber.prototype.getAbsoluteAdditives = function() {
+leiminauts.effectnumber.ExtendedEffectNumber.prototype.getAbsoluteAdditives = function() {
   return this.base.getAbsoluteAdditives().concat(this.absoluteAdditives);
 }
 
-leiminauts.ExtendedEffectNumber.prototype.getMultiplicatives = function() {
+leiminauts.effectnumber.ExtendedEffectNumber.prototype.getMultiplicatives = function() {
   return this.base.getMultiplicatives().concat(this.multiplicatives);
 }
 
-leiminauts.ExtendedEffectNumber.prototype.getMultipliers = function() {
+leiminauts.effectnumber.ExtendedEffectNumber.prototype.getMultipliers = function() {
   return this.base.getMultipliers().concat(this.multipliers);
 }
