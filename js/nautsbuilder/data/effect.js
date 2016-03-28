@@ -10,21 +10,23 @@ leiminauts.effect = leiminauts.effect || {};
 leiminauts.effect.Effect = function(name) {
   this.name = name;
 }
-
 leiminauts.effect.Effect.prototype.isNumeric = function() { return false; }
-leiminauts.effect.Effect.prototype.value = function() { return undefined; }
+leiminauts.effect.Effect.prototype.toString = function() { return undefined; }
 
 
-leiminauts.effect.NumericEffect = function(name, prefix, postfix, baseNumbers) {
+leiminauts.effect.NumericEffect = function(name, prefix, postfix, baseValues) {
   leiminauts.effect.Effect.call(this, name);
   this.prefix = prefix;
   this.postfix = postfix;
 
-  this.effectStages = _(baseNumbers).map(function(baseNumber) {
-    return new leiminauts.EffectNumber(baseNumber);
+  this.effectStages = _(baseValues).map(function(baseValue) {
+    if (baseValue instanceof leiminauts.EffectNumber) {
+      return new leiminauts.ExtendedEffectNumber(baseValue);
+    } else {
+      return new leiminauts.EffectNumber(baseValue);
+    }
   });
 }
-
 leiminauts.effect.NumericEffect.prototype = Object.create(leiminauts.effect.Effect.prototype);
 leiminauts.effect.NumericEffect.prototype.constructor = leiminauts.effect.NumericEffect;
 leiminauts.effect.NumericEffect.prototype.isNumeric = function() { return true; }
@@ -32,7 +34,7 @@ leiminauts.effect.NumericEffect.prototype.isRelative = function() { return this.
 leiminauts.effect.NumericEffect.prototype.isMultiplicative = function() {
   return this.prefix === "×" || this.prefix === "/";
 }
-leiminauts.effect.NumericEffect.prototype.value = function() {
+leiminauts.effect.NumericEffect.prototype.toString = function() {
   return _(this.effectStages).map(function(ev) {
     var str = "";
     if (this.prefix !== "@") str += this.prefix;
@@ -42,14 +44,22 @@ leiminauts.effect.NumericEffect.prototype.value = function() {
   }, this).join(' > ');
 }
 
+
+// Creates a new NumericEffect that extends & references this.
+// Useful for creating effects that are tied to others, e.g. DPS of damage
+leiminauts.effect.NumericEffect.prototype.extend = function(effectName) {
+  return new leiminauts.effect.NumericEffect(effectName, this.prefix, this.postfix, this.effectStages);
+}
+
+
 leiminauts.effect.StringEffect = function(name, value) {
   leiminauts.effect.Effect.call(this, name);
   this._value = value;
 }
-
 leiminauts.effect.StringEffect.prototype = Object.create(leiminauts.effect.Effect.prototype);
 leiminauts.effect.StringEffect.prototype.constructor = leiminauts.effect.StringEffect;
-leiminauts.effect.StringEffect.prototype.value = function() { return String(this._value); }
+leiminauts.effect.StringEffect.prototype.toString = function() { return String(this._value); }
+
 
 leiminauts.effect.numberRegex = /^(\+|-|\/|×|@)?([0-9]*\.?[0-9]+)([%s])?$/i;
 leiminauts.effect.matchNumberRegex = function(number) {
@@ -110,12 +120,10 @@ leiminauts.effect.existsUndefinedMatch = function(stagedMatches) {
 }
 
 leiminauts.effect.stringEffectFromValues = function(effectName, values) {
-  var baseValue = values.shift();
-  if (values.length > 0) {
-    console.log("Warning: unable to merge non-numeric effect " + effectName + ": " + baseValue + "'"
-      + " with upgrades '" + values + "'. Ignoring upgrades...");
+  if (values.length > 1) {
+    console.log("Warning: unable to merge non-numeric effect " + effectName + ": " + values + "'. Ignoring upgrades...");
   }
-  return new leiminauts.effect.StringEffect(effectName, baseValue);
+  return new leiminauts.effect.StringEffect(effectName, values[0]);
 }
 
 leiminauts.effect.numericEffectFromValues = function(effectName, stagedMatches) {
@@ -214,7 +222,7 @@ leiminauts.effect.applyUpgrades = function(effect, upgradesMatches) {
   // Transpose upgradesMatches from
   // [upgrade_0: [stages], ..., upgrade_n: [stages]] to
   // [stage_0: [upgrades], ..., stage_n: [upgrades]]
-  var upgradesPerStages = leiminauts.utils.transpose(upgradesMatches);
+  var upgradesPerStages = _(upgradesMatches).transpose();
   _(upgradesPerStages).each(function(upgrades, index) {
     var effectNumber = effect.effectStages[index];
     _(upgrades).each(function(upgradeMatch) {

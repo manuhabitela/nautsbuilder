@@ -246,12 +246,12 @@ leiminauts.Skill = Backbone.Model.extend({
 				return;
 			}
 			this.applyScaling(effect);
-			this.get('effects').push({"key": effect.name, value: effect.value()});
+			this.get('effects').push({"key": effect.name, "value": effect.toString()});
 		}, this);
 	},
 
 	applyScaling: function(effect) {
-		if (!this.effectIsScaling(effect)) {
+		if (!this.effectIsScalable(effect)) {
 			return;
 		}
 
@@ -269,7 +269,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		});
 	},
 
-	effectIsScaling: function(effect) {
+	effectIsScalable: function(effect) {
 		return effect.isNumeric() && !effect.isRelative() && !effect.isMultiplicative();
 	},
 
@@ -278,11 +278,11 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		var matchingRow = _(leiminauts.scaling).find(function(row) {
 			var filterKeys = _(Object.keys(row)).filter(function (s) { return s.indexOf("filter") === 0; });
-			var filters = _(filterKeys).map(function (key) {
+			var filters = _.chain(filterKeys).map(function (key) {
 				return row[key];
 			}).filter(function (str) {
 				return str && str.length > 0;
-			});
+			}).value();
 
 			// Return true if one of the filters matches the effect
 			return _(filters).some(function (filter) {

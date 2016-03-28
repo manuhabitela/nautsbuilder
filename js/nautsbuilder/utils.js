@@ -44,6 +44,48 @@ _.mixin({
 	italics: function(string) {
 		if (!string) return '';
 		return string.replace(/\n/g, "<br>").replace(/\*(.*)\*/, '<em>$1</em>');
+	},
+
+	sum: function(obj, iterator, context) {
+		if (!iterator && _.isEmpty(obj)) {
+			return 0;
+		}
+
+		var result = 0;
+		if (!iterator && _.isArray(obj)) {
+			var n = obj.length;
+			for (var i = 0; i < n; ++i) {
+				result += obj[i];
+			}
+		} else {
+			obj.each(function(value, index, list) {
+				result += iterator ? iterator.call(context, value, index, list) : value;
+			});
+		}
+		return result;
+	},
+
+	prod: function(obj, iterator, context) {
+		if (!iterator && _.isEmpty(obj)) {
+			return 1;
+		}
+
+		var result = 1;
+		if (!iterator && _.isArray(obj)) {
+			var n = obj.length;
+			for (var i = 0; i < n; ++i) {
+				result *= obj[i];
+			}
+		} else {
+			obj.each(function(value, index, list) {
+				result *= iterator ? iterator.call(context, value, index, list) : value;
+			});
+		}
+		return result;
+	},
+
+	transpose: function(arrayOfArrays) {
+		return _.zip.apply(_, arrayOfArrays)
 	}
 });
 
@@ -115,27 +157,5 @@ leiminauts.utils = {
 
 	dps: function(damage, speed) {
 		return leiminauts.utils.number( (parseFloat(speed)/60*parseFloat(damage)).toFixed(2) );
-	},
-
-	sum: function(list) {
-		var sum = 0;
-		var n = list.length;
-		for (var i = 0; i < n; ++i) {
-			sum += list[i];
-		}
-		return sum;
-	},
-
-	prod: function(list) {
-		var prod = 1;
-		var n = list.length;
-		for (var i = 0; i < n; ++i) {
-			prod *= list[i];
-		}
-		return prod;
-	},
-
-	transpose: function(arrayOfArrays) {
-		return _.zip.apply(_, arrayOfArrays)
 	}
 };

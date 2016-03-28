@@ -4,13 +4,29 @@
  * copyright (c) 2013, Emmanuel Pelletier
  */
 
-// TODO: rename to EffectNumber
+// TODO: make part of 'leiminauts.effect' namespace
 leiminauts = leiminauts || {};
-leiminauts.EffectNumber = function(number) {
-  this.baseNumber = Number(number);
-  if (Number.isNaN(this.baseNumber)) {
-    console.log("Warning: " + number + " is not a number."); //FIXME: duplicate
+leiminauts.ensureNumber = function(value) {
+  if (value instanceof leiminauts.EffectNumber) {
+    return value;
   }
+
+  var number = Number(value);
+  if (Number.isNaN(number)) {
+    console.log("Warning: " + value + " is not a number."); //FIXME: duplicate
+  }
+  return number;
+}
+leiminauts.getNumber = function(value) {
+  if (value instanceof leiminauts.EffectNumber) {
+    return value.getValue();
+  } else {
+    return value;
+  }
+}
+
+leiminauts.EffectNumber = function(number) {
+  this.baseNumber = leiminauts.ensureNumber(number);
 
   this.absoluteAdditives = [];
   this.relativeAdditives = [];
@@ -19,11 +35,11 @@ leiminauts.EffectNumber = function(number) {
 }
 
 leiminauts.EffectNumber.prototype.getValue = function() {
-  var base = this.baseNumber;
-  var relativeAdditives = leiminauts.utils.sum(this.getRelativeAdditives());
-  var absoluteAdditives = leiminauts.utils.sum(this.getAbsoluteAdditives());
-  var multiplicatives = leiminauts.utils.sum(this.getMultiplicatives());
-  var multipliers = leiminauts.utils.prod(this.getMultipliers());
+  var base = leiminauts.getNumber(this.baseNumber);
+  var relativeAdditives = _.chain(this.getRelativeAdditives()).map(leiminauts.getNumber).sum().value();
+  var absoluteAdditives = _.chain(this.getAbsoluteAdditives()).map(leiminauts.getNumber).sum().value();
+  var multiplicatives = _.chain(this.getMultiplicatives()).map(leiminauts.getNumber).sum().value();
+  var multipliers = _.chain(this.getMultipliers()).map(leiminauts.getNumber).prod().value();
 
   return (base * (1 + relativeAdditives) + absoluteAdditives) * (1 + multiplicatives) * multipliers;
 }
@@ -48,35 +64,26 @@ leiminauts.EffectNumber.prototype.toString = function() {
   return this.getValue().toString();
 }
 
-
-leiminauts.EffectNumber.prototype.toNumber = function(value) { // Move to utils?
-  var number = Number(value);
-  if (Number.isNaN(number)) {
-    console.log("Warning: " + value + " is not a number."); //FIXME: duplicate
-  }
-  return number;
-}
-
 leiminauts.EffectNumber.prototype.addRelativeAdditive = function(num) {
-  var number = this.toNumber(num);
+  var number = leiminauts.ensureNumber(num);
   this.relativeAdditives.push(number);
   return this;
 }
 
 leiminauts.EffectNumber.prototype.addAbsoluteAdditive = function(num) {
-  var number = this.toNumber(num);
+  var number = leiminauts.ensureNumber(num);
   this.absoluteAdditives.push(number);
   return this;
 }
 
 leiminauts.EffectNumber.prototype.addMultiplicative = function(num) {
-  var number = this.toNumber(num);
+  var number = leiminauts.ensureNumber(num);
   this.multiplicatives.push(number);
   return this;
 }
 
 leiminauts.EffectNumber.prototype.addMultiplier = function(num) {
-  var number = this.toNumber(num);
+  var number = leiminauts.ensureNumber(num);
   this.multipliers.push(number);
   return this;
 }
