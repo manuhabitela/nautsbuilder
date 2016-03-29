@@ -1,7 +1,7 @@
 {
   "name": "nautsbuilder",
   "title": "Nautsbuilder - Awesomenauts build maker",
-  "version": "0.16.1",
+  "version": "0.16.2",
   "private": true,
   "devDependencies": {
     "grunt": "^1.0.0",
