@@ -32,3 +32,4 @@ leiminauts.lastServerDataUpdate = " . time()*1000 . "; //" . date('Y-m-d H:i:s')
 		file_put_contents(dirname(__FILE__).'/last-update.js', $lastUpdate);
 	}
 }
+?>
