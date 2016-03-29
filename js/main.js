@@ -48,7 +48,10 @@ $(function() {
 			$.ajax({url: dataUrl('upgrades'), dataType: "json"}),
 			$.ajax({url: dataUrl('skills'), dataType: "json"}),
 			$.ajax({url: dataUrl('scaling'), dataType: "json"})
-		).done(function(chars, ups, sks, scl) {
+		).fail(function(jqXHR, textStatus, errorThrown) {
+			console.log("AJAX request for loading JSON files failed:");
+			console.log(textStatus, errorThrown);
+		}).done(function(chars, ups, sks, scl) {
 			var data = { characters: chars[0], skills: sks[0], upgrades: ups[0], scaling: scl[0] };
 			if (Modernizr.localstorage && useLocalStorage) {
 				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.characters', JSON.stringify(data.characters));
