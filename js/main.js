@@ -42,14 +42,15 @@ $(function() {
 		Backbone.history.start({pushState: false});
 	};
 	var dataUrl = function(type) { return './data/' + spreadsheet.name + '-' + type + '.json'; };
+	var saveUrl = function(jqXHR, settings) { jqXHR.url = settings.url; };
 	var loadData = function() {
 		$.when(
-			$.ajax({url: dataUrl('characters'), dataType: "json"}),
-			$.ajax({url: dataUrl('upgrades'), dataType: "json"}),
-			$.ajax({url: dataUrl('skills'), dataType: "json"}),
-			$.ajax({url: dataUrl('scaling'), dataType: "json"})
+			$.ajax({url: dataUrl('characters'), dataType: "json", beforeSend: saveUrl}),
+			$.ajax({url: dataUrl('upgrades'), dataType: "json", beforeSend: saveUrl}),
+			$.ajax({url: dataUrl('skills'), dataType: "json", beforeSend: saveUrl}),
+			$.ajax({url: dataUrl('scaling'), dataType: "json", beforeSend: saveUrl})
 		).fail(function(jqXHR, textStatus, errorThrown) {
-			console.log("AJAX request for loading JSON files failed:");
+			console.log("AJAX request for loading JSON file '" + jqXHR.url + "' failed:");
 			console.log(textStatus, errorThrown);
 		}).done(function(chars, ups, sks, scl) {
 			var data = { characters: chars[0], skills: sks[0], upgrades: ups[0], scaling: scl[0] };
@@ -79,7 +80,7 @@ $(function() {
 			var skills = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.skills');
 			var upgrades = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.upgrades');
 			var scaling = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.scaling');
-			_([characters, skills, upgrades]).each(function(data) {
+			_([characters, skills, upgrades, scaling]).each(function(data) {
 				if (!data || data === "undefined") {
 					dataOk = false;
 					return false;
