@@ -21,11 +21,11 @@ leiminauts.lastServerDataUpdate = " . time()*1000 . "; //" . date('Y-m-d H:i:s')
 		$testJson = json_decode($json);
 		$log .= "[" . date('Y-m-d H:i:s') . "]: " . $sheet . " " . $type;
 
-		if ($json === '') {
+		if (trim($json) === "") {
 			// json_decode accepts an empty string which is not valid JSON.
 			// In order to avoid this, we store an empty list.
 			file_put_contents(dirname(__FILE__).'/'.$sheet.'-'.$type.'.json', '[]');
-			$log .= " warning: data was empty!";
+			$log .= " warning: data '".$json."' was empty!";
 		} else if (json_last_error() == JSON_ERROR_NONE) {
 			file_put_contents(dirname(__FILE__).'/'.$sheet.'-'.$type.'.json', $json);
 			$log .= " ok!";
