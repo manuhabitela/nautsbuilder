@@ -142,7 +142,7 @@ module.exports = function(grunt) {
 		clean: {
 			build: ["css/"],
 			dist: ["dist/", "index-dist.php"],
-			data: ["data/*.json", "data/last-update.js", "js/nautsbuilder/spreadsheet/last-update.js"]
+			data: ["data/*.json", "data/last-update.js", "data/last-update.log", "js/nautsbuilder/spreadsheet/last-update.js"]
 		}
 	});
 
