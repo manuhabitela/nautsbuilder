@@ -26,7 +26,7 @@ $(function() {
 	var dev = false && (window.location.hostname === "localhost");
 	var useLocalStorage = true;
 	leiminauts.sheets = [
-		{ name: "steam", key: "1-CvReAzr70XVb11kK76OKRRflQU7KZiiONv6g1j4pq8" },
+		{ name: "steam", key: "0AuPP-DBESPOedF9hckdzMWVhc2c3Rkk1R2RTa1pUdWc" },
 		//dev spreadsheet: 0AuPP-DBESPOedGZHb1Ata1hKdFhSRHVzamN0WVUwMWc
 		//here putting steam spreadsheet in the dev sheet to load steam server data when on dev instead of localstorage
 		{ name: "dev", key: "0AuPP-DBESPOedHBBU1FCcWl2ZTZDSUdwM0JPcW0wV2c" },
