@@ -24,5 +24,6 @@ index-dist.php
 css/style.css
 data/*.json
 data/last-update.js
+data/last-update.log
 dist/
 js/nautsbuilder/spreadsheet/last-update.js
