@@ -28,7 +28,12 @@ leiminauts.lastServerDataUpdate = " . time()*1000 . "; //" . date('Y-m-d H:i:s')
 			$log .= " warning: data '".$json."' was empty!";
 		} else if (json_last_error() == JSON_ERROR_NONE) {
 			file_put_contents(dirname(__FILE__).'/'.$sheet.'-'.$type.'.json', $json);
-			$log .= " ok!";
+			$log .= " ok";
+			if ($type === 'scaling') {
+				$log .= ": ".print_r($json, true);
+			} else {
+				$log .= "!";
+			}
 		} else {
 			$errors++;
 			$log .= " error '" . json_last_error() . "':\n";
