@@ -4,7 +4,7 @@
  * copyright (c) 2013, Emmanuel Pelletier
  */
 
-var leiminauts = leiminauts || {};
+window.leiminauts = window.leiminauts || {};
 leiminauts.effectnumber = leiminauts.effectnumber || {};
 
 // FIXME: check if type checks are needed?
