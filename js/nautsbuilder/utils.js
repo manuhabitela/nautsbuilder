@@ -84,6 +84,10 @@ _.mixin({
 		return result;
 	},
 
+	avg: function(obj, iterator, context) {
+		return _.sum(obj, iterator, context) / _.size(obj);
+	},
+
 	transpose: function(arrayOfArrays) {
 		return _.zip.apply(_, arrayOfArrays)
 	}
