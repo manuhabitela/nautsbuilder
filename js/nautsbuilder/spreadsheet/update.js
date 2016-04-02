@@ -24,6 +24,7 @@
 				type: 'POST',
 				url: '../../../data/update.php',
 				data: data,
+				success: function(returnData, textStatus, jqXHR) { console.log(returnData); },
 				complete: onSheetDataUpdated
 			});
 		};

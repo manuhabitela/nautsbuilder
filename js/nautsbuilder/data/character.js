@@ -63,7 +63,6 @@ leiminauts.CharactersData = Backbone.Collection.extend({
 			this.data = opts.data;
 			this.console = opts.console || false;
 
-			var characters, skills, upgrades;
 			if (this.data) {
 				leiminauts.characters = this.data.characters;
 				leiminauts.skills = this.data.skills;
