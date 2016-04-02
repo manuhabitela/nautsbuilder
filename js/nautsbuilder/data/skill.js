@@ -246,7 +246,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				return;
 			}
 			this.applyScaling(effect);
-			this.get('effects').push({"key": effect.name, "value": effect.toString()});
+			this.get('effects').push({"key": effect.key, "value": effect.value});
 		}, this);
 	},
 
@@ -264,8 +264,8 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (currentLevel < 1) { currentLevel = 1; }
 		if (currentLevel > 20) { currentLevel = 20; }
 		var scalingMultiplier = (1 + (currentLevel-1)*scalingValue);
-		_(effect.effectStages).each(function(ev) {
-			ev.addMultiplier(scalingMultiplier);
+		_(effect.effectNumbers).each(function(en) {
+			en.multiply(scalingMultiplier); // FIXME: does not work if effectNumber is not instance of CalculatedNumber!
 		});
 	},
 
