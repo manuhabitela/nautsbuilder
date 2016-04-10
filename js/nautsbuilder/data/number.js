@@ -19,27 +19,6 @@ window.leiminauts = window.leiminauts || {};
 leiminauts.number = leiminauts.number || {};
 
 /**
- * Throws a new Error indicating that the given method is not implemented.
- * @param funcName Name of the to be implemented method
- */
-leiminauts.number.notImplemented = function(funcName) {
-  throw new Error(funcName + "not implemented by subclass!");
-};
-
-/**
- * Creates the prototype of subclass from class and returns it.
- *
- * @param clazz The base class
- * @param subClazz The class that should extend from clazz
- * @returns {*} the prototype of the subclass
- */
-leiminauts.number.extendPrototype = function(clazz, subClazz) {
-  subClazz.prototype = Object.create(clazz.prototype);
-  subClazz.prototype.constructor = subClazz;
-  return subClazz.prototype;
-};
-
-/**
  * Represents a numeric object that can be evaluated to receive a value. Each subclass needs to implement the property
  * 'value'.
  * @class
@@ -53,7 +32,7 @@ leiminauts.number.Number = (function() {
    * @abstract
    */
   Object.defineProperty(Number.prototype, 'value', {
-    get: function() { leiminauts.number.notImplemented("Number.prototype.value"); }
+    get: function() { leiminauts.utils.throwNotImplemented("Number.prototype.value"); }
   });
 
   /**
@@ -118,7 +97,7 @@ leiminauts.number.Value = (function() {
     this.length = this.stages.length;
   };
 
-  var proto = leiminauts.number.extendPrototype(leiminauts.number.Number, Value);
+  var proto = leiminauts.utils.extendPrototype(leiminauts.number.Number, Value);
 
   Value.ZERO = new Value(0);
   Value.ONE = new Value(1);
@@ -256,7 +235,7 @@ leiminauts.number.AggregatedNumber = (function() {
     this.aggregate = aggregate;
   };
 
-  var proto = leiminauts.number.extendPrototype(leiminauts.number.Number, AggregatedNumber);
+  var proto = leiminauts.utils.extendPrototype(leiminauts.number.Number, AggregatedNumber);
 
   /**
    * @property {leiminauts.number.Value} The aggregate of the stages of the given number.
@@ -353,7 +332,7 @@ leiminauts.number.CalculatedNumber = (function() {
     this._additiveMultipliers = [];
     this._multipliers = [];
   };
-  var proto = leiminauts.number.extendPrototype(leiminauts.number.Number, CalculatedNumber);
+  var proto = leiminauts.utils.extendPrototype(leiminauts.number.Number, CalculatedNumber);
 
   Object.defineProperties(proto, {
     absoluteAdditions:   { get: function() { return this._absoluteAdditions; } },
@@ -545,7 +524,7 @@ leiminauts.number.ExtendedCalculatedNumber = (function() {
     leiminauts.number.CalculatedNumber.call(this, proxy.instanceCount, proxy.base);
     this.proxy = proxy;
   };
-  var proto = leiminauts.number.extendPrototype(leiminauts.number.CalculatedNumber, ExtendedCalculatedNumber);
+  var proto = leiminauts.utils.extendPrototype(leiminauts.number.CalculatedNumber, ExtendedCalculatedNumber);
 
   // Overwrite the getter properties to include the proxy's as well as the Numbers from this instance
   Object.defineProperties(proto, {
