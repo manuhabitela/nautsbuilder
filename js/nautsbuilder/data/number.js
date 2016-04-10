@@ -547,7 +547,7 @@ leiminauts.number.ExtendedCalculatedNumber = (function() {
   };
   var proto = leiminauts.number.extendPrototype(leiminauts.number.CalculatedNumber, ExtendedCalculatedNumber);
 
-  // Overwrite the getter properties to include the proxy's as well as the Numbers from this
+  // Overwrite the getter properties to include the proxy's as well as the Numbers from this instance
   Object.defineProperties(proto, {
     absoluteAdditions:   { get: function() { return this.proxy.absoluteAdditions.concat(this._absoluteAdditions); } },
     relativeAdditions:   { get: function() { return this.proxy.relativeAdditions.concat(this._relativeAdditions); } },
