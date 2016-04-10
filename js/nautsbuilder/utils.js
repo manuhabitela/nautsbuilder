@@ -174,7 +174,7 @@ leiminauts.utils = {
 	 * @throws {Error} Always throws indicating that the given method is not implemented.
 	 */
 	throwNotImplemented: function(funcName) {
-		throw new Error(funcName + "not implemented by subclass!");
+		throw new Error(funcName + " not implemented by subclass!");
 	},
 
 	/**
