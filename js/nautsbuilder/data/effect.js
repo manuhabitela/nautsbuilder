@@ -8,67 +8,155 @@ window.leiminauts = window.leiminauts || {};
 leiminauts.effect = leiminauts.effect || {};
 
 leiminauts.effect.Effect = (function() {
-  var Effect = function(name) {
-    this.name = name;
+  var Effect = function(effectName) {
+    this.name = effectName;
+    this.key = this.name;
   };
   var proto = Effect.prototype;
 
   Object.defineProperties(proto, {
-    key: { get: function() { return this.name; } },
-    value: { get: function() { return undefined; } }
+    'value': { get: function() { leiminauts.utils.throwNotImplemented("Effect.prototype.value"); } }
   });
 
-  proto.isNumeric = function() { return false; }
+  proto.toString = function() { return this.key + ": " + this.value; };
+  proto.isScalable = function() { return false; };
 
   return Effect;
 })();
 
 
 leiminauts.effect.NumericEffect = (function() {
-  var NumericEffect = function(name, prefix, postfix, effectNumbers) {
-    leiminauts.effect.Effect.call(this, name);
+  var NumericEffect = function(effectName, prefix, postfix, number) {
+    leiminauts.effect.Effect.call(this, effectName);
     this.prefix = prefix;
     this.postfix = postfix;
-    this.effectNumbers = effectNumbers;
-  }
-  NumericEffect.prototype = Object.create(leiminauts.effect.Effect.prototype);
-  var proto = NumericEffect.prototype;
-  proto.constructor = NumericEffect;
+    console.assert(number instanceof leiminauts.number.Number, number);
+    this.number = number;
+  };
+  var proto = leiminauts.utils.extendPrototype(leiminauts.effect.Effect, NumericEffect);
 
-  Object.defineProperty(proto, "value", {
-    get: function() { return this.numbersToString(); }
-  });
+  Object.defineProperty(proto, 'value', { get: function() {
+    var prefix = this.prefix === "@" ? "" : this.prefix;
+    return this.number.toString(prefix, this.postfix);
+  }});
 
-  proto.isNumeric = function() { return true; }
-  proto.isRelative = function() { return this.postfix === "%"; }
-  proto.isMultiplicative = function() { return this.prefix === "×" || this.prefix === "/"; }
-  proto.numbersToString = function() {
-    return _(this.effectNumbers.valuesOf()).map(function(num) {
-      var str = "";
-      if (this.prefix !== "@") str += this.prefix;
-      str += leiminauts.utils.number(num);
-      str += this.postfix;
-      return str;
-    }, this).join(' > ');
+  proto.isScalable = function() { return !this.isRelative() && !this.isMultiplicative(); };
+  proto.isRelative = function() { return this.postfix === "%"; };
+  proto.isMultiplicative = function() { return this.prefix === "×" || this.prefix === "/"; };
+  proto.applyScaling = function(currentLevel, scalingValue) {
+    if (currentLevel < 1) { currentLevel = 1; }
+    if (currentLevel > 20) { currentLevel = 20; }
+
+    var scalingMultiplier = (1 + (currentLevel-1)*scalingValue);
+
+    if (!(this.number instanceof leiminauts.number.CalculatedNumber)) {
+      console.log("Info: trying to scale a Number that is not a CalculatedNumber", this.number);
+      this.number = new leiminauts.number.CalculatedNumber(1, this.number);
+    }
+    
+    this.number.multiply(scalingMultiplier);
   };
 
   return NumericEffect;
 })();
 
 leiminauts.effect.StringEffect = (function() {
-  var StringEffect = function(name, value) {
-    leiminauts.effect.Effect.call(this, name);
-    this._value = value;
+  var StringEffect = function(effectName, value) {
+    leiminauts.effect.Effect.call(this, effectName);
+    Object.defineProperty(this, 'value', { get: function() {
+      return value;
+    }});
   };
-  StringEffect.prototype = Object.create(leiminauts.effect.Effect.prototype);
-  var proto = StringEffect.prototype;
-  proto.constructor = StringEffect;
-
-  Object.defineProperty(proto, 'value', {
-    get: function() { return this._value; }
-  });
-
+  leiminauts.utils.extendPrototype(leiminauts.effect.Effect, StringEffect);
   return StringEffect;
+})();
+
+/**
+ * Given a string listing all effects returns a list of Effects.
+ * @param {string} effectsString a string containing key:value pairs separated by ';'
+ * @returns {leiminauts.effect.Effect[]} list of resulting Effects
+ */
+leiminauts.effect.effectsFromString = function(effectsString) {
+  var keyValuePairs = leiminauts.utils.treatEffects(effectsString);
+  return _(keyValuePairs).map(function(pair) {
+    return leiminauts.effect.effectFromString(pair.key, pair.value);
+  });
+};
+
+/**
+ * Creates an Effect from a given name and value
+ * @param {string} name effect name
+ * @param {value} value effect value
+ * @returns {leiminauts.effect.Effect} a NumericEffect if value is a list of numbers, a StringEffect otherwise.
+ */
+leiminauts.effect.effectFromString = (function() {
+  var effectFromString = function(effectName, effectValue) {
+    var stages = String(effectValue).split('>');
+    var matches = _(stages).map(function(stage) {
+      return matchNumberRegex(_.trim(stage));
+    });
+
+    if (_(matches).contains(undefined)) {
+      // Found a non-numeric match
+      return new leiminauts.effect.StringEffect(effectName, effectValue);
+    }
+
+    var notUndefined = function(e) { return e !== undefined; };
+    var prefix = _(matches).pluck('prefix').find(notUndefined);
+    var postfix = _(matches).pluck('postfix').find(notUndefined);
+    var value = new leiminauts.number.Value(_(matches).pluck('number'));
+    return new leiminauts.effect.NumericEffect(effectName, prefix, postfix, value);
+  };
+
+  var numberRegex = /^(\+|-|\/|×|@)?([0-9]*\.?[0-9]+)([%s])?$/i;
+  // Returns the results of matching a number with the regex
+  var matchNumberRegex = function(number) {
+    var regexResults = numberRegex.exec(number);
+    if (regexResults === null) {
+      return undefined;
+    }
+
+    if (regexResults[1] === undefined) {
+      regexResults[1] = "";
+    } else if (regexResults[1] === "-") {
+      // Remove '-' from prefix group and add it to number group
+      regexResults[1] = "";
+      regexResults[2] = "-" + regexResults[2];
+    }
+
+    if (regexResults[3] === undefined) {
+      regexResults[3] = "";
+    }
+
+    return {
+      prefix: regexResults[1],
+      number: Number(regexResults[2]),
+      postfix: regexResults[3]
+    };
+  };
+
+  return effectFromString;
+})();
+
+leiminauts.effect.mergeEffects = (function() {
+  var mergeEffects = function(effects) {
+    // TODO: implement method
+
+    var first = effects[0];
+    if (first instanceof leiminauts.effect.StringEffect) {
+      return first;
+    }
+
+    var value = first.number.value;
+    var name = first.name;
+    var prefix = first.prefix;
+    var postfix = first.postfix;
+    var number = new leiminauts.number.CalculatedNumber(1, value);
+    var effect = new leiminauts.effect.NumericEffect(name, prefix, postfix, number);
+    return effect;
+  };
+
+  return mergeEffects;
 })();
 
 leiminauts.effect.effectFromValues = (function() {

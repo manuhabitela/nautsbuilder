@@ -93,7 +93,6 @@ leiminauts.number.Value = (function() {
       this.stages = leiminauts.utils.argumentsToArray(arguments);
     }
 
-    this.value = this;
     this.length = this.stages.length;
   };
 
@@ -101,6 +100,10 @@ leiminauts.number.Value = (function() {
 
   Value.ZERO = new Value(0);
   Value.ONE = new Value(1);
+
+  Object.defineProperty(proto, 'value', { get: function() {
+    return this;
+  }});
 
   /**
    * @param {string} [prefix] prefix for each number
