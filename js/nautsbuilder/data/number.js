@@ -56,10 +56,12 @@ leiminauts.number.Number = (function() {
   });
 
   /**
-   * @returns {string} the string representation of the value
+   * @param {string} [prefix] prefix for each number
+   * @param {string} [postfix] postfix for each number
+   * @returns {string} the string representation of the value with optional prefix and postfix for the individual numbers
    */
-  Number.prototype.toString = function() {
-    return this.value.toString();
+  Number.prototype.toString = function(prefix, postfix) {
+    return this.value.toString(prefix, postfix);
   };
 
   /**
@@ -429,20 +431,22 @@ leiminauts.number.CalculatedNumber = (function() {
   });
 
   /**
+   * @param {string} [prefix] prefix for each number
+   * @param {string} [postfix] postfix for each number
    * @returns {string} the string representation of this number. If an instanceValue with a count higher than one is
    *    found, this value is additionally displayed
    * @override
    */
-  proto.toString = function() {
+  proto.toString = function(prefix, postfix) {
     var instance = this.instanceValue;
     var totalValue = instance.value.multiply(instance.count);
 
-    var str = totalValue.toString();
+    var str = totalValue.toString(prefix, postfix);
     if (instance.count > 1) {
       str += " (";
 
       if (instance.value.length > 1) str += '[';
-      str += instance.value.toString();
+      str += instance.value.toString(prefix, postfix);
       if (instance.value.length > 1) str += ']';
 
       str += '×';
