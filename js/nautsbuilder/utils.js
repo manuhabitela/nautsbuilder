@@ -163,7 +163,9 @@ leiminauts.utils = {
 		return leiminauts.utils.number( (parseFloat(speed)/60*parseFloat(damage)).toFixed(2) );
 	},
 
-	argumentsToArray: function(args) {
-		return Array.prototype.slice.call(args);
+	//converts the arguments object of a function into an array, starting from the index'th parameter
+	argumentsToArray: function(args, index) {
+		var index = index || 0;
+		return Array.prototype.slice.call(args, index);
 	}
 };

@@ -50,6 +50,7 @@ leiminauts.number.Number = (function() {
   /**
    * @property {leiminauts.number.Value}
    * @name Number#value
+   * @abstract
    */
   Object.defineProperty(Number.prototype, 'value', {
     get: function() { leiminauts.number.notImplemented("Number.prototype.value"); }
@@ -105,15 +106,16 @@ leiminauts.number.Value = (function() {
    */
   var Value = function(values) {
     leiminauts.number.Number.call(this);
-    var stages;
+
     if (_.isArray(values)) {
-      stages = values;
+      this.stages = values;
     } else {
       // If stages is not an array, convert the arguments object into an array
-      stages = leiminauts.utils.argumentsToArray(arguments);
+      this.stages = leiminauts.utils.argumentsToArray(arguments);
     }
 
-    Object.defineProperty(this, 'stages', { get: function() { return stages; } });
+    this.value = this;
+    this.length = this.stages.length;
   };
 
   var proto = leiminauts.number.extendPrototype(leiminauts.number.Number, Value);
@@ -122,34 +124,13 @@ leiminauts.number.Value = (function() {
   Value.ONE = new Value(1);
 
   /**
-   * @property {leiminauts.number.Value} this
-   * @name leiminauts.number.Value#value
-   * @override
-   */
-  Object.defineProperty(proto, 'value', {
-    get: function() { return this }
-  });
-
-  /**
-   * @property {number} the number of stages
-   * @name leiminauts.number.Value#length
-   */
-  Object.defineProperty(proto, 'length', {
-    get: function() { return this.stages.length; }
-  });
-
-  /**
    * @param {string} [prefix] prefix for each number
    * @param {string} [postfix] postfix for each number
    * @returns {string}
    */
   proto.toString = function(prefix, postfix) {
-    if (!prefix) {
-      prefix = "";
-    }
-    if (!postfix) {
-      postfix = "";
-    }
+    if (prefix === undefined) { prefix = ""; }
+    if (postfix === undefined) { postfix = ""; }
     return _(this.stages).map(function(stage) {
       return prefix + leiminauts.utils.number(stage) + postfix;
     }).join(' > ');
@@ -520,7 +501,7 @@ leiminauts.number.CalculatedNumber = (function() {
       return elem;
     }
 
-    var elements = leiminauts.utils.argumentsToArray(arguments).slice(index);
+    var elements = leiminauts.utils.argumentsToArray(arguments, index);
     return new leiminauts.number.Value(elements);
   };
 
