@@ -161,5 +161,9 @@ leiminauts.utils = {
 
 	dps: function(damage, speed) {
 		return leiminauts.utils.number( (parseFloat(speed)/60*parseFloat(damage)).toFixed(2) );
+	},
+
+	argumentsToArray: function(args) {
+		return Array.prototype.slice.call(args);
 	}
 };
