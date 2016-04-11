@@ -61,7 +61,6 @@ module.exports = function(grunt) {
 				src: [
 					'js/nautsbuilder/utils.js',
 					'js/nautsbuilder/data/number.js',
-					'js/nautsbuilder/data/effectnumber.js',
 					'js/nautsbuilder/data/effect.js',
 					'js/nautsbuilder/data/character.js',
 					'js/nautsbuilder/data/skill.js',
