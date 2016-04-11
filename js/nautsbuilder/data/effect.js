@@ -8,20 +8,20 @@ window.leiminauts = window.leiminauts || {};
 leiminauts.effect = leiminauts.effect || {};
 
 leiminauts.effect.Effect = (function() {
-  var Effect = function(effectName) {
-    this.name = effectName;
-    this.key = this.name;
-  };
-  var proto = Effect.prototype;
+	var Effect = function(effectName) {
+		this.name = effectName;
+		this.key = this.name;
+	};
+	var proto = Effect.prototype;
 
-  Object.defineProperties(proto, {
-    'value': { get: function() { leiminauts.utils.throwNotImplemented("Effect.prototype.value"); } }
-  });
+	Object.defineProperties(proto, {
+		'value': { get: function() { leiminauts.utils.throwNotImplemented("Effect.prototype.value"); } }
+	});
 
-  proto.toString = function() { return this.key + ": " + this.value; };
-  proto.isScalable = function() { return false; };
+	proto.toString = function() { return this.key + ": " + this.value; };
+	proto.isScalable = function() { return false; };
 
-  return Effect;
+	return Effect;
 })();
 
 /**
@@ -29,60 +29,60 @@ leiminauts.effect.Effect = (function() {
  * @class
  */
 leiminauts.effect.NumericEffect = (function() {
-  /**
-   * Creates a new NumericEffect from the given name, prefix, postfix and number.
-   * @param {string} effectName name of the effect
-   * @param {string} prefix prefix of the number
-   * @param {string} postfix postfix of the number
-   * @param {leiminauts.number.Number} number value as Number
-   * @constructor
-   */
-  var NumericEffect = function(effectName, prefix, postfix, number) {
-    leiminauts.effect.Effect.call(this, effectName);
-    this.prefix = prefix;
-    this.postfix = postfix;
+	/**
+	 * Creates a new NumericEffect from the given name, prefix, postfix and number.
+	 * @param {string} effectName name of the effect
+	 * @param {string} prefix prefix of the number
+	 * @param {string} postfix postfix of the number
+	 * @param {leiminauts.number.Number} number value as Number
+	 * @constructor
+	 */
+	var NumericEffect = function(effectName, prefix, postfix, number) {
+		leiminauts.effect.Effect.call(this, effectName);
+		this.prefix = prefix;
+		this.postfix = postfix;
 
-    if (number instanceof leiminauts.number.Number) {
-      this.number = number;
-    } else {
-      console.log("Info: passed a non-Number to constructor of NumericEffect: ", number);
-      var num = Number(number);
-      this.number = new leiminauts.number.Value(num);
-    }
-  };
-  var proto = leiminauts.utils.extendPrototype(leiminauts.effect.Effect, NumericEffect);
+		if (number instanceof leiminauts.number.Number) {
+			this.number = number;
+		} else {
+			console.log("Info: passed a non-Number to constructor of NumericEffect: ", number);
+			var num = Number(number);
+			this.number = new leiminauts.number.Value(num);
+		}
+	};
+	var proto = leiminauts.utils.extendPrototype(leiminauts.effect.Effect, NumericEffect);
 
-  Object.defineProperty(proto, 'value', { get: function() {
-    var prefix = this.prefix === "@" ? "" : this.prefix;
-    return this.number.toString(prefix, this.postfix);
-  }});
+	Object.defineProperty(proto, 'value', { get: function() {
+		var prefix = this.prefix === "@" ? "" : this.prefix;
+		return this.number.toString(prefix, this.postfix);
+	}});
 
-  /** @returns {boolean} True if this effect can be scaled. False otherwise. */
-  proto.isScalable = function() { return !this.isRelative() && !this.isMultiplicative(); };
-  /** @returns {boolean} True if this effect is percentage based. False otherwise */
-  proto.isRelative = function() { return this.postfix === "%"; };
-  /** @returns {boolean} True if this effect is multiplicative. False otherwise */
-  proto.isMultiplicative = function() { return this.prefix === "×" || this.prefix === "/"; };
-  /**
-   * Scales this effect by the given level and scaling value according to (1 + (level-1)*scalingValue)
-   * @param {number} level the level
-   * @param {number} scalingValue the increase per level
-   */
-  proto.applyScaling = function(level, scalingValue) {
-    if (level < 1) { level = 1; }
-    if (level > 20) { level = 20; }
+	/** @returns {boolean} True if this effect can be scaled. False otherwise. */
+	proto.isScalable = function() { return !this.isRelative() && !this.isMultiplicative(); };
+	/** @returns {boolean} True if this effect is percentage based. False otherwise */
+	proto.isRelative = function() { return this.postfix === "%"; };
+	/** @returns {boolean} True if this effect is multiplicative. False otherwise */
+	proto.isMultiplicative = function() { return this.prefix === "×" || this.prefix === "/"; };
+	/**
+	 * Scales this effect by the given level and scaling value according to (1 + (level-1)*scalingValue)
+	 * @param {number} level the level
+	 * @param {number} scalingValue the increase per level
+	 */
+	proto.applyScaling = function(level, scalingValue) {
+		if (level < 1) { level = 1; }
+		if (level > 20) { level = 20; }
 
-    var scalingMultiplier = (1 + (level-1)*scalingValue);
+		var scalingMultiplier = (1 + (level-1)*scalingValue);
 
-    if (!(this.number instanceof leiminauts.number.CalculatedNumber)) {
-      console.log("Info: trying to scale a Number that is not a CalculatedNumber", this.number);
-      this.number = new leiminauts.number.CalculatedNumber(1, this.number);
-    }
+		if (!(this.number instanceof leiminauts.number.CalculatedNumber)) {
+			console.log("Info: trying to scale a Number that is not a CalculatedNumber", this.number);
+			this.number = new leiminauts.number.CalculatedNumber(1, this.number);
+		}
 
-    this.number.multiply(scalingMultiplier);
-  };
+		this.number.multiply(scalingMultiplier);
+	};
 
-  return NumericEffect;
+	return NumericEffect;
 })();
 
 /**
@@ -91,21 +91,21 @@ leiminauts.effect.NumericEffect = (function() {
  * @class
  */
 leiminauts.effect.StringEffect = (function() {
-  /**
-   * Creates a new StringEffect from the given name and value.
-   *
-   * @param {string} effectName name of the effect
-   * @param {string} value value
-   * @constructor
-   */
-  var StringEffect = function(effectName, value) {
-    leiminauts.effect.Effect.call(this, effectName);
-    Object.defineProperty(this, 'value', { get: function() {
-      return value;
-    }});
-  };
-  leiminauts.utils.extendPrototype(leiminauts.effect.Effect, StringEffect);
-  return StringEffect;
+	/**
+	 * Creates a new StringEffect from the given name and value.
+	 *
+	 * @param {string} effectName name of the effect
+	 * @param {string} value value
+	 * @constructor
+	 */
+	var StringEffect = function(effectName, value) {
+		leiminauts.effect.Effect.call(this, effectName);
+		Object.defineProperty(this, 'value', { get: function() {
+			return value;
+		}});
+	};
+	leiminauts.utils.extendPrototype(leiminauts.effect.Effect, StringEffect);
+	return StringEffect;
 })();
 
 /**
@@ -114,10 +114,10 @@ leiminauts.effect.StringEffect = (function() {
  * @returns {leiminauts.effect.Effect[]} list of resulting Effects
  */
 leiminauts.effect.effectsFromString = function(effectsString) {
-  var keyValuePairs = leiminauts.utils.treatEffects(effectsString);
-  return _(keyValuePairs).map(function(pair) {
-    return leiminauts.effect.effectFromString(pair.key, pair.value);
-  });
+	var keyValuePairs = leiminauts.utils.treatEffects(effectsString);
+	return _(keyValuePairs).map(function(pair) {
+		return leiminauts.effect.effectFromString(pair.key, pair.value);
+	});
 };
 
 /**
@@ -127,52 +127,52 @@ leiminauts.effect.effectsFromString = function(effectsString) {
  * @returns {leiminauts.effect.Effect} a NumericEffect if value can be parsed into a list of numbers, a StringEffect otherwise.
  */
 leiminauts.effect.effectFromString = (function() {
-  var effectFromString = function(effectName, effectValue) {
-    var stages = String(effectValue).split('>');
-    var matches = _(stages).map(function(stage) {
-      return matchNumberRegex(_.trim(stage));
-    });
+	var effectFromString = function(effectName, effectValue) {
+		var stages = String(effectValue).split('>');
+		var matches = _(stages).map(function(stage) {
+			return matchNumberRegex(_.trim(stage));
+		});
 
-    if (_(matches).contains(undefined)) {
-      // Found a non-numeric match
-      return new leiminauts.effect.StringEffect(effectName, effectValue);
-    }
+		if (_(matches).contains(undefined)) {
+			// Found a non-numeric match
+			return new leiminauts.effect.StringEffect(effectName, effectValue);
+		}
 
-    var notUndefined = function(e) { return e !== undefined; };
-    var prefix = _(matches).pluck('prefix').find(notUndefined);
-    var postfix = _(matches).pluck('postfix').find(notUndefined);
-    var value = new leiminauts.number.Value(_(matches).pluck('number'));
-    return new leiminauts.effect.NumericEffect(effectName, prefix, postfix, value);
-  };
+		var notUndefined = function(e) { return e !== undefined; };
+		var prefix = _(matches).pluck('prefix').find(notUndefined);
+		var postfix = _(matches).pluck('postfix').find(notUndefined);
+		var value = new leiminauts.number.Value(_(matches).pluck('number'));
+		return new leiminauts.effect.NumericEffect(effectName, prefix, postfix, value);
+	};
 
-  var numberRegex = /^(\+|-|\/|×|@)?([0-9]*\.?[0-9]+)([%s])?$/i;
-  // Returns the results of matching a number with the regex
-  var matchNumberRegex = function(number) {
-    var regexResults = numberRegex.exec(number);
-    if (regexResults === null) {
-      return undefined;
-    }
+	var numberRegex = /^(\+|-|\/|×|@)?([0-9]*\.?[0-9]+)([%s])?$/i;
+	// Returns the results of matching a number with the regex
+	var matchNumberRegex = function(number) {
+		var regexResults = numberRegex.exec(number);
+		if (regexResults === null) {
+			return undefined;
+		}
 
-    if (regexResults[1] === undefined) {
-      regexResults[1] = "";
-    } else if (regexResults[1] === "-") {
-      // Remove '-' from prefix group and add it to number group
-      regexResults[1] = "";
-      regexResults[2] = "-" + regexResults[2];
-    }
+		if (regexResults[1] === undefined) {
+			regexResults[1] = "";
+		} else if (regexResults[1] === "-") {
+			// Remove '-' from prefix group and add it to number group
+			regexResults[1] = "";
+			regexResults[2] = "-" + regexResults[2];
+		}
 
-    if (regexResults[3] === undefined) {
-      regexResults[3] = "";
-    }
+		if (regexResults[3] === undefined) {
+			regexResults[3] = "";
+		}
 
-    return {
-      prefix: regexResults[1],
-      number: Number(regexResults[2]),
-      postfix: regexResults[3]
-    };
-  };
+		return {
+			prefix: regexResults[1],
+			number: Number(regexResults[2]),
+			postfix: regexResults[3]
+		};
+	};
 
-  return effectFromString;
+	return effectFromString;
 })();
 
 /**
@@ -183,135 +183,135 @@ leiminauts.effect.effectFromString = (function() {
  * @returns {leiminauts.effect.Effect} the merged effect
  */
 leiminauts.effect.mergeEffects = (function() {
-  var mergeEffects = function(effects) {
-    console.assert(effects.length >= 1, effects);
-    var containsOnlyNumeric = _(effects).every(function(effect) {
-      return effect instanceof leiminauts.effect.NumericEffect;
-    });
-    if (!containsOnlyNumeric) {
-      if (effects.length > 1) {
-        console.log("Warning: cannot merge non-NumericEffects, ignoring upgrades of ", effects);
-      }
+	var mergeEffects = function(effects) {
+		console.assert(effects.length >= 1, effects);
+		var containsOnlyNumeric = _(effects).every(function(effect) {
+			return effect instanceof leiminauts.effect.NumericEffect;
+		});
+		if (!containsOnlyNumeric) {
+			if (effects.length > 1) {
+				console.log("Warning: cannot merge non-NumericEffects, ignoring upgrades of ", effects);
+			}
 
-      return effects[0];
-    }
+			return effects[0];
+		}
 
-    var baseEffect = findAndRemoveBaseEffect(effects);
-    var upgradeEffects = effects;
+		var baseEffect = findAndRemoveBaseEffect(effects);
+		var upgradeEffects = effects;
 
-    var resultNumber = new leiminauts.number.CalculatedNumber(1, baseEffect.number.value);
-    var resultEffect = new leiminauts.effect.NumericEffect(baseEffect.name, baseEffect.prefix, baseEffect.postfix, resultNumber);
+		var resultNumber = new leiminauts.number.CalculatedNumber(1, baseEffect.number.value);
+		var resultEffect = new leiminauts.effect.NumericEffect(baseEffect.name, baseEffect.prefix, baseEffect.postfix, resultNumber);
 
-    _(upgradeEffects).each(function(upgradeEffect) {
-      applyUpgradeToEffect(resultEffect, upgradeEffect);
-    });
+		_(upgradeEffects).each(function(upgradeEffect) {
+			applyUpgradeToEffect(resultEffect, upgradeEffect);
+		});
 
-    return resultEffect;
-  };
+		return resultEffect;
+	};
 
-  /**
-   * Finds the base effect based on the ordering given by affixComparator. Removes the base effect from effects and
-   * returns it.
-   * @param {leiminauts.effect.NumericEffect[]} effects list of NumericEffects
-   * @returns {leiminauts.effect.NumericEffect}
-   */
-  var findAndRemoveBaseEffect = function(effects) {
-    var affixes = _(effects).map(function(effect, index) {
-      return {index: index, prefix: effect.prefix, postfix: effect.postfix};
-    });
-    affixes.sort(affixComparator);
-    var baseAffix = affixes[0];
-    var baseEffect = effects.splice(baseAffix.index, 1)[0];
-    return baseEffect;
-  };
+	/**
+	 * Finds the base effect based on the ordering given by affixComparator. Removes the base effect from effects and
+	 * returns it.
+	 * @param {leiminauts.effect.NumericEffect[]} effects list of NumericEffects
+	 * @returns {leiminauts.effect.NumericEffect}
+	 */
+	var findAndRemoveBaseEffect = function(effects) {
+		var affixes = _(effects).map(function(effect, index) {
+			return {index: index, prefix: effect.prefix, postfix: effect.postfix};
+		});
+		affixes.sort(affixComparator);
+		var baseAffix = affixes[0];
+		var baseEffect = effects.splice(baseAffix.index, 1)[0];
+		return baseEffect;
+	};
 
-  /**
-   * This functions compares two prefix-postfix pairs. A prefix-postfix pair is
-   * smaller than another if it is more likely to be a base value.
-   * The ordering rules are the following:
-   * 1. !(pre == '×' || pre == '/') <<< (pre == '×' || pre == '/')
-   * 2. post == 's' <<< post == '' <<< post == '%'
-   * 3. pre == '' <<< pre != ''
+	/**
+	 * This functions compares two prefix-postfix pairs. A prefix-postfix pair is
+	 * smaller than another if it is more likely to be a base value.
+	 * The ordering rules are the following:
+	 * 1. !(pre == '×' || pre == '/') <<< (pre == '×' || pre == '/')
+	 * 2. post == 's' <<< post == '' <<< post == '%'
+	 * 3. pre == '' <<< pre != ''
 
-   * Possible prefixes: '', '+', '×', '/'
-   * Possible postfixes: '', '%', 's'
+	 * Possible prefixes: '', '+', '×', '/'
+	 * Possible postfixes: '', '%', 's'
 
-   * This ordering makes it so that all multiplicative pairs appear last (most
-   * unlikely to be a base value). Then, a value with seconds comes before a
-   * value without an unit which comes before a percentage value. Finally, a
-   * empty prefix is more likely to be a base value than a non-empty one.
-   *
-   * The comparator is stable, that is it returns the pair with the smaller index if they are equal.
-   * @param {{index: number, prefix: string, postfix: string}} a first prefix-postfix par
-   * @param {{index: number, prefix: string, postfix: string}} b second prefix-postfix par
-   * @returns {number} -1 if a comes before b, 1 if b comes before a and 0 otherwise.
-   */
-  var affixComparator = function(a, b) {
-    // Order multiplicative prefixes always last
-    var aMultPrefix = a.prefix === "×" || a.prefix === "/";
-    var bMultPrefix = b.prefix === "×" || b.prefix === "/";
-    if (!aMultPrefix && bMultPrefix) {
-      return -1;
-    } else if (aMultPrefix && !bMultPrefix) {
-      return 1;
-    }
+	 * This ordering makes it so that all multiplicative pairs appear last (most
+	 * unlikely to be a base value). Then, a value with seconds comes before a
+	 * value without an unit which comes before a percentage value. Finally, a
+	 * empty prefix is more likely to be a base value than a non-empty one.
+	 *
+	 * The comparator is stable, that is it returns the pair with the smaller index if they are equal.
+	 * @param {{index: number, prefix: string, postfix: string}} a first prefix-postfix par
+	 * @param {{index: number, prefix: string, postfix: string}} b second prefix-postfix par
+	 * @returns {number} -1 if a comes before b, 1 if b comes before a and 0 otherwise.
+	 */
+	var affixComparator = function(a, b) {
+		// Order multiplicative prefixes always last
+		var aMultPrefix = a.prefix === "×" || a.prefix === "/";
+		var bMultPrefix = b.prefix === "×" || b.prefix === "/";
+		if (!aMultPrefix && bMultPrefix) {
+			return -1;
+		} else if (aMultPrefix && !bMultPrefix) {
+			return 1;
+		}
 
-    // Order postfix: 's' < '' < '%'
-    if (a.postfix === "s" && b.postfix !== "s") {
-      return -1;
-    } else if (a.postfix !== "s" && b.postfix === "s") {
-      return 1;
-    }
+		// Order postfix: 's' < '' < '%'
+		if (a.postfix === "s" && b.postfix !== "s") {
+			return -1;
+		} else if (a.postfix !== "s" && b.postfix === "s") {
+			return 1;
+		}
 
-    if (a.postfix !== "%" && b.postfix === "%") {
-      return -1;
-    } else if (a.postfix === "%" && b.postfix !== "%") {
-      return 1;
-    }
+		if (a.postfix !== "%" && b.postfix === "%") {
+			return -1;
+		} else if (a.postfix === "%" && b.postfix !== "%") {
+			return 1;
+		}
 
-    // Order prefix: '' <  '+' or '×' or '/'
-    if (a.postfix === "" && b.postfix !== "") {
-      return -1;
-    } else if (a.postfix !== "" && b.postfix === "") {
-      return 1;
-    }
+		// Order prefix: '' <  '+' or '×' or '/'
+		if (a.postfix === "" && b.postfix !== "") {
+			return -1;
+		} else if (a.postfix !== "" && b.postfix === "") {
+			return 1;
+		}
 
-    // Stable sort
-    return a.index - b.index;
-  };
+		// Stable sort
+		return a.index - b.index;
+	};
 
-  /**
-   * Applies the value of the given upgrade effect to the number of the given effect.
-   * @param {leiminauts.effect.NumericEffect} effect
-   * @param {leiminauts.effect.NumericEffect} upgradeEffect
-   */
-  var applyUpgradeToEffect = function(effect, upgradeEffect) {
-    if (upgradeEffect.prefix === "@") {
-      return; // Do nothing because base is fixed
-    }
+	/**
+	 * Applies the value of the given upgrade effect to the number of the given effect.
+	 * @param {leiminauts.effect.NumericEffect} effect
+	 * @param {leiminauts.effect.NumericEffect} upgradeEffect
+	 */
+	var applyUpgradeToEffect = function(effect, upgradeEffect) {
+		if (upgradeEffect.prefix === "@") {
+			return; // Do nothing because base is fixed
+		}
 
-    var number = effect.number;
-    var value = upgradeEffect.number.value;
-    if (upgradeEffect.isRelative() && !effect.isRelative()) {
-      // Adapt value to reflect relative calculation to base
-      value = value.divide(100);
-    }
+		var number = effect.number;
+		var value = upgradeEffect.number.value;
+		if (upgradeEffect.isRelative() && !effect.isRelative()) {
+			// Adapt value to reflect relative calculation to base
+			value = value.divide(100);
+		}
 
-    if (upgradeEffect.prefix === "×") {
-      number.additiveMultiply(value.substract(leiminauts.number.Value.ONE));
-    } else if (upgradeEffect.prefix === "/") {
-      // base/value = base * 1/value = base * (1/value-1+1) = base * (1 + (1/value - 1))
-      // => Multiply additively with (1/value - 1)
-      var newValue = (leiminauts.number.Value.ONE.divide(value)).substract(leiminauts.number.Value.ONE);
-      number.additiveMultiply(newValue);
-    } else {
-      if (upgradeEffect.isRelative() && !effect.isRelative()) {
-        number.relativeAdd(value);
-      } else {
-        number.absoluteAdd(value);
-      }
-    }
-  };
+		if (upgradeEffect.prefix === "×") {
+			number.additiveMultiply(value.substract(leiminauts.number.Value.ONE));
+		} else if (upgradeEffect.prefix === "/") {
+			// base/value = base * 1/value = base * (1/value-1+1) = base * (1 + (1/value - 1))
+			// => Multiply additively with (1/value - 1)
+			var newValue = (leiminauts.number.Value.ONE.divide(value)).substract(leiminauts.number.Value.ONE);
+			number.additiveMultiply(newValue);
+		} else {
+			if (upgradeEffect.isRelative() && !effect.isRelative()) {
+				number.relativeAdd(value);
+			} else {
+				number.absoluteAdd(value);
+			}
+		}
+	};
 
-  return mergeEffects;
+	return mergeEffects;
 })();
