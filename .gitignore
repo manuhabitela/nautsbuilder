@@ -2,6 +2,7 @@
 .livereload
 *en conflit*
 *.sublime-*
+.idea/
 
 .htpasswd
 config/database.php
