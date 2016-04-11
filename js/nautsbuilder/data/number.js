@@ -200,19 +200,16 @@ leiminauts.number.Value = (function() {
 	 * @private
 	 */
 	proto._operatePairwise = function(that, binaryOp) {
-		// TODO: Adapt this function to work with any sizes of this and that. Pad any non-existing index with the first stage
-
 		if (this.length !== that.length && this.length > 1 && that.length > 1) {
-			console.log("Warning: incompatible sizes, ignoring operation with ", that);
-			return this;
+			console.log("Info: Padding of", Math.abs(this.length-that.length), "element(s) of",
+					this.length < that.length ? "left" : "right", "operand required to operate on", this.stages, "with", that.stages, ".");
 		}
 
-		console.assert(this.length === that.length || this.length === 1 || that.length === 1);
 		var length = Math.max(this.length, that.length);
 		var resultStages = [];
 		for (var i = 0; i < length; ++i) {
-			var left  = this.length === 1 ? this.stages[0] : this.stages[i];
-			var right = that.length === 1 ? that.stages[0] : that.stages[i];
+			var left  = i < this.length ? this.stages[i] : this.stages[0];
+			var right = i < that.length ? that.stages[i] : that.stages[0];
 			resultStages.push(binaryOp(left, right));
 		}
 		return new Value(resultStages);
