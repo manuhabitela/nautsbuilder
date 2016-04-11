@@ -84,6 +84,10 @@ _.mixin({
 		return result;
 	},
 
+	avg: function(obj, iterator, context) {
+		return _.sum(obj, iterator, context) / _.size(obj);
+	},
+
 	transpose: function(arrayOfArrays) {
 		return _.zip.apply(_, arrayOfArrays)
 	}
@@ -157,5 +161,32 @@ leiminauts.utils = {
 
 	dps: function(damage, speed) {
 		return leiminauts.utils.number( (parseFloat(speed)/60*parseFloat(damage)).toFixed(2) );
+	},
+
+	//converts the arguments object of a function into an array, starting from the index'th parameter
+	argumentsToArray: function(args, index) {
+		var index = index || 0;
+		return Array.prototype.slice.call(args, index);
+	},
+
+	/**
+	 * @param funcName Name of the to be implemented method
+	 * @throws {Error} Always throws indicating that the given method is not implemented.
+	 */
+	throwNotImplemented: function(funcName) {
+		throw new Error(funcName + " not implemented by subclass!");
+	},
+
+	/**
+	 * Creates the prototype of subclass from class and returns it.
+	 *
+	 * @param clazz The base class
+	 * @param subClazz The class to be extended from clazz
+	 * @returns {prototype} the prototype of subClazz
+	 */
+	extendPrototype: function(clazz, subClazz) {
+		subClazz.prototype = Object.create(clazz.prototype);
+		subClazz.prototype.constructor = subClazz;
+		return subClazz.prototype;
 	}
 };

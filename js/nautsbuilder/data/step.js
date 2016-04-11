@@ -10,11 +10,9 @@ leiminauts.Step = Backbone.Model.extend({
 	},
 
 	initialize: function() {
-		//description is a string showing the list of effects the step gives. Ex: "crit chance: +15%; crit damage: +10"
-		//so each attribute is separated by a ";"
-		//and attribute name and value are separated by a ":"
-		this.set('attrs', leiminauts.utils.treatEffects(this.get('description')));
-
+		//description is a string showing the list of effects the step gives.
+		var effects = leiminauts.effect.effectsFromString(this.get('description'));
+		this.set('effects', effects);
 		this.updateDescription();
 	},
 

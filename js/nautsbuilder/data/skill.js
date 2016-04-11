@@ -48,16 +48,18 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (!_(this.get('effects')).isString())
 			return false;
 
-		var baseEffects = leiminauts.utils.treatEffects(this.get('effects'));
+		var baseEffects = leiminauts.effect.effectsFromString(this.get('effects'));
 
 		if (this.get('type') == "jump") {
 			var solar = _(baseEffects).findWhere({key: "solar"});
-			if (!solar)
-				baseEffects.push({key: "solar", value: 235});
+			if (!solar) {
+				baseEffects.push(new leiminauts.effect.NumericEffect("solar", "", "", new leiminauts.number.Value(235)));
+			}
 
 			var solarPerMin = _(baseEffects).findWhere({key: "solar per min"});
-			if (!solarPerMin)
-				baseEffects.push({key: "solar per min", value: 30});
+			if (!solarPerMin) {
+				baseEffects.push(new leiminauts.effect.NumericEffect("solar per min", "", "", new leiminauts.number.Value(30)));
+			}
 		}
 
 		this.set('baseEffects', baseEffects);
@@ -154,12 +156,14 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		var activeSteps = this.getActiveSteps();
 		this.set('effects', [], {silent: true});
+
 		var effects = this.mergeEffectsAndSteps(this.get('baseEffects'), activeSteps);
 		this.applyUpgrades(effects);
 
-		this.setSpecificEffects();
-		this.setDPS();
-		this.setSpecificEffectsTheReturnOfTheRevenge();
+		// TODO: implement specific effects with new classes
+		// this.setSpecificEffects();
+		// this.setDPS();
+		// this.setSpecificEffectsTheReturnOfTheRevenge();
 		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
 	},
 
@@ -198,60 +202,37 @@ leiminauts.Skill = Backbone.Model.extend({
 		var effects = {};
 
 		// Combine all effects with the name key into an array of values
-		var addToEffects = function(attributesList) {
-			_(attributesList).each(function(attr) {
-				if (effects[attr.key] === undefined) {
-					effects[attr.key] = [ attr.value ];
+		var addToEffects = function(effectList) {
+			_(effectList).each(function(effect) {
+				if (effects[effect.key] === undefined) {
+					effects[effect.key] = [];
 				}
-				else {
-					effects[attr.key].push(attr.value);
-				}
+				effects[effect.key].push(effect);
 			});
 		};
 
 		addToEffects(baseEffects);
 		_(activeSteps).each(function(step) {
-			addToEffects(step.get('attrs'));
+			addToEffects(step.get('effects'));
 		});
-
-		// Sort each array so that divison values always come last
-		/*_(effects).each(function(arr, key, map) {
-			map[key].sort(function(left, right) {
-				var leftIsDivison = left.toString().charAt(0) == "/";
-				var rightIsDivison = right.toString().charAt(0) == "/";
-
-				// If they are not the same type, return the one with divison
-				// Otherwise, don't sort so that the baseEffect is still the first value
-				if (leftIsDivison !== rightIsDivison) {
-					return leftIsDivison;
-				}
-				else {
-					return false;
-				}
-			});
-		});*/
 
 		return effects;
 	},
 
 	// For all effects, merges all steps into one value
 	applyUpgrades: function(effects) {
-		_(effects).each(function(steps, effectName) {
-			if (steps.length < 1) {
-				console.info("Empty array of steps, do nothing.");
-				return;
-			}
-			var effect = leiminauts.effect.effectFromValues(effectName, steps);
+		_(effects).each(function(steps) {
+			var effect = leiminauts.effect.mergeEffects(steps);
 			if (effect === undefined) {
 				return;
 			}
 			this.applyScaling(effect);
-			this.get('effects').push({"key": effect.name, "value": effect.toString()});
+			this.get('effects').push(effect);
 		}, this);
 	},
 
 	applyScaling: function(effect) {
-		if (!this.effectIsScalable(effect)) {
+		if (!effect.isScalable()) {
 			return;
 		}
 
@@ -261,16 +242,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		}
 
 		var currentLevel = this.character.get('xp_level');
-		if (currentLevel < 1) { currentLevel = 1; }
-		if (currentLevel > 20) { currentLevel = 20; }
-		var scalingMultiplier = (1 + (currentLevel-1)*scalingValue);
-		_(effect.effectStages).each(function(ev) {
-			ev.addMultiplier(scalingMultiplier);
-		});
-	},
-
-	effectIsScalable: function(effect) {
-		return effect.isNumeric() && !effect.isRelative() && !effect.isMultiplicative();
+		effect.applyScaling(currentLevel, scalingValue);
 	},
 
 	getEffectScalingValue: function(effectName) {
