@@ -200,6 +200,8 @@ leiminauts.number.Value = (function() {
 	 * @private
 	 */
 	proto._operatePairwise = function(that, binaryOp) {
+		// TODO: Adapt this function to work with any sizes of this and that. Pad any non-existing index with the first stage
+
 		if (this.length !== that.length && this.length > 1 && that.length > 1) {
 			console.log("Warning: incompatible sizes, ignoring operation with ", that);
 			return this;
