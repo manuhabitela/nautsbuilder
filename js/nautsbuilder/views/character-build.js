@@ -12,7 +12,8 @@ leiminauts.BuildView = Backbone.View.extend({
 		"click .build-cancel": "reset"
 	},
 
-	initialize: function() {
+	initialize: function(options) {
+		this.options = options || {};
 		if (this.options.character) {
 			this.character = this.options.character;
 			this.model = this.character.model;

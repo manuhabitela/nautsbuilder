@@ -14,7 +14,9 @@ leiminauts.UpgradeView = Backbone.View.extend({
 		'click': 'onClick'
 	},
 
-	initialize: function() {
+	initialize: function(options) {
+		this.options = options || {};
+
 		this.template = _.template( $('#build-upgrade-tpl').html() );
 
 		this.forum = this.options.forum || false;

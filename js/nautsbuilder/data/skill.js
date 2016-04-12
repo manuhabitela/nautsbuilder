@@ -583,32 +583,36 @@ leiminauts.Skill = Backbone.Model.extend({
 	//set specifics effects after DPS calculation
 	setSpecificEffectsTheReturnOfTheRevenge: function() {
 		if (!this.get('selected')) return false;
-		var effects = _(this.get('effects'));
+		var multiplierRegex = /(.+) multiplier/i;
+		var partition = _(this.get('effects')).partition(function(effect) {
+			return multiplierRegex.test(effect.key);
+		});
+		var multipliers = partition[0];
+		var effects = partition[1];
 
-		effects.each(function(effect) {
-			var result = (effect.key).match(/(.+) multiplier/i);
-			if (result && effect.value) {
-				effects.splice(effects.indexOf(effect), 1);
-				this.multiplyEffect(effect.value, effects, result[1]);
+		_(multipliers).each(function(multiplier) {
+			var prefix = (multiplier.key).match(multiplierRegex)[1];
+			this.multiplyEffect(multiplier.value, effects, prefix);
 
-				if (this.get('name') == "Bubble Gun") {
-					this.multiplyEffect(effect.value, effects, "codfather damage");
-					this.multiplyEffect(effect.value, effects, "yakoiza damage");
-				}
+			if (this.get('name') == "Bubble Gun") {
+				this.multiplyEffect(multiplier.value, effects, "codfather damage");
+				this.multiplyEffect(multiplier.value, effects, "yakoiza damage");
 			}
 		}, this);
+
+		this.set('effects', effects);
 	},
 
 	multiplyEffect: function(times, effects, effectKey) {
 		effectKey = effectKey || "damage";
-		var effect = effects.findWhere({key: effectKey});
-		if (effect) effect.value = leiminauts.utils.number(effect.value*times) + "&nbsp; ( " + effect.value + "×" + times + " )";
+		var effect = _(effects).findWhere({key: effectKey});
+		if (effect) effect.value = leiminauts.utils.number(effect.value*times) + " (" + effect.value + "×" + times + ")";
 
 		var dmgLength = "damage".length;
 		if (effectKey.substr(-dmgLength) === "damage") {
 			var dpsPrefix = effectKey.substr(0, effectKey.length - dmgLength);
-			var dps = effects.findWhere({key: dpsPrefix + "DPS"});
-			if (dps) dps.value = leiminauts.utils.number(dps.value*times) + "&nbsp; ( " + dps.value + "×" + times + " )";
+			var dps = _(effects).findWhere({key: dpsPrefix + "DPS"});
+			if (dps) dps.value = leiminauts.utils.number(dps.value*times) + " (" + dps.value + "×" + times + ")";
 		}
 	},
 

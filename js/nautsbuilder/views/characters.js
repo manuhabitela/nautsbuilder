@@ -10,7 +10,9 @@ leiminauts.CharactersView = Backbone.View.extend({
 		"click .char[data-id]": "selectCharacter"
 	},
 
-	initialize: function() {
+	initialize: function(options) {
+		this.options = options || {};
+
 		this.template = _.template( $('#chars-tpl').html() );
 		this.listenTo(this.collection, 'add remove reset', this.render);
 

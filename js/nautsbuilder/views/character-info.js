@@ -14,7 +14,8 @@ leiminauts.InfoView = Backbone.View.extend({
 		"change .xp-number": "xpNumberChange",
 	},
 
-	initialize: function() {
+	initialize: function(options) {
+		this.options = options || {};
 		if (this.options.character) {
 			this.character = this.options.character;
 			this.model = this.character.model;
