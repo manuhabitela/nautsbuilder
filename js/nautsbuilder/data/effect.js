@@ -138,11 +138,19 @@ leiminauts.effect.effectFromString = (function() {
 			return new leiminauts.effect.StringEffect(effectName, effectValue);
 		}
 
-		var notUndefined = function(e) { return e !== undefined; };
-		var prefix = _(matches).pluck('prefix').find(notUndefined);
-		var postfix = _(matches).pluck('postfix').find(notUndefined);
+
+		var prefix = findLastDefined('prefix');
+		var postfix = findLastDefined('postfix');
 		var value = new leiminauts.number.Value(_(matches).pluck('number'));
 		return new leiminauts.effect.NumericEffect(effectName, prefix, postfix, value);
+	};
+
+	var findLastDefined = function(matches, attribute) {
+		return _.chain(matches)
+			.pluck(attribute)
+			.reverse()
+			.find(function(e) { return e !== undefined; })
+			.value();
 	};
 
 	var numberRegex = /^(\+|-|\/|×|@)?([0-9]*\.?[0-9]+)([%s])?$/i;
