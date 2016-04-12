@@ -44,6 +44,11 @@ _.mixin({
 	italics: function(string) {
 		if (!string) return '';
 		return string.replace(/\n/g, "<br>").replace(/\*(.*)\*/, '<em>$1</em>');
+	},
+
+	//Returns true if the list contains any value that matches all of the key-value pairs listed in properties.
+	containsWhere: function(list, properties) {
+		return _.some(list, _.matcher(properties));
 	}
 });
 

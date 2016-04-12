@@ -49,18 +49,25 @@ leiminauts.Skill = Backbone.Model.extend({
 			return false;
 
 		var baseEffects = leiminauts.utils.treatEffects(this.get('effects'));
-
 		if (this.get('type') == "jump") {
-			var solar = _(baseEffects).findWhere({key: "solar"});
-			if (!solar)
-				baseEffects.push({key: "solar", value: 235});
-
-			var solarPerMin = _(baseEffects).findWhere({key: "solar per min"});
-			if (!solarPerMin)
-				baseEffects.push({key: "solar per min", value: 30});
+			this.addBaseJumpEffects(baseEffects);
 		}
 
 		this.set('baseEffects', baseEffects);
+	},
+
+	addBaseJumpEffects: function(baseEffects) {
+		var baseJump = _(leiminauts.skills).findWhere({name: "base jump", type: "jump"});
+		if (!baseJump) {
+			return;
+		}
+
+		var baseJumpEffects = leiminauts.utils.treatEffects(baseJump.effects);
+		_(baseJumpEffects).each(function(effect) {
+			if (!_(baseEffects).containsWhere({key: effect.key})) {
+				baseEffects.push(effect);
+			}
+		});
 	},
 
 	initUpgrades: function() {
