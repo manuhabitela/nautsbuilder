@@ -89,7 +89,12 @@ _.mixin({
 	},
 
 	transpose: function(arrayOfArrays) {
-		return _.zip.apply(_, arrayOfArrays)
+		return _.zip.apply(_, arrayOfArrays);
+	},
+
+	//Returns true if the list contains any value that matches all of the key-value pairs listed in properties.
+	containsWhere: function(list, properties) {
+		return _.some(list, _.matcher(properties));
 	}
 });
 

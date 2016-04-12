@@ -94,6 +94,10 @@
   max-height: 600px;
   overflow: visible;
   z-index: 50;
+  @include respond-to(mobile) {
+    overflow: overlay;
+    max-height: 100px;
+  }
 }
 
 .skill-info {

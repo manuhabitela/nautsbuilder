@@ -15,7 +15,8 @@ leiminauts.SkillView = Backbone.View.extend({
 		'click .skill-cancel': 'reset'
 	},
 
-	initialize: function() {
+	initialize: function(options) {
+		this.options = options || {};
 		this.forum = this.options.forum || false;
 
 		this.upgrades = [];
@@ -66,12 +67,8 @@ leiminauts.SkillView = Backbone.View.extend({
 	renderUpgradesInfo: function() {
 		var data = this.model.toJSON();
 		data.forum = this.forum;
-		this.$(".skill-effects").html(
-			_.template(
-				$('#build-skill-effects-tpl').html(),
-				data
-			)
-		);
+		var template = _.template( $('#build-skill-effects-tpl').html() );
+		this.$(".skill-effects").html(template(data));
 	},
 
 	handleTooltip: function(e) {
