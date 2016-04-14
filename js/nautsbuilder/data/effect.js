@@ -138,9 +138,8 @@ leiminauts.effect.effectFromString = (function() {
 			return new leiminauts.effect.StringEffect(effectName, effectValue);
 		}
 
-
-		var prefix = findLastDefined('prefix');
-		var postfix = findLastDefined('postfix');
+		var prefix = findLastDefined(matches, 'prefix');
+		var postfix = findLastDefined(matches, 'postfix');
 		var value = new leiminauts.number.Value(_(matches).pluck('number'));
 		return new leiminauts.effect.NumericEffect(effectName, prefix, postfix, value);
 	};
