@@ -167,6 +167,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		this.setSpecificEffects();
 		this.setDPS();
 		this.setSpecificEffectsTheReturnOfTheRevenge();
+		this.applyScaling();
 		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
 	},
 
@@ -266,8 +267,6 @@ leiminauts.Skill = Backbone.Model.extend({
 				resultStages = this.mergeSteps(steppedStages);
 			}
 
-			this.applyScaling(resultStages, effectName);
-
 			var resultValue = this.mergeResultStages(resultStages);
 			this.get('effects').push({"key": effectName, value: resultValue});
 		}, this);
@@ -287,49 +286,6 @@ leiminauts.Skill = Backbone.Model.extend({
 		result.isNumber = function() { return this.number !== undefined; };
 		result.isRelative = function() { return this.postfix === "%"; };
 		return result;
-	},
-
-	applyScaling: function(stages, effectName) {
-		var scalingValue = this.getEffectScalingValue(effectName);
-		if (scalingValue === undefined) {
-			return;
-		}
-
-		var currentLevel = this.character.get('xp_level');
-		_(stages).each(function(stage) {
-			if (this.effectStageIsScaling(stage) && 1 <= currentLevel && currentLevel <= 20) {
-				stage.number *= (1 + (currentLevel-1)*scalingValue);
-			}
-		}, this);
-	},
-
-	getEffectScalingValue: function(effectName) {
-		var regexMatchesEffect = function(regex) { return regex.test(effectName); };
-
-		var matchingRow = _(leiminauts.scaling).find(function(row) {
-			var filterKeys = _(Object.keys(row)).filter(function (s) { return s.indexOf("filter") === 0; });
-			var filters = _(filterKeys).map(function (key) {
-				return row[key];
-			}).filter(function (str) {
-				return str && str.length > 0;
-			});
-
-			// Return true if one of the filters matches the effect
-			return _(filters).some(function (filter) {
-				var regex = new RegExp("^" + filter + "$", "i"); // Case-insensitive
-				return regex.test(effectName);
-			});
-		});
-
-		if (matchingRow !== undefined) {
-			return Number(matchingRow.value);
-		} else {
-			return undefined;
-		}
-	},
-
-	effectStageIsScaling: function(stage) {
-		return stage.isNumber() && !stage.isRelative() && stage.prefix !== "×" && stage.prefix !== "/";
 	},
 
 	// Padds each step (base and upgrades) with the respective first value to the maximum number of stages found
@@ -633,6 +589,83 @@ leiminauts.Skill = Backbone.Model.extend({
 	getActiveUpgrade: function(name) {
 		var upgrade = _(this.getActiveUpgrades()).filter(function(upg) { return upg.get('name').toLowerCase() == name.toLowerCase(); });
 		if (upgrade.length) return upgrade[0]; else return false;
+	},
+
+	applyScaling: function() {
+		var stageRegex = /^([^\(]+)(?: \((.+)×([0-9]+)\))?$/i;
+		var numberRegex = /^((?:\+|-|@)?)([0-9]+[\.,]?[0-9]*)$/i; // Do not match prefix '/', '×' or postfix '%', 's'
+		var currentLevel = this.character.get('xp_level');
+
+		var effects = this.get('effects');
+		var scaledEffects = _(effects).map(function(effect) {
+			var effectName = effect.key;
+			var value = effect.value;
+
+			var scalingValue = this.getEffectScalingValue(effectName);
+			if (scalingValue === undefined) {
+				return effect;
+			}
+
+			var currentLevel = this.character.get('xp_level');
+			var stages = String(value).split(' > ');
+			var scaledStages = _(stages).map(function(stage) {
+				var stageMatch = stage.match(stageRegex);
+				if (stageMatch == null) {
+					return stage;
+				}
+
+				var numbers = stageMatch.slice(1, 3);
+				var scaledNumbers = _(numbers).map(function(number) {
+					if (number === undefined) {
+						return number;
+					}
+					var numberMatch = number.match(numberRegex);
+					if (numberMatch == null) {
+						return number;
+					}
+
+					var prefix = numberMatch[1];
+					var n = Number(numberMatch[2]);
+					n *= (1 + (currentLevel-1)*scalingValue);
+					return prefix + leiminauts.utils.number(n);
+				});
+
+				var resultStage = scaledNumbers[0];
+				if (scaledNumbers.length > 2) {
+					resultStage += ' (' + scaledNumbers[1] + '×' + stageMatch[3] + ')';
+				}
+				return resultStage;
+			}, this);
+
+			var scaledValue = scaledStages.join(' > ');
+			return {key: effect.key, value: scaledValue};
+		}, this);
+		this.set('effects', scaledEffects);
+	},
+
+	getEffectScalingValue: function(effectName) {
+		var regexMatchesEffect = function(regex) { return regex.test(effectName); };
+
+		var matchingRow = _(leiminauts.scaling).find(function(row) {
+			var filterKeys = _(Object.keys(row)).filter(function (s) { return s.indexOf("filter") === 0; });
+			var filters = _(filterKeys).map(function (key) {
+				return row[key];
+			}).filter(function (str) {
+				return str && str.length > 0;
+			});
+
+			// Return true if one of the filters matches the effect
+			return _(filters).some(function (filter) {
+				var regex = new RegExp("^" + filter + "$", "i"); // Case-insensitive
+				return regex.test(effectName);
+			});
+		});
+
+		if (matchingRow !== undefined) {
+			return Number(matchingRow.value);
+		} else {
+			return undefined;
+		}
 	}
 });
 
