@@ -256,8 +256,6 @@ leiminauts.Skill = Backbone.Model.extend({
 				return stages;
 			}, this);
 
-			this.applyScaling(stagedSteps[0], effectName);
-
 			var resultStages;
 			if (stagedSteps.length == 1) {
 				resultStages = stagedSteps[0];
@@ -267,6 +265,8 @@ leiminauts.Skill = Backbone.Model.extend({
 				var steppedStages = _.zip.apply(_, stagedSteps);
 				resultStages = this.mergeSteps(steppedStages);
 			}
+
+			this.applyScaling(resultStages, effectName);
 
 			var resultValue = this.mergeResultStages(resultStages);
 			this.get('effects').push({"key": effectName, value: resultValue});
@@ -289,14 +289,14 @@ leiminauts.Skill = Backbone.Model.extend({
 		return result;
 	},
 
-	applyScaling: function(baseStages, effectName) {
+	applyScaling: function(stages, effectName) {
 		var scalingValue = this.getEffectScalingValue(effectName);
 		if (scalingValue === undefined) {
 			return;
 		}
 
 		var currentLevel = this.character.get('xp_level');
-		_(baseStages).each(function(stage) {
+		_(stages).each(function(stage) {
 			if (this.effectStageIsScaling(stage) && 1 <= currentLevel && currentLevel <= 20) {
 				stage.number *= (1 + (currentLevel-1)*scalingValue);
 			}
