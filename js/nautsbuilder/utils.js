@@ -170,6 +170,7 @@ leiminauts.utils = {
 
 	//converts the arguments object of a function into an array, starting from the index'th parameter
 	argumentsToArray: function(args, index) {
+		console.assert(_.isArguments(args));
 		var index = index || 0;
 		return Array.prototype.slice.call(args, index);
 	},
