@@ -354,25 +354,41 @@ leiminauts.Skill = Backbone.Model.extend({
 			effects.push({key: "DPS max", value: leiminauts.utils.number(attackPerSecond*maxDamage)});
 		}
 
-		if (this.get('name') == "Spike Dive") {
-			dmg = +effects.findWhere({key: "damage"}).value;
-			var seahorse = this.getActiveUpgrade("dead seahorse head");
-			var seahorseEffect = null;
-			var seahorsePercent = effects.findWhere({key: "extra spike damage"});
-			seahorsePercent = seahorsePercent ? parseInt(seahorsePercent.value, 10) : null;
-			if (seahorse && seahorsePercent) {
-				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "extra spike" }) ), 1 );
-				effects.splice( _(effects).indexOf( _(effects).findWhere({ key: "extra spike damage" }) ), 1 );
-				seahorseEffect = {key: "Extra Spike", value: dmg*seahorsePercent/100 };
-				effects.push(seahorseEffect);
+		if (this.get('name') == 'Spike Dive') {
+			dmg = Number(effects.findWhere({key: 'damage'}).value);
+
+			// Make Goldfish's damage effect absolute
+			var solarDamageEffect = effects.findWhere({key: 'damage with 150 solar'});
+			if (solarDamageEffect) {
+				solarDamageEffect.value = dmg + Number(solarDamageEffect.value);
 			}
 
-			var goldfish = this.getActiveUpgrade("bag full of gold fish");
-			var goldfishEffect = effects.findWhere({key: "damage with 150 solar"});
-			if (goldfish && goldfishEffect) {
-				goldfishEffect.value = goldfishEffect.value*1 + dmg;
-				if (seahorseEffect) {
-					effects.push({key: "Extra Spike With 150 Solar", value: Math.floor(goldfishEffect.value*seahorsePercent/100)});
+			// Handle Dead Sea Horse effects
+			var spikeDamageEffect = effects.findWhere({key: 'extra spike damage'});
+			var doubleSpikeDamageEffect = effects.findWhere({key: 'double extra spike damage'});
+			var spikeSolarDamageEffect = effects.findWhere({key: 'extra spike damage with 150 solar'});
+
+			// First remove all effects, avoids showing extra spike damage effects if Dead Seahorse Head is not active
+			if (spikeDamageEffect) {
+				effects.splice(effects.indexOf(spikeDamageEffect), 1);
+			}
+			if (doubleSpikeDamageEffect) {
+				effects.splice(effects.indexOf(doubleSpikeDamageEffect), 1);
+			}
+			if (spikeSolarDamageEffect) {
+				effects.splice(effects.indexOf(spikeSolarDamageEffect), 1);
+			}
+
+			var dshIsActive = this.getActiveUpgrade('dead seahorse head') !== false;
+			// Set base spike damage
+			if (dshIsActive && spikeDamageEffect) {
+				var spikeDamage = Number(spikeDamageEffect.value);
+				effects.push({key: 'extra spike damage', value: doubleSpikeDamageEffect ? 2*spikeDamage : spikeDamage });
+
+				// Set spike damage with 150 solar
+				if (spikeSolarDamageEffect) {
+					var spikeSolarDamage = spikeDamage + Number(spikeSolarDamageEffect.value);
+					effects.push({key: 'extra spike damage with 150 solar', value: doubleSpikeDamageEffect ? 2*spikeSolarDamage : spikeSolarDamage});
 				}
 			}
 		}
