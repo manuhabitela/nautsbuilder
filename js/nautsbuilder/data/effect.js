@@ -42,13 +42,8 @@ leiminauts.effect.NumericEffect = (function() {
 		this.prefix = prefix;
 		this.postfix = postfix;
 
-		if (number instanceof leiminauts.number.Number) {
-			this.number = number;
-		} else {
-			console.log("Info: passed a non-Number to constructor of NumericEffect: ", number);
-			var num = Number(number);
-			this.number = new leiminauts.number.Value(num);
-		}
+		console.assert(number instanceof leiminauts.number.Number, "Assertion failed: found non-Number", number);
+		this.number = number;
 	};
 	var proto = leiminauts.utils.extendPrototype(leiminauts.effect.Effect, NumericEffect);
 
@@ -74,9 +69,9 @@ leiminauts.effect.NumericEffect = (function() {
 
 		var scalingMultiplier = (1 + (level-1)*scalingValue);
 
-		if (!(this.number instanceof leiminauts.number.CalculatedNumber)) {
-			console.log("Info: trying to scale a Number that is not a CalculatedNumber", this.number);
-			this.number = new leiminauts.number.CalculatedNumber(1, this.number);
+		if (!this.number.isExpression()) {
+			console.log("Warning: try to scale a non-Expression", this.number);
+			this.number = new leiminauts.number.Expression(1, this.number);
 		}
 
 		this.number.multiply(scalingMultiplier);
@@ -206,7 +201,7 @@ leiminauts.effect.mergeEffects = (function() {
 		var baseEffect = findAndRemoveBaseEffect(effects);
 		var upgradeEffects = effects;
 
-		var resultNumber = new leiminauts.number.CalculatedNumber(1, baseEffect.number.value);
+		var resultNumber = new leiminauts.number.Expression(1, baseEffect.number.value());
 		var resultEffect = new leiminauts.effect.NumericEffect(baseEffect.name, baseEffect.prefix, baseEffect.postfix, resultNumber);
 
 		_(upgradeEffects).each(function(upgradeEffect) {
@@ -298,25 +293,23 @@ leiminauts.effect.mergeEffects = (function() {
 		}
 
 		var number = effect.number;
-		var value = upgradeEffect.number.value;
-		if (upgradeEffect.isRelative() && !effect.isRelative()) {
+		var value = upgradeEffect.number.value();
+
+		if (!effect.isRelative() && upgradeEffect.isRelative()) {
 			// Adapt value to reflect relative calculation to base
 			value = value.divide(100);
 		}
 
 		if (upgradeEffect.prefix === "×") {
-			number.additiveMultiply(value.substract(leiminauts.number.Value.ONE));
+			number.multiplyStacking(value);
 		} else if (upgradeEffect.prefix === "/") {
-			// base/value = base * 1/value = base * (1/value-1+1) = base * (1 + (1/value - 1))
-			// => Multiply additively with (1/value - 1)
-			var newValue = (leiminauts.number.Value.ONE.divide(value)).substract(leiminauts.number.Value.ONE);
-			number.additiveMultiply(newValue);
+			number.divideStacking(value);
+		} else if (!effect.isRelative() && upgradeEffect.isRelative()) {
+			// Turn the relative calculation into an absolute multiplier
+			// x - 25% = x * (1 - 25/100) = x * (- 25/100 + 1)
+			number.multiplyStacking(value.add(1));
 		} else {
-			if (upgradeEffect.isRelative() && !effect.isRelative()) {
-				number.relativeAdd(value);
-			} else {
-				number.absoluteAdd(value);
-			}
+			number.addStacking(value);
 		}
 	};
 
