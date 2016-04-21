@@ -124,10 +124,17 @@ leiminauts.number.Value = (function() {
 	};
 	var proto = leiminauts.utils.extendPrototype(leiminauts.number.Number, Value);
 
+	/**
+	 * @returns {leiminauts.number.Value} this
+     */
 	proto.value = function() {
 		return this;
 	};
 
+	/**
+	 * @param {object} that object to compare to this
+	 * @returns {boolean} True if and only if the other object is a Value and contains the same stages. False otherwise.
+     */
 	proto.equals = function(that) {
 		if (this === that) return true;
 		if (that === undefined) return false;
@@ -142,7 +149,7 @@ leiminauts.number.Value = (function() {
 	/**
 	 * @param {string} [prefix] prefix for each number
 	 * @param {string} [postfix] postfix for each number
-	 * @returns {string}
+	 * @returns {string} a string representation of the stages with the given prefix and postfix
 	 */
 	proto.toString = function(prefix, postfix) {
 		prefix = prefix || "";
@@ -152,31 +159,37 @@ leiminauts.number.Value = (function() {
 		}).join(' > ');
 	};
 
+	/** @returns {leiminauts.number.Value} the negated Value */
 	proto.negate = function() {
 		if (Value.ZERO.equals(this)) { return this; }
 		return this._map(function(n) { return -n; });
 	};
 
+	/** @returns {leiminauts.number.Value} the reciprocal Value */
 	proto.reciprocate = function() {
 		if (Value.ONE.equals(this)) { return this; }
 		return this._map(function(n) { return 1.0/n; });
 	};
 
+	/** @returns {leiminauts.number.Value} the minimum stage as Value */
 	proto.min = function() {
 		if (this.length == 1) { return this; }
 		return this._collect(_.min);
 	};
 
+	/** @returns {leiminauts.number.Value} the maximum stage as Value */
 	proto.max = function() {
 		if (this.length == 1) { return this; }
 		return this._collect(_.max);
 	};
-	
+
+	/** @returns {leiminauts.number.Value} the average number of the stages as Value */
 	proto.avg = function() {
 		if (this.length == 1) { return this; }
 		return this._collect(_.avg);
 	};
 
+	/** @returns {leiminauts.number.Value} the sum of the stages as Value */
 	proto.sum = function() {
 		if (this.length == 1) { return this; }
 		return this._collect(_.sum);
@@ -267,7 +280,25 @@ leiminauts.number.Value = (function() {
 	return Value;
 })();
 
+/**
+ * Represents an expression that can be evaluated into a final Value. Each operation is inplace and only taken into
+ * consideration when evaluating the expression with the method 'value()'.
+ *
+ * Expression contains two types of operations: Normal operations are right-associative and get evaluated in the order
+ * they were added to this expression. Stacking operations are operations that stack additively with themselves; 'addStacking' together with
+ * 'subtractStacking' and 'multiplyStacking' with 'divideStacking'. All stacking operations are execute before any other
+ * operation. The expression of the stacking operations calculates the following:
+ *
+ * (base + sum(a_i) - sum(s_i)) * (1 + sum(m_i) + sum(1/d_i - 1))
+ *
+ * @class
+ */
 leiminauts.number.Expression = (function() {
+	/**
+	 * Types of possible operations for Expression. The value of a given OperationType relates to the prototype function
+	 * of Value.
+	 * @type {Object}
+	 */
 	var OperationType = Object.freeze({
 		NEGATE:      "negate",
 		RECIPROCATE: "reciprocate",
@@ -282,8 +313,8 @@ leiminauts.number.Expression = (function() {
 	});
 
 	/**
-	 *
-	 * @param instanceCount
+	 * Creates a new Expression from the given instance count and the base Number or numbers.
+	 * @param {number} instanceCount instance count, has to be greater than 0
 	 * @param {leiminauts.number.Number|...number} The base number, given as a Number or multiple numbers as arguments
 	 * @constructor
      */
@@ -419,31 +450,65 @@ leiminauts.number.Expression = (function() {
 		return str;
 	};
 
+	/**
+	 * Negates the expression.
+	 * @returns {leiminauts.number.Expression} this
+	 */
 	proto.negate = function() {
 		this._operations.push({ type: OperationType.NEGATE });
 		return this;
 	};
 
+	/**
+	 * Takes the reciprocal of the expression.
+	 * @returns {leiminauts.number.Expression} this
+	 */
 	proto.reciprocate = function() {
 		this._operations.push({ type: OperationType.RECIPROCATE });
 		return this;
 	};
 
+	/**
+	 * Takes the minimum stage of the current expression.
+	 * @returns {leiminauts.number.Expression} this
+	 */
+	proto.min = function() {
+		this._operations.push({ type: OperationType.MIN });
+		return this;
+	};
+
+	/**
+	 * Takes the maximum stage of the current expression.
+	 * @returns {leiminauts.number.Expression} this
+	 */
 	proto.max = function() {
 		this._operations.push({ type: OperationType.MAX });
 		return this;
 	};
 
+	/**
+	 * Takes the average number of all stages of the current expression.
+	 * @returns {leiminauts.number.Expression} this
+	 */
 	proto.avg = function() {
 		this._operations.push({ type: OperationType.AVG });
 		return this;
 	};
 
+	/**
+	 * Takes the sum of all stages of the current expression.
+	 * @returns {leiminauts.number.Expression} this
+	 */
 	proto.sum = function() {
 		this._operations.push({ type: OperationType.SUM });
 		return this;
 	};
 
+	/**
+	 * Adds the given number(s) to the expression.
+	 * @param {leiminauts.number.Number|...number} numbers Either a Number or multiple numbers as arguments
+	 * @returns {leiminauts.number.Expression} this
+     */
 	proto.add = function(numbers) {
 		var number = this._ensureNumber(arguments);
 		if (!leiminauts.number.Value.ZERO.equals(number)) {
@@ -452,6 +517,11 @@ leiminauts.number.Expression = (function() {
 		return this;
 	};
 
+	/**
+	 * Subtracts the given number(s) from the expression.
+	 * @param {leiminauts.number.Number|...number} numbers Either a Number or multiple numbers as arguments
+	 * @returns {leiminauts.number.Expression} this
+	 */
 	proto.subtract = function(numbers) {
 		var number = this._ensureNumber(arguments);
 		if (!leiminauts.number.Value.ZERO.equals(number)) {
@@ -460,6 +530,11 @@ leiminauts.number.Expression = (function() {
 		return this;
 	};
 
+	/**
+	 * Multiplies the expression with the given number(s).
+	 * @param {leiminauts.number.Number|...number} numbers Either a Number or multiple numbers as arguments
+	 * @returns {leiminauts.number.Expression} this
+	 */
 	proto.multiply = function(numbers) {
 		var number = this._ensureNumber(arguments);
 		if (!leiminauts.number.Value.ONE.equals(number)) {
@@ -468,6 +543,11 @@ leiminauts.number.Expression = (function() {
 		return this;
 	};
 
+	/**
+	 * Divides the expression by the given number(s).
+	 * @param {leiminauts.number.Number|...number} numbers Either a Number or multiple numbers as arguments
+	 * @returns {leiminauts.number.Expression} this
+	 */
 	proto.divide = function(numbers) {
 		var number = this._ensureNumber(arguments);
 		if (!leiminauts.number.Value.ONE.equals(number)) {
@@ -476,6 +556,11 @@ leiminauts.number.Expression = (function() {
 		return this;
 	};
 
+	/**
+	 * Adds the given number(s) to the additive stack.
+	 * @param {leiminauts.number.Number|...number} numbers Either a Number or multiple numbers as arguments
+	 * @returns {leiminauts.number.Expression} this
+	 */
 	proto.addStacking = function(numbers) {
 		var number = this._ensureNumber(arguments);
 		if (!leiminauts.number.Value.ZERO.equals(number)) {
@@ -484,6 +569,11 @@ leiminauts.number.Expression = (function() {
 		return this;
 	};
 
+	/**
+	 * Subtracts the given number(s) from the additive stack.
+	 * @param {leiminauts.number.Number|...number} numbers Either a Number or multiple numbers as arguments
+	 * @returns {leiminauts.number.Expression} this
+	 */
 	proto.subtractStacking = function(numbers) {
 		var number = this._ensureNumber(arguments);
 		if (!leiminauts.number.Value.ZERO.equals(number)) {
@@ -492,6 +582,11 @@ leiminauts.number.Expression = (function() {
 		return this;
 	};
 
+	/**
+	 * Adds the given number(s) to the multiplicative stack.
+	 * @param {leiminauts.number.Number|...number} numbers Either a Number or multiple numbers as arguments
+	 * @returns {leiminauts.number.Expression} this
+	 */
 	proto.multiplyStacking = function(numbers) {
 		var number = this._ensureNumber(arguments);
 		if (!leiminauts.number.Value.ONE.equals(number)) {
@@ -500,6 +595,11 @@ leiminauts.number.Expression = (function() {
 		return this;
 	};
 
+	/**
+	 * Adds the given number(s) to the multiplicative stack as a division.
+	 * @param {leiminauts.number.Number|...number} numbers Either a Number or multiple numbers as arguments
+	 * @returns {leiminauts.number.Expression} this
+	 */
 	proto.divideStacking = function(numbers) {
 		var number = this._ensureNumber(arguments);
 		if (!leiminauts.number.Value.ONE.equals(number)) {
@@ -511,7 +611,19 @@ leiminauts.number.Expression = (function() {
 	return Expression;
 })();
 
+/**
+ * Represents an expression that extends another. All operations do not influence the extended object. All stacking
+ * operations stack with the extended object. The normal operations of this object are executed after the operations
+ * of the extended object.
+ *
+ * @class
+ */
 leiminauts.number.ExtendedExpression = (function() {
+	/**
+	 * Creates a new ExtendedExpression by extending the given Expression.
+	 * @param {leiminauts.number.Expression} expression to be extended expression
+	 * @constructor
+     */
 	var ExtendedExpression = function(expression) {
 		leiminauts.number.Expression.call(this, expression.instanceCount, expression.base);
 		this.proxy = expression;
