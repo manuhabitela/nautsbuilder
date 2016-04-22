@@ -215,8 +215,8 @@ leiminauts.effect.effectFromString = (function() {
 
 	var numberRegex = /^(\+|-|\/|×|@)?([0-9]*\.?[0-9]+)([%s])?$/i;
 	// Returns the results of matching a number with the regex
-	var matchNumberRegex = function(number) {
-		var regexResults = numberRegex.exec(number);
+	var matchNumberRegex = function(numberString) {
+		var regexResults = numberRegex.exec(numberString);
 		if (regexResults === null) {
 			return undefined;
 		}
