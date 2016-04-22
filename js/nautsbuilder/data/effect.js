@@ -18,8 +18,19 @@ leiminauts.effect.Effect = (function() {
 		'value': { get: function() { leiminauts.utils.throwNotImplemented("Effect.prototype.value"); } }
 	});
 
-	proto.toString = function() { return this.key + ": " + this.value; };
-	proto.isScalable = function() { return false; };
+	proto.toString = function() {
+		return this.key + ": " + this.value;
+	};
+
+	/** @returns {boolean} True if this effect is numeric. False otherwise. */
+	proto.isNumeric = function() {
+		return this instanceof leiminauts.effect.NumericEffect;
+	};
+
+	/** @returns {boolean} True if this effect can be scaled. False otherwise. */
+	proto.isScalable = function() {
+		return this.isNumeric() && !this.isRelative() && !this.isMultiplicative();
+	};
 
 	return Effect;
 })();
@@ -52,12 +63,16 @@ leiminauts.effect.NumericEffect = (function() {
 		return this.number.toString(prefix, this.postfix);
 	}});
 
-	/** @returns {boolean} True if this effect can be scaled. False otherwise. */
-	proto.isScalable = function() { return !this.isRelative() && !this.isMultiplicative(); };
 	/** @returns {boolean} True if this effect is percentage based. False otherwise */
-	proto.isRelative = function() { return this.postfix === "%"; };
+	proto.isRelative = function() {
+		return this.postfix === "%";
+	};
+
 	/** @returns {boolean} True if this effect is multiplicative. False otherwise */
-	proto.isMultiplicative = function() { return this.prefix === "×" || this.prefix === "/"; };
+	proto.isMultiplicative = function() {
+		return this.prefix === "×" || this.prefix === "/";
+	};
+
 	/**
 	 * Scales this effect by the given level and scaling value according to (1 + (level-1)*scalingValue)
 	 * @param {number} level the level
@@ -75,6 +90,56 @@ leiminauts.effect.NumericEffect = (function() {
 		}
 
 		this.number.multiply(scalingMultiplier);
+	};
+
+	/**
+	 *
+	 * @param {leiminauts.effect.NumericEffect} upgradeEffect
+	 */
+	proto.applyEffect = function(upgradeEffect) {
+		if (!upgradeEffect.isNumeric()) {
+			console.log("Warning: trying to apply non-NumericEffect ", upgradeEffect, " to ", this);
+			return;
+		}
+		console.assert(upgradeEffect instanceof leiminauts.effect.NumericEffect);
+		if (upgradeEffect.prefix === "@") {
+			return; // Do nothing because of prefix
+		}
+
+		if (!this.number.isExpression()) {
+			this.number = new leiminauts.number.Expression(1, this.number);
+		}
+
+		var isRelativeToBase = !this.isRelative() && upgradeEffect.isRelative();
+		this._applyNumber(upgradeEffect.number, upgradeEffect.prefix, isRelativeToBase);
+	};
+
+	/**
+	 * Applies the given number with its prefix and whether it is relative to this effect.
+	 * @param {leiminauts.number.Number} upgrade upgrade Number to apply
+	 * @param {string} prefix prefix of the Number
+	 * @param {boolean} isRelativeToBase If true, then Number is handled as a percentage increase to base, i.e. +- X%
+	 * @private
+	 */
+	proto._applyNumber = function(upgrade, prefix, isRelativeToBase) {
+		// Create a new Expression to avoid changing upgrade inplace
+		var expression = new leiminauts.number.Expression(1, upgrade);
+		if (isRelativeToBase) {
+			// Adapt value to reflect relative calculation to base
+			expression.divide(100);
+		}
+
+		if (prefix === "×") {
+			this.number.multiplyStacking(expression);
+		} else if (prefix === "/") {
+			this.number.divideStacking(expression);
+		} else if (isRelativeToBase) {
+			// Turn the relative calculation into an absolute multiplier
+			// x + a% = x * (1 + a/100)
+			this.number.multiplyStacking(expression.add(1));
+		} else {
+			this.number.addStacking(expression);
+		}
 	};
 
 	return NumericEffect;
@@ -180,7 +245,7 @@ leiminauts.effect.effectFromString = (function() {
 
 /**
  * Merges a list of effects into one. If a non-NumericEffect exists, it returns the first effect. If all effects are
- * numeric, it creates a new NumericEffect and merges the value of the effect number into it.
+ * numeric, it returns a new NumericEffect with all the effects merged into it.
  *
  * @param {leiminauts.effect.Effect[]} effects list of effects, must contain at least one element
  * @returns {leiminauts.effect.Effect} the merged effect
@@ -189,11 +254,11 @@ leiminauts.effect.mergeEffects = (function() {
 	var mergeEffects = function(effects) {
 		console.assert(effects.length >= 1, effects);
 		var containsOnlyNumeric = _(effects).every(function(effect) {
-			return effect instanceof leiminauts.effect.NumericEffect;
+			return effect.isNumeric();
 		});
 		if (!containsOnlyNumeric) {
 			if (effects.length > 1) {
-				console.log("Warning: cannot merge non-NumericEffects, ignoring upgrades of ", effects);
+				console.log("Warning: cannot merge non-NumericEffects, ignoring upgrades ", effects.slice(1));
 			}
 
 			return effects[0];
@@ -202,11 +267,10 @@ leiminauts.effect.mergeEffects = (function() {
 		var baseEffect = findAndRemoveBaseEffect(effects);
 		var upgradeEffects = effects;
 
-		var resultNumber = new leiminauts.number.Expression(1, baseEffect.number.value());
-		var resultEffect = new leiminauts.effect.NumericEffect(baseEffect.name, baseEffect.prefix, baseEffect.postfix, resultNumber);
-
-		_(upgradeEffects).each(function(upgradeEffect) {
-			applyUpgradeToEffect(resultEffect, upgradeEffect);
+		var expr = new leiminauts.number.Expression(1, baseEffect.number);
+		var resultEffect = new leiminauts.effect.NumericEffect(baseEffect.name, baseEffect.prefix, baseEffect.postfix, expr);
+		_(upgradeEffects).each(function(e) {
+			resultEffect.applyEffect(e);
 		});
 
 		return resultEffect;
@@ -281,37 +345,6 @@ leiminauts.effect.mergeEffects = (function() {
 
 		// Stable sort
 		return a.index - b.index;
-	};
-
-	/**
-	 * Applies the value of the given upgrade effect to the number of the given effect.
-	 * @param {leiminauts.effect.NumericEffect} effect
-	 * @param {leiminauts.effect.NumericEffect} upgradeEffect
-	 */
-	var applyUpgradeToEffect = function(effect, upgradeEffect) {
-		if (upgradeEffect.prefix === "@") {
-			return; // Do nothing because base is fixed
-		}
-
-		var number = effect.number;
-		var value = upgradeEffect.number.value();
-
-		if (!effect.isRelative() && upgradeEffect.isRelative()) {
-			// Adapt value to reflect relative calculation to base
-			value = value.divide(100);
-		}
-
-		if (upgradeEffect.prefix === "×") {
-			number.multiplyStacking(value);
-		} else if (upgradeEffect.prefix === "/") {
-			number.divideStacking(value);
-		} else if (!effect.isRelative() && upgradeEffect.isRelative()) {
-			// Turn the relative calculation into an absolute multiplier
-			// x - 25% = x * (1 - 25/100) = x * (- 25/100 + 1)
-			number.multiplyStacking(value.add(1));
-		} else {
-			number.addStacking(value);
-		}
 	};
 
 	return mergeEffects;
