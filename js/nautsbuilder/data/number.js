@@ -42,10 +42,12 @@ leiminauts.number.Number = (function() {
 		return this.value().toString(prefix, postfix);
 	};
 
+	/** @returns {boolean} true if this instance is a Value. False otherwise. */
 	proto.isValue = function() {
 		return this instanceof leiminauts.number.Value;
 	};
 
+	/** @returns {boolean} true if this instance is an Expression. False otherwise. */
 	proto.isExpression = function() {
 		return this instanceof leiminauts.number.Expression;
 	};
@@ -612,7 +614,7 @@ leiminauts.number.Expression = (function() {
 	proto.divideStacking = function(numbers) {
 		var number = this._ensureNumber(arguments);
 		if (!leiminauts.number.Value.ONE.equals(number)) {
-			this._stackingDivisons.push(number);
+			this._stackingDivisions.push(number);
 		}
 		return this;
 	};
