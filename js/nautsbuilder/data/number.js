@@ -337,10 +337,19 @@ leiminauts.number.Expression = (function() {
 	proto.stackingMultiplications = function() { return this._stackingMultiplications; };
 	proto.stackingDivisions = function() { return this._stackingDivisions; };
 
+	/**
+	 * Returns the resulting value after evaluating this expression.
+	 */
 	proto.value = function() {
 		return this._evaluateWithBaseValue(this.base.value(), 1);
 	};
 
+	/**
+	 * Returns the instance value and its corresponding count. It holds that
+	 * value = instanceValue * instanceCount
+	 *
+	 * @returns {{count: number, value: leiminauts.number.Value}} an object containing both the instance count and value
+	 */
 	proto.instanceValue = function() {
 		var baseNumber = this.base;
 		// If we got more than one instance or baseNumber is not an expression
