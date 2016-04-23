@@ -53,62 +53,53 @@ leiminauts.Skill = Backbone.Model.extend({
 		if (this.get('type') == "jump") {
 			this.addBaseJumpEffects(baseEffects);
 		}
-
 		this.set('baseEffects', baseEffects);
 	},
 
 	addBaseJumpEffects: function(baseEffects) {
 		var baseJump = _(leiminauts.skills).findWhere({name: "base jump", type: "jump"});
-		if (!baseJump) {
-			return;
-		}
-
+		if (!baseJump) { return; }
 		var baseJumpEffects = leiminauts.effect.effectsFromString(baseJump.effects);
-		_(baseJumpEffects).each(function(effect) {
-			if (!_(baseEffects).containsWhere({key: effect.key})) {
-				baseEffects.push(effect);
-			}
-		});
+		_(baseEffects).defaults(baseJumpEffects);
 	},
 
+	pillsList: {'turbo': 'Power Pills Turbo', 'light': 'Power Pills Light', 'companion': 'Power Pills Companion'},
 	initUpgrades: function() {
-		// Use the common upgrades named Jump for the jump skill
-		var skillName = (this.get('type') == "jump" ? "Jump" : this.get('name'));
+		var skillName = this.get('type') === 'jump' ? 'Jump' : this.get('name');
 		var skillUpgrades = _(leiminauts.upgrades).where({ skill: skillName });
 
 		// Handle pills and unique character upgrades for the jump skill
-		if (skillName === "Jump") {
-			var upgradesObj = _(skillUpgrades);
-
+		if (this.get('type') === 'jump') {
 			// Handle character specific pills
-			var baseEffects = this.get('baseEffects');
-			var pills = _(baseEffects).findWhere({key: "pills"});
-			if (pills) {
-				// Remove pills value from baseEffects
-				var index = _(baseEffects).indexOf(pills);
-				baseEffects.splice(index, 1);
+			var pillsEffect = this.get('baseEffects')['pills'];
+			if (pillsEffect) {
+				// Remove pills effect
+				delete this.get('baseEffects')['pills'];
 
-				// Remove unused pills from upgrades
-				var unwantedPills = {"turbo": "Power Pills Turbo", "light": "Power Pills Light", "companion": "Power Pills Companion"};
-				delete unwantedPills[pills.value];
+				// Get all pills that are not ours
+				var unwantedPills = _(this.pillsList).filter(function(pillValue, pillKey) {
+					return pillKey !== pillsEffect.value;
+				});
 
-				_(unwantedPills).each(function(pillsName) {
-					var pill = upgradesObj.findWhere({ name: pillsName });
-					var index = upgradesObj.indexOf(pill);
-					if (index >= 0)
-						skillUpgrades.splice(index, 1);
+				// Remove remaining pills from skillUpgrades
+				_(unwantedPills).each(function(pillValue) {
+					var pillIndex = _(skillUpgrades).findIndex(_.matcher({ name: pillValue }));
+					if (pillIndex >= 0) {
+						skillUpgrades.splice(pillIndex, 1);
+					}
 				});
 			}
 
 			// Replace unique jump upgrades with common ones
 			var characterJumpUpgrades = _(leiminauts.upgrades).where({ skill: this.get('name') });
 			_(characterJumpUpgrades).each(function(newUpgrade) {
-				var oldUpgrade = upgradesObj.findWhere({ skill: "Jump", name: newUpgrade.replaces });
-				var index = upgradesObj.indexOf(oldUpgrade);
-				skillUpgrades[index] = _(newUpgrade).clone();
+				var oldUpgradeIndex = _(skillUpgrades).findIndex(_.matcher({skill: "Jump", name: newUpgrade.replaces}));
+				if (oldUpgradeIndex >= 0) {
+					skillUpgrades[oldUpgradeIndex] = _(newUpgrade).clone();
+				}
 			});
-		} else {
-			// Link the upgrade to the skill to enable upgrade shortcut
+		} else if (this.get('type') !== 'auto') {
+			// Link skill to enable activation shortcut for upgrades
 			_(skillUpgrades).each(function(upgrade) {
 				upgrade.skill = this;
 			}, this);
@@ -158,41 +149,22 @@ leiminauts.Skill = Backbone.Model.extend({
 		var activeUpgrades = this.getActiveUpgrades();
 		this.set('total_cost', this.getTotalCost(activeUpgrades));
 		this.set('maxed_out', this.skillIsMaxedOut(activeUpgrades));
-		this.lockNonActiveUpgrades(this.upgrades, activeUpgrades);
+		this.lockNonActiveUpgrades(activeUpgrades);
 
-		var activeSteps = this.getActiveSteps();
 		this.set('effects', [], {silent: true});
-
-		var effects = this.mergeEffectsAndSteps(this.get('baseEffects'), activeSteps);
-		this.applyUpgrades(effects);
+		var activeSteps = this.getActiveSteps();
+		var effects = this.mergeBaseAndUpgrades(this.get('baseEffects'), activeSteps);
 
 		// TODO: implement specific effects with new classes
 		// this.setSpecificEffects();
 		// this.setDPS();
 		// this.setSpecificEffectsTheReturnOfTheRevenge();
-		this.set('effects', _(this.get('effects')).sortBy(function(effect) { return effect.key.toLowerCase(); }));
-	},
 
-	skillIsMaxedOut: function(activeUpgrades) {
-		var maxedOut = true;
-		if (activeUpgrades.length >= 3) {
-			_(activeUpgrades).each(function(upgrade) {
-				if (upgrade.get('current_step').get('level') !== upgrade.get('max_step')) {
-					maxedOut = false;
-					return false;
-				}
-			});
-		} else {
-			maxedOut = false;
-		}
-		return maxedOut;
-	},
-
-	lockNonActiveUpgrades: function(upgrades, activeUpgrades) {
-		// Make all none active upgrades locked if 3 upgrades are active
-		upgrades.each(function(upgrade) {
-			upgrade.set('locked', activeUpgrades.length >= 3 && !_(activeUpgrades).contains(upgrade));
+		_(effects).each(this.applyScaling, this);
+		var sortedEffects = _(effects).sortBy(function(effect) {
+			return effect.key.toLowerCase();
 		});
+		this.set('effects', sortedEffects);
 	},
 
 	getTotalCost: function(activeUpgrades) {
@@ -204,37 +176,44 @@ leiminauts.Skill = Backbone.Model.extend({
 		return cost;
 	},
 
-	mergeEffectsAndSteps: function(baseEffects, activeSteps) {
-		var effects = {};
+	skillIsMaxedOut: function(activeUpgrades) {
+		if (activeUpgrades.length < 3) {
+			return false;
+		}
 
-		// Combine all effects with the name key into an array of values
-		var addToEffects = function(effectList) {
-			_(effectList).each(function(effect) {
-				if (effects[effect.key] === undefined) {
-					effects[effect.key] = [];
-				}
-				effects[effect.key].push(effect);
-			});
-		};
-
-		addToEffects(baseEffects);
-		_(activeSteps).each(function(step) {
-			addToEffects(step.get('effects'));
+		return _(activeUpgrades).every(function(upgrade) {
+			return upgrade.get('current_step').get('level') === upgrade.get('max_step');
 		});
-
-		return effects;
 	},
 
-	// For all effects, merges all steps into one value
-	applyUpgrades: function(effects) {
-		_(effects).each(function(steps) {
-			var effect = leiminauts.effect.mergeEffects(steps);
-			if (effect === undefined) {
-				return;
-			}
-			this.applyScaling(effect);
-			this.get('effects').push(effect);
-		}, this);
+	lockNonActiveUpgrades: function(activeUpgrades) {
+		// Make all none active upgrades locked if 3 upgrades are active
+		this.upgrades.each(function(upgrade) {
+			upgrade.set('locked', activeUpgrades.length >= 3 && !_(activeUpgrades).contains(upgrade));
+		});
+	},
+
+	mergeBaseAndUpgrades: function(baseEffects, activeSteps) {
+		var stepsEffects = _(activeSteps).map(function(step) {
+			return step.get('effects');
+		});
+		var effectsList = [baseEffects].concat(stepsEffects);
+
+		// Get all the effects from baseEffect and stepsEffects into one array
+		var effectList = _(effectsList).chain()
+			.map(_.values)
+			.flatten()
+			.value();
+
+		// Group effects with same name
+		var groupedEffects = _(effectsList).groupBy(function(effect) {
+			return effect.name;
+		});
+
+		// Merge effects into one
+		return _(groupedEffects).map(function(effects) {
+			return leiminauts.effect.mergeEffects(effects);
+		});
 	},
 
 	applyScaling: function(effect) {

@@ -169,15 +169,21 @@ leiminauts.effect.StringEffect = (function() {
 })();
 
 /**
- * Given a string listing all effects returns a list of Effects.
+ * Given a string listing all effects returns an object with key-value pairs where key is the effect name and value the
+ * effect.
  * @param {string} effectsString a string containing key:value pairs separated by ';'
- * @returns {leiminauts.effect.Effect[]} list of resulting Effects
+ * @returns {object} object containing all effects as key:value pairs
  */
 leiminauts.effect.effectsFromString = function(effectsString) {
 	var keyValuePairs = leiminauts.utils.treatEffects(effectsString);
-	return _(keyValuePairs).map(function(pair) {
-		return leiminauts.effect.effectFromString(pair.key, pair.value);
-	});
+	return _(keyValuePairs).chain()
+		.map(function(pair) {
+			var effect = leiminauts.effect.effectFromString(pair.key, pair.value);
+			return [effect.key, effect];
+		})
+		.reverse() // Use reverse so that the first duplicate pair.key wins
+		.object()
+		.value();
 };
 
 /**
