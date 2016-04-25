@@ -226,6 +226,10 @@ leiminauts.Skill = Backbone.Model.extend({
 			return;
 		}
 
+		if (effect.number instanceof leiminauts.number.ExtendedExpression) {
+			return; // Avoid duplicate scaling
+		}
+
 		var currentLevel = this.character.get('xp_level');
 		effect.applyScaling(currentLevel, scalingValue);
 	},
