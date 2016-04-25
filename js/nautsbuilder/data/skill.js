@@ -206,12 +206,12 @@ leiminauts.Skill = Backbone.Model.extend({
 			.value();
 
 		// Group effects with same name
-		var groupedEffects = _(effectsList).groupBy(function(effect) {
+		var groupedEffects = _(effectList).groupBy(function(effect) {
 			return effect.name;
 		});
 
 		// Merge effects into one
-		return _(groupedEffects).map(function(effects) {
+		return _(groupedEffects).mapObject(function(effects) {
 			return leiminauts.effect.mergeEffects(effects);
 		});
 	},
