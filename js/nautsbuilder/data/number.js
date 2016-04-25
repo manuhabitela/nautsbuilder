@@ -636,6 +636,7 @@ leiminauts.number.ExtendedExpression = (function() {
 	 * @constructor
      */
 	var ExtendedExpression = function(expression) {
+		console.assert(expression instanceof leiminauts.number.Expression, "Assertion failed: ExtendedExpression constructor was given non-Expression object", expression);
 		leiminauts.number.Expression.call(this, expression.instanceCount, expression.base);
 		this.proxy = expression;
 	};
