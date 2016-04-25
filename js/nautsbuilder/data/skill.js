@@ -629,12 +629,10 @@ leiminauts.Skill = Backbone.Model.extend({
 				if (stageMatch == null) {
 					return stage;
 				}
+				stageMatch = _(stageMatch).reject(_.isUndefined);
 
 				var numbers = stageMatch.slice(1, 3);
 				var scaledNumbers = _(numbers).map(function(number) {
-					if (number === undefined) {
-						return number;
-					}
 					var numberMatch = number.match(numberRegex);
 					if (numberMatch == null) {
 						return number;
@@ -646,8 +644,8 @@ leiminauts.Skill = Backbone.Model.extend({
 					return prefix + leiminauts.utils.number(n);
 				});
 
-				var resultStage = scaledNumbers[0];
-				if (scaledNumbers.length > 2) {
+				var resultStage = "" + scaledNumbers[0];
+				if (scaledNumbers.length > 1) {
 					resultStage += ' (' + scaledNumbers[1] + '×' + stageMatch[3] + ')';
 				}
 				return resultStage;
