@@ -160,7 +160,10 @@ leiminauts.Skill = Backbone.Model.extend({
 		// this.setDPS();
 		// this.setSpecificEffectsTheReturnOfTheRevenge();
 
+		this.applyBonusEffects(effects);
+
 		_(effects).each(this.applyScaling, this);
+
 		var sortedEffects = _(effects).sortBy(function(effect) {
 			return effect.key.toLowerCase();
 		});
@@ -258,6 +261,175 @@ leiminauts.Skill = Backbone.Model.extend({
 			return undefined;
 		}
 	},
+
+
+	filterNumericEffects: function(effects) {
+		return _(effects).pick(function(effect, key) {
+			return effect instanceof leiminauts.effect.NumericEffect;
+		});
+	},
+
+	applyBonusEffects: function(effects) {
+		var baseEffectNames = ['damage', 'attack speed', 'heal', 'heal over time'];
+		var bonusEffectNames = ['bonus', 'backstab', 'ion blowtorch', 'charged', 'structure', 'split'];
+		var numericEffects = this.filterNumericEffects(effects);
+
+		_(baseEffectNames).each(function(baseName) {
+			var baseKey = baseName;
+			if (!_(numericEffects).has(baseKey)) {
+				return; // Ignore because there is no base effect to apply with bonus effect
+			}
+			var baseEffect = numericEffects[baseKey];
+
+			_(bonusEffectNames).each(function(bonusName) {
+				var bonusKey = bonusName + ' ' + baseName;
+				if (!_(numericEffects).has(bonusKey)) {
+					return;
+				}
+				var bonusEffect = numericEffects[bonusKey];
+				this.applyBonusEffect(effects, baseEffect, bonusEffect);
+			}, this);
+		}, this);
+	},
+
+	applyBonusEffect: function(effects, baseEffect, bonusEffect) {
+		var resultNumber = new leiminauts.number.ExtendedExpression(baseEffect.number);
+		var resultEffect = new leiminauts.effect.NumericEffect(bonusEffect.name, baseEffect.prefix, baseEffect.postfix, resultNumber);
+		resultEffect.applyEffect(bonusEffect);
+
+		// Replace bonusEffect with resultEffect
+		effects[bonusEffect.key] = resultEffect;
+	},
+
+	// perSecondTypes: [
+	// 	{name: 'damage', prefix: 'd'},
+	// 	{name: 'heal',   prefix: 'h'}
+	// ],
+	// perSecondCalculations: [{
+	// 	/* Properties for the DPS/HPS calculation based on 'attack speed' */
+	// 	regex: function(type, typePrefix) {
+	// 		return new RegExp('^((.+ )?)' + type + '$', 'i');
+	// 	},
+	// 	effectName: function(prefix, type, typePrefix) {
+	// 		return prefix + typePrefix + 'ps';
+	// 	},
+	// 	secondaryEffectName: function(prefix, type) {
+	// 		return prefix + 'attack speed';
+	// 	},
+	// 	calculateNumber: function(averageNumber, secondaryNumber) {
+	// 		return new leiminauts.number.CalculatedNumber(1, averageNumber)
+	// 			.multiply(secondaryNumber)
+	// 			.multiply(1.0/60.0);
+	// 	}
+	// },{
+	// 	/* Properties for the DPS/HPS calculation base on 'X over time' and 'X duration' */
+	// 	regex: function(type, typePrefix) {
+	// 		return new RegExp('^((.+ )?)' + type + ' over time$', 'i');
+	// 	},
+	// 	effectName: function(prefix, type, typePrefix) {
+	// 		return prefix + typePrefix + 'ot ' + typePrefix + 'ps';
+	// 	},
+	// 	secondaryEffectName: function(prefix, type) {
+	// 		return prefix + type + ' duration';
+	// 	},
+	// 	calculateNumber: function(averageNumber, secondaryNumber) {
+	// 		// FIXME: number.value is a hack and defeats the whole purpose of Number & Value
+	// 		var duration = secondaryNumber.value;
+	// 		return new leiminauts.number.CalculatedNumber(1, averageNumber)
+	// 			.multiply(leiminauts.number.Value.ONE.divide(duration));
+	// 	}
+	// },{
+	// 	/* Properties for the 'total heal/damage' calculation based on 'DPS/HPS' and 'duration' */
+	// 	regex: function(type, typePrefix) {
+	// 		return new RegExp('^((.+ )?)' + typePrefix + 'ps$', 'i');
+	// 	},
+	// 	effectName: function(prefix, type, typePrefix) {
+	// 		return prefix + 'total ' + type;
+	// 	},
+	// 	secondaryEffectName: function(prefix, type) {
+	// 		return prefix + 'duration';
+	// 	},
+	// 	calculateNumber: function(averageNumber, secondaryNumber) {
+	// 		// FIXME: number.value is a hack and defeats the whole purpose of Number & Value
+	// 		var duration = secondaryNumber.value;
+	// 		return new leiminauts.number.CalculatedNumber(1, averageNumber)
+	// 			.multiply(duration);
+	// 	}
+	// }],
+	//
+	// /**
+	//  * Creates DPS and HPS effects from the following pairs:
+	//  *  - 'X (damage|heal)' and 'X attack speed'
+	//  *  - 'X (damage|heal) over time' and 'X (damage|heal) duration'.
+	//  *  The created effects directly depend on the referenced effects.
+	//  *
+	//  * @param effects
+	//  */
+	// addPerSecondEffects: function(effects) {
+	// 	console.assert(this.get('selected'));
+	//
+	// 	_(this.perSecondTypes).each(function(type) {
+	// 		_(this.perSecondCalculations).each(function(calcProperties) {
+	// 			this.addPerSecondEffectsForCalculation(effects, type, calcProperties);
+	// 		}, this);
+	// 	}, this);
+	// },
+	//
+	// addPerSecondEffectsForCalculation: function(effects, type, calcProperties) {
+	// 	var numericEffects = this.filterNumericEffects(effects);
+	//
+	// 	// Add effects for each type
+	// 	var regex = calcProperties.regex(type.name, type.prefix);
+	// 	var matchingEffects = _(numericEffects).filter(function(e) {
+	// 		return regex.test(e.key);
+	// 	});
+	//
+	// 	_(matchingEffects).each(function(matchingEffect) {
+	// 		var prefix = (matchingEffect.key).match(regex)[1];
+	// 		var resultName = calcProperties.effectName(prefix, type.name, type.prefix);
+	// 		if (_(effects).containsWhere({key: resultName})) {
+	// 			// Result effect already exists
+	// 			console.log("Result effect", resultName, "already exists, ignoring...");
+	// 			return;
+	// 		}
+	//
+	// 		var secondaryName = calcProperties.secondaryEffectName(prefix, type.name);
+	// 		var secondaryEffect = _(numericEffects).findWhere({key: secondaryName});
+	// 		if (!secondaryEffect) {
+	// 			return; // Could not find second effect for calculation, ignore.
+	// 		}
+	//
+	// 		var averageNumber = leiminauts.number.AggregatedNumber.avg(matchingEffect.number);
+	// 		var resultNumber = calcProperties.calculateNumber(averageNumber, secondaryEffect.number);
+	// 		var resultEffect = new leiminauts.effect.NumericEffect(resultName, '', '', resultNumber);
+	// 		effects.push(resultEffect);
+	// 	});
+	// },
+	//
+	// multiplierRegex:  /(.+) multiplier/i,
+	// setMultipliers: function(effects) {
+	// 	var numericEffects = this.filterNumericEffects(effects);
+	//
+	// 	var multiplierEffects = _(numericEffects).filter(function(effect) {
+	// 		return this.multiplierRegex.test(effect.key);
+	// 	}, this);
+	//
+	// 	_(multiplierEffects).each(function(multiplier) {
+	// 		var prefix = (multiplier.key).match(this.multiplierRegex)[1]; // TODO: Use substr?
+	// 		var effect = _(numericEffects).findWhere({key: prefix});
+	// 		if (!effect || !(effect.number instanceof leiminauts.number.CalculatedNumber)) {
+	// 			return; // Effect does not exist or is not a CalculatedNumber, i.e. does not have an instanceCount
+	// 		}
+	//
+	// 		effect.number.instanceCount = multiplier.number.value;
+	// 		var multiplierIndex = _(effects).indexOf(multiplier);
+	// 		effects.splice(multiplierIndex, 1);
+	// 	}, this);
+	// },
+
+
+
+
 
 	setSpecificEffects: function() {
 		if (!this.get('selected')) return false;
