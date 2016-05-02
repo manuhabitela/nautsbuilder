@@ -161,6 +161,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		// this.setSpecificEffectsTheReturnOfTheRevenge();
 
 		this.applyBonusEffects(effects);
+		this.applyDpsEffects(effects);
 		this.setMultipliers(effects);
 
 		_(effects).each(this.applyScaling, this);
@@ -307,6 +308,52 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		// Replace bonusEffect with resultEffect
 		effects[bonusEffect.key] = resultEffect;
+	},
+
+	applyDpsEffects: function(effects) {
+		var damageName = 'damage';
+		var attackSpeedName = 'attack speed';
+		var numericEffects = this.filterNumericEffects(effects);
+
+		// Base DPS
+		if (_(numericEffects).has(damageName) && _(numericEffects).has(attackSpeedName)) {
+			var damageEffect = numericEffects[damageName];
+			var attackSpeedEffect = numericEffects[attackSpeedName];
+            this.applyDpsEffect(effects, damageEffect, attackSpeedEffect, 'dps');
+		}
+
+		// Additional DPS effects
+		var dpsEffectNames = ['thorn', 'missile', 'backstab'];
+		_(dpsEffectNames).each(function(dpsPrefix) {
+			var prefixDamageEffect = numericEffects[dpsPrefix + ' ' + damageName];
+			if (!prefixDamageEffect) { prefixDamageEffect = numericEffects[damageName]; }
+			if (!prefixDamageEffect) { return; } // Skip because neither base nor prefix exists
+
+			var prefixAtkspdEffect = numericEffects[dpsPrefix + ' ' + attackSpeedName];
+			if (!prefixAtkspdEffect) { prefixAtkspdEffect = numericEffects[attackSpeedName]; }
+			if (!prefixAtkspdEffect) { return; } // Skip because neither base nor prefix exists
+
+			if (prefixDamageEffect.name === damageName && prefixAtkspdEffect.name === attackSpeedName) {
+				return; // Skip because base DPS already handled
+			}
+
+			var resultName = dpsPrefix + ' dps';
+            this.applyDpsEffect(effects, prefixDamageEffect, prefixAtkspdEffect, resultName);
+		}, this);
+	},
+
+	applyDpsEffect: function(effects, damageEffect, attackSpeedEffect, dpsEffectName) {
+		if (_(effects).has(dpsEffectName)) {
+			console.log("Warning: DPS effect '" + dpsEffectName + "' already exists, ignoring new one...");
+			return;
+		}
+
+		var resultNumber = new leiminauts.number.ExtendedExpression(damageEffect.number)
+			.avg()
+			.multiply(attackSpeedEffect.number)
+			.divide(60);
+		var resultEffect = new leiminauts.effect.NumericEffect(dpsEffectName, damageEffect.prefix, damageEffect.postfix, resultNumber);
+		effects[resultEffect.key] = resultEffect;
 	},
 
 	// perSecondTypes: [
