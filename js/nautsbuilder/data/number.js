@@ -654,6 +654,10 @@ leiminauts.number.ExtendedExpression = (function() {
 	};
 
 	var proto = leiminauts.utils.extendPrototype(leiminauts.number.Expression, ExtendedExpression);
+
+	Object.defineProperty(proto, 'base', { get: function() { return this.proxy.base; } });
+	Object.defineProperty(proto, 'instanceCount', { get: function() { return this.proxy.instanceCount; } });
+
 	proto.operations = function() {
 		return this.proxy.operations().concat(this._operations);
 	};
