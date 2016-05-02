@@ -161,6 +161,18 @@ leiminauts.number.Value = (function() {
 		}).join(' > ');
 	};
 
+	/**
+	 * Returns this Value as a number. If it contains more than one stage, it emits a warning and returns the first stage.
+	 * @returns {number} the number of the first stage
+	 */
+	proto.toNumber = function() {
+		if (this.length > 1) {
+			console.log("Warning: cannot map Value", this, "with", this.length, "stages to a number. Returning first stage");
+		}
+
+		return Number(this.stages[0]);
+	};
+
 	/** @returns {leiminauts.number.Value} the negated Value */
 	proto.negate = function() {
 		if (Value.ZERO.equals(this)) { return this; }

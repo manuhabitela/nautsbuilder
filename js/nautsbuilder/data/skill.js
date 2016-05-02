@@ -161,6 +161,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		// this.setSpecificEffectsTheReturnOfTheRevenge();
 
 		this.applyBonusEffects(effects);
+		this.setMultipliers(effects);
 
 		_(effects).each(this.applyScaling, this);
 
@@ -405,27 +406,25 @@ leiminauts.Skill = Backbone.Model.extend({
 	// 		effects.push(resultEffect);
 	// 	});
 	// },
-	//
-	// multiplierRegex:  /(.+) multiplier/i,
-	// setMultipliers: function(effects) {
-	// 	var numericEffects = this.filterNumericEffects(effects);
-	//
-	// 	var multiplierEffects = _(numericEffects).filter(function(effect) {
-	// 		return this.multiplierRegex.test(effect.key);
-	// 	}, this);
-	//
-	// 	_(multiplierEffects).each(function(multiplier) {
-	// 		var prefix = (multiplier.key).match(this.multiplierRegex)[1]; // TODO: Use substr?
-	// 		var effect = _(numericEffects).findWhere({key: prefix});
-	// 		if (!effect || !(effect.number instanceof leiminauts.number.CalculatedNumber)) {
-	// 			return; // Effect does not exist or is not a CalculatedNumber, i.e. does not have an instanceCount
-	// 		}
-	//
-	// 		effect.number.instanceCount = multiplier.number.value;
-	// 		var multiplierIndex = _(effects).indexOf(multiplier);
-	// 		effects.splice(multiplierIndex, 1);
-	// 	}, this);
-	// },
+
+	multiplierRegex:  /(.+) multiplier/i,
+	setMultipliers: function(effects) {
+		var numericEffects = this.filterNumericEffects(effects);
+		var multiplierEffects = _(numericEffects).pick(function(effect, key) {
+			return this.multiplierRegex.test(key);
+		}, this);
+
+		_(multiplierEffects).each(function(multiplier, multiplierKey) {
+			var prefix = (multiplierKey).match(this.multiplierRegex)[1];
+			var effect = numericEffects[prefix];
+			if (!effect || !(effect.number instanceof leiminauts.number.Expression)) {
+				return; // Effect does not exist or is not an Expression, i.e. does not have an instanceCount
+			}
+
+			effect.number.instanceCount = multiplier.number.value().toNumber();
+			delete effects[multiplierKey];
+		}, this);
+	},
 
 
 
