@@ -271,25 +271,32 @@ leiminauts.Skill = Backbone.Model.extend({
 	},
 
 	applyBonusEffects: function(effects) {
-		var baseEffectNames = ['damage', 'attack speed', 'heal', 'heal over time'];
-		var bonusEffectNames = ['bonus', 'backstab', 'ion blowtorch', 'charged', 'structure', 'split'];
+		var bonusEffects = [
+			{ base: 'damage', prefix: 'bonus' },
+			{ base: 'damage', prefix: 'backstab' },
+			{ base: 'damage', prefix: 'ion blowtorch' },
+			{ base: 'damage', prefix: 'structure' },
+			{ base: 'damage', prefix: 'split' },
+
+			{ base: 'damage', prefix: 'charged' },
+			{ base: 'heal', prefix: 'charged' },
+			{ base: 'heal over time', prefix: 'charged' },
+
+			{ base: 'attack speed', prefix: 'bonus' },
+			{ base: 'attack speed', prefix: 'skullpate trophy' }
+		];
+
 		var numericEffects = this.filterNumericEffects(effects);
+		var foundBonusEffects = _(bonusEffects).chain().map(function(bonus) {
+			var baseEffect = numericEffects[bonus.base];
+			var bonusEffect = numericEffects[bonus.prefix + ' ' + bonus.base];
+			return { base: baseEffect, bonus: bonusEffect};
+		}).reject(function(pair) {
+			return _(pair.base).isUndefined() || _(pair.bonus).isUndefined();
+		}).value();
 
-		_(baseEffectNames).each(function(baseName) {
-			var baseKey = baseName;
-			if (!_(numericEffects).has(baseKey)) {
-				return; // Ignore because there is no base effect to apply with bonus effect
-			}
-			var baseEffect = numericEffects[baseKey];
-
-			_(bonusEffectNames).each(function(bonusName) {
-				var bonusKey = bonusName + ' ' + baseName;
-				if (!_(numericEffects).has(bonusKey)) {
-					return;
-				}
-				var bonusEffect = numericEffects[bonusKey];
-				this.applyBonusEffect(effects, baseEffect, bonusEffect);
-			}, this);
+		_(foundBonusEffects).each(function(pair) {
+			this.applyBonusEffect(effects, pair.base, pair.bonus);
 		}, this);
 	},
 
