@@ -651,12 +651,18 @@ leiminauts.number.ExtendedExpression = (function() {
 		console.assert(expression instanceof leiminauts.number.Expression, "Assertion failed: ExtendedExpression constructor was given non-Expression object", expression);
 		leiminauts.number.Expression.call(this, expression.instanceCount, expression.base);
 		this.proxy = expression;
+		this._instanceCount = 1;
 	};
 
 	var proto = leiminauts.utils.extendPrototype(leiminauts.number.Expression, ExtendedExpression);
 
 	Object.defineProperty(proto, 'base', { get: function() { return this.proxy.base; } });
-	Object.defineProperty(proto, 'instanceCount', { get: function() { return this.proxy.instanceCount; } });
+	// Redefine instanceCount so that our ExtendedExpression can have its own
+	// TODO: avoid redefining property, use methods instead
+	Object.defineProperty(proto, 'instanceCount', {
+		get: function() { return this.proxy.instanceCount * this._instanceCount; },
+		set: function(number) { this._instanceCount = number; }
+	});
 
 	proto.operations = function() {
 		return this.proxy.operations().concat(this._operations);
