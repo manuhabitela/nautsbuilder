@@ -351,21 +351,21 @@ leiminauts.Skill = Backbone.Model.extend({
 		}).value();
 
 		_(foundSpeedEffects).each(function(tuple) {
-			this.applyDpsEffect(effects, tuple.base, tuple.speed, tuple.result);
+			this.applySpeedEffect(effects, tuple.base, tuple.speed, tuple.result);
 		}, this);
 	},
 
-	applyDpsEffect: function(effects, damageEffect, attackSpeedEffect, dpsEffectName) {
-		if (_(effects).has(dpsEffectName)) {
-			console.log("Warning: DPS effect '" + dpsEffectName + "' already exists, ignoring new one...");
+	applySpeedEffect: function(effects, baseEffect, speedEffect, resultName) {
+		if (_(effects).has(resultName)) {
+			console.log("Warning: speed effect '" + resultName + "' already exists, ignoring new one...");
 			return;
 		}
 
-		var resultNumber = new leiminauts.number.ExtendedExpression(damageEffect.number)
+		var resultNumber = new leiminauts.number.ExtendedExpression(baseEffect.number)
 			.avg()
-			.multiply(attackSpeedEffect.number)
+			.multiply(speedEffect.number)
 			.divide(60);
-		var resultEffect = new leiminauts.effect.NumericEffect(dpsEffectName, damageEffect.prefix, damageEffect.postfix, resultNumber);
+		var resultEffect = new leiminauts.effect.NumericEffect(resultName, baseEffect.prefix, baseEffect.postfix, resultNumber);
 		effects[resultEffect.key] = resultEffect;
 	},
 
