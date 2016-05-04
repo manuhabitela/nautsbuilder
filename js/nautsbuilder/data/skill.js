@@ -471,11 +471,12 @@ leiminauts.Skill = Backbone.Model.extend({
 		_(multiplierEffects).each(function(multiplier, multiplierKey) {
 			var prefix = (multiplierKey).match(this.multiplierRegex)[1];
 			var effect = numericEffects[prefix];
-			if (!effect || !(effect.number instanceof leiminauts.number.Expression)) {
-				return; // Effect does not exist or is not an Expression, i.e. does not have an instanceCount
+
+			// Only Expressions can have an instance count
+			if (effect && effect.number instanceof leiminauts.number.Expression) {
+				effect.number.instanceCount = multiplier.number.value().toNumber();
 			}
 
-			effect.number.instanceCount = multiplier.number.value().toNumber();
 			delete effects[multiplierKey];
 		}, this);
 	},
