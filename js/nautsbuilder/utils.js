@@ -95,6 +95,19 @@ _.mixin({
 	//Returns true if the list contains any value that matches all of the key-value pairs listed in properties.
 	containsWhere: function(list, properties) {
 		return _.some(list, _.matcher(properties));
+	},
+
+	powerSet: function(array, iterator, ignoreEmptySet, context) {
+		var size = 1 << array.length;
+		var n = (ignoreEmptySet ? 1 : 0);
+		for (; n < size; ++n) {
+			// Filter array by using only elements whose index is set in the number 'n'
+			var result = _(array).filter(function(value, index) {
+				return n & (1 << index);
+			});
+
+			iterator.call(context, result);
+		}
 	}
 });
 

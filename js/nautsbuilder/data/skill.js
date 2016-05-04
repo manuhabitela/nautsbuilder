@@ -273,41 +273,76 @@ leiminauts.Skill = Backbone.Model.extend({
 
 	applyBonusEffects: function(effects) {
 		var bonusEffects = [
-			{ base: 'damage', prefix: 'bonus' },
-			{ base: 'damage', prefix: 'backstab' },
-			{ base: 'damage', prefix: 'ion blowtorch' },
-			{ base: 'damage', prefix: 'structure' },
-			{ base: 'damage', prefix: 'split' },
+			{ base: 'damage',         prefix: 'bonus' },
+			{ base: 'damage',         prefix: 'backstab' },
+			{ base: 'damage',         prefix: 'ion blowtorch' },
+			{ base: 'damage',         prefix: 'structure' },
 
-			{ base: 'damage', prefix: 'charged' },
-			{ base: 'heal', prefix: 'charged' },
+			{ base: 'damage',         prefix: 'no naut' },
+			{ base: 'damage',         prefix: 'split' },
+			{ base: 'damage',         prefix: 'snared' },
+
+			{ base: 'damage',         prefix: 'damaged' },
+
+			{ base: 'damage',         prefix: 'charged' },
+			{ base: 'heal',           prefix: 'charged' },
 			{ base: 'heal over time', prefix: 'charged' },
 
-			{ base: 'attack speed', prefix: 'bonus' },
-			{ base: 'attack speed', prefix: 'skullpate trophy' }
+			{ base: 'attack speed',   prefix: 'bonus' },
+			{ base: 'attack speed',   prefix: 'damaged' }
 		];
 
 		var numericEffects = this.filterNumericEffects(effects);
-		var foundBonusEffects = _(bonusEffects).chain().map(function(bonus) {
-			var baseEffect = numericEffects[bonus.base];
-			var bonusEffect = numericEffects[bonus.prefix + ' ' + bonus.base];
-			return { base: baseEffect, bonus: bonusEffect};
-		}).reject(function(pair) {
-			return _(pair.base).isUndefined() || _(pair.bonus).isUndefined();
-		}).value();
 
-		_(foundBonusEffects).each(function(pair) {
-			this.applyBonusEffect(effects, pair.base, pair.bonus);
+		var grupped = _(bonusEffects).groupBy('base');
+		_(grupped).each(function(group, baseName) {
+			var baseEffect = numericEffects[baseName];
+			if (_(baseEffect).isUndefined()) {
+				return;
+			}
+
+            var existingBonusEffects = _(group).chain()
+				.pluck('prefix')
+				.map(function(prefix) { return numericEffects[prefix + ' ' + baseName]; })
+				.reject(_.isUndefined)
+				.value();
+			if (existingBonusEffects.length < 1) {
+				return;
+			}
+
+			this.applyBonusEffectGroup(effects, baseEffect, existingBonusEffects);
 		}, this);
 	},
 
-	applyBonusEffect: function(effects, baseEffect, bonusEffect) {
-		var resultNumber = new leiminauts.number.ExtendedExpression(baseEffect.number);
-		var resultEffect = new leiminauts.effect.NumericEffect(bonusEffect.name, baseEffect.prefix, baseEffect.postfix, resultNumber);
-		resultEffect.applyEffect(bonusEffect);
+	applyBonusEffectGroup: function(effects, baseEffect, bonusEffects) {
+		if (bonusEffects.length == 1) {
+			// Apply bonus damage for single element
+			var bonusEffect = bonusEffects[0];
+			this.applyBonusEffect(effects, bonusEffect.name, baseEffect, [bonusEffect]);
+			return;
+		}
 
-		// Replace bonusEffect with resultEffect
-		effects[bonusEffect.key] = resultEffect;
+		// Create bonus effects for each combination of bonus effects, i.e. the power set
+		console.assert(bonusEffects.length > 1);
+		var ignoreEmptySet = true;
+		_(bonusEffects).powerSet(function(effectCombination) {
+			var filteredPrefixes = _(effectCombination).map(function(e) {
+				return e.name.slice(0, -(baseName.length+1));
+			});
+			var resultName = filteredPrefixes.join(' ') + ' ' + baseEffect.name;
+			this.applyBonusEffect(effects, resultName, baseEffect, effectCombination);
+		}, ignoreEmptySet, this);
+	},
+
+	applyBonusEffect: function(effects, bonusName, baseEffect, bonusEffects) {
+		var resultNumber = new leiminauts.number.ExtendedExpression(baseEffect.number);
+		var resultEffect = new leiminauts.effect.NumericEffect(bonusName, baseEffect.prefix, baseEffect.postfix, resultNumber);
+
+		_(bonusEffects).each(function(bonusEffect) {
+			resultEffect.applyEffect(bonusEffect);
+		});
+
+		effects[bonusName] = resultEffect;
 	},
 
 
