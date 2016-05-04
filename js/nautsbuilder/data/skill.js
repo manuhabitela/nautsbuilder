@@ -324,12 +324,13 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		// Create bonus effects for each combination of bonus effects, i.e. the power set
 		console.assert(bonusEffects.length > 1);
+		var baseName = baseEffect.name;
 		var ignoreEmptySet = true;
 		_(bonusEffects).powerSet(function(effectCombination) {
 			var filteredPrefixes = _(effectCombination).map(function(e) {
 				return e.name.slice(0, -(baseName.length+1));
 			});
-			var resultName = filteredPrefixes.join(' ') + ' ' + baseEffect.name;
+			var resultName = filteredPrefixes.join(' ') + ' ' + baseName;
 			this.applyBonusEffect(effects, resultName, baseEffect, effectCombination);
 		}, ignoreEmptySet, this);
 	},
