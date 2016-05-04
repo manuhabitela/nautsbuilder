@@ -351,11 +351,11 @@ leiminauts.Skill = Backbone.Model.extend({
 		}).value();
 
 		_(foundSpeedEffects).each(function(tuple) {
-			this.applySpeedEffect(effects, tuple.base, tuple.speed, tuple.result);
+			this.applySpeedEffect(effects, tuple.result, tuple.base, tuple.speed);
 		}, this);
 	},
 
-	applySpeedEffect: function(effects, baseEffect, speedEffect, resultName) {
+	applySpeedEffect: function(effects, resultName, baseEffect, speedEffect) {
 		if (_(effects).has(resultName)) {
 			console.log("Warning: speed effect '" + resultName + "' already exists, ignoring new one...");
 			return;
