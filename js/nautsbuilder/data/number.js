@@ -279,8 +279,8 @@ leiminauts.number.Value = (function() {
 	proto._mapPairwise = function(that, binaryOp) {
 		var zipped = _.zip(this.stages, that.stages);
 		var stages = _(zipped).map(function(pair) {
-			left  = pair[0] || this.stages[0];
-			right = pair[1] || that.stages[0];
+			left  = (_(pair[0]).isUndefined() ? this.stages[0] : pair[0]);
+			right = (_(pair[1]).isUndefined() ? that.stages[0] : pair[1]);
 			return binaryOp(left, right);
 		}, this);
 		return new Value(stages);
