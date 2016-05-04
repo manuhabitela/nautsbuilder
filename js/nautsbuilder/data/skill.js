@@ -274,9 +274,14 @@ leiminauts.Skill = Backbone.Model.extend({
 	applyBonusEffects: function(effects) {
 		var bonusEffects = [
 			{ base: 'damage',         prefix: 'bonus' },
+			{ base: 'damage',         prefix: 'naut' },
 			{ base: 'damage',         prefix: 'backstab' },
 			{ base: 'damage',         prefix: 'ion blowtorch' },
 			{ base: 'damage',         prefix: 'structure' },
+			{ base: 'damage',         prefix: 'codfather' },
+			{ base: 'damage',         prefix: 'afro' },
+			//{ base: 'damage',         prefix: 'afro stealth' },
+			{ base: 'damage',         prefix: 'homing' },
 
 			{ base: 'damage',         prefix: 'no naut' },
 			{ base: 'damage',         prefix: 'split' },
@@ -284,12 +289,18 @@ leiminauts.Skill = Backbone.Model.extend({
 
 			{ base: 'damage',         prefix: 'damaged' },
 
+			{ base: 'anchor damage',  prefix: 'bonus' },
+			{ base: 'ink damage',     prefix: 'bonus' },
+			{ base: 'pistol damage',  prefix: 'bonus' },
+
 			{ base: 'damage',         prefix: 'charged' },
 			{ base: 'heal',           prefix: 'charged' },
 			{ base: 'heal over time', prefix: 'charged' },
 
 			{ base: 'attack speed',   prefix: 'bonus' },
-			{ base: 'attack speed',   prefix: 'damaged' }
+			{ base: 'attack speed',   prefix: 'damaged' },
+			{ base: 'bike attack speed',prefix: 'bonus' },
+			{ base: 'pistol attack speed',prefix: 'bonus' }
 		];
 
 		var numericEffects = this.filterNumericEffects(effects);
@@ -354,21 +365,49 @@ leiminauts.Skill = Backbone.Model.extend({
 
 	applySpeedEffects: function(effects) {
 		var speedEffects = [
+			// Default DPS case
 			{ base: 'damage',               speed: 'attack speed',          result: 'dps' },
-			{ base: 'thorn damage',         speed: 'attack speed',          result: 'thorn dps' },
+
+			// Bonus damage with default attack speed
+			{ base: 'naut damage',          speed: 'attack speed',          result: 'naut dps' },
 			{ base: 'backstab damage',      speed: 'attack speed',          result: 'backstab dps' },
+			{ base: 'naut backstab damage', speed: 'attack speed',          result: 'naut backstab dps' },
+			{ base: 'max damage',           speed: 'attack speed',          result: 'max dps' },
+			{ base: 'thorn damage',         speed: 'attack speed',          result: 'thorn dps' },
 			{ base: 'no naut damage',       speed: 'attack speed',          result: 'no naut dps' },
 			{ base: 'no naut split damage', speed: 'attack speed',          result: 'no naut split dps' },
-			{ base: 'split damage',         speed: 'attack speed',          result: 'split dps' },
 			{ base: 'ion blowtorch damage', speed: 'attack speed',          result: 'ion blowtorch dps' },
+			{ base: 'split damage',         speed: 'attack speed',          result: 'split dps' },
 			{ base: 'snared damage',        speed: 'attack speed',          result: 'snared dps' },
+			{ base: 'split snared damage',  speed: 'attack speed',          result: 'split snared dps' },
 			{ base: 'structure damage',     speed: 'attack speed',          result: 'structure dps' },
+			{ base: 'damaged damage',       speed: 'attack speed',          result: 'damaged dps' },
+			{ base: 'codfather damage',     speed: 'attack speed',          result: 'codfather dps' },
+			{ base: 'afro damage',          speed: 'attack speed',          result: 'afro dps' },
+			{ base: 'naut afro damage',     speed: 'attack speed',          result: 'naut afro dps' },
+			{ base: 'homing damage',        speed: 'attack speed',          result: 'homing dps' },
+			{ base: 'fork damage',          speed: 'attack speed',          result: 'fork dps' },
 
+			// Default damage with bonus attack speed
 			{ base: 'damage',               speed: 'bonus attack speed',    result: 'bonus dps' },
-			{ base: 'damage',               speed: 'damaged attack speed', result: 'damaged dps' },
+			{ base: 'damage',               speed: 'damaged attack speed',  result: 'damaged dps' },
 
+			// Own damage and attack speed
 			{ base: 'missile damage',       speed: 'missile attack speed',  result: 'missile dps' },
+			{ base: 'particle damage',      speed: 'particle attack speed', result: 'particle dps' },
+			{ base: 'fat cat damage',       speed: 'fat cat attack speed',  result: 'fat cat dps' },
+			{ base: 'fat cat split damage', speed: 'fat cat attack speed',  result: 'fat cat split dps' },
+			{ base: 'storm damage',         speed: 'storm attack speed',    result: 'storm dps' },
+			{ base: 'anchor damage',        speed: 'anchor attack speed',   result: 'anchor dps' },
+			{ base: 'ink damage',           speed: 'ink attack speed',      result: 'ink dps' },
+			{ base: 'mg damage',            speed: 'mg attack speed',       result: 'mg dps' },
+			{ base: 'sg damage',            speed: 'sg attack speed',       result: 'sg dps' },
+			{ base: 'bike damage',          speed: 'bike attack speed',     result: 'bike dps' },
+			{ base: 'bike damage',          speed: 'bonus bike attack speed',result: 'bonus bike dps' },
+			{ base: 'pistol damage',        speed: 'pistol attack speed',   result: 'pistol dps' },
+			{ base: 'pistol damage',        speed: 'bonus pistol attack speed',result: 'bonus pistol dps' },
 
+			// Default HPS case
 			{ base: 'heal',                 speed: 'attack speed',          result: 'hps' },
 
 			{ base: 'droid heal',           speed: 'attack speed',          result: 'droid hps' },
