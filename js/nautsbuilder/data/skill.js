@@ -161,7 +161,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		// this.setSpecificEffectsTheReturnOfTheRevenge();
 
 		this.applyBonusEffects(effects);
-		this.applyDpsEffects(effects);
+		this.applySpeedEffects(effects);
 		this.setMultipliers(effects);
 
 		_(effects).each(this.applyScaling, this);
@@ -310,35 +310,48 @@ leiminauts.Skill = Backbone.Model.extend({
 		effects[bonusEffect.key] = resultEffect;
 	},
 
-	applyDpsEffects: function(effects) {
-		var damageName = 'damage';
-		var attackSpeedName = 'attack speed';
+
+
+
+
+
+
+	applySpeedEffects: function(effects) {
+		var speedEffects = [
+			{ base: 'damage',               speed: 'attack speed',          result: 'dps' },
+			{ base: 'thorn damage',         speed: 'attack speed',          result: 'thorn dps' },
+			{ base: 'backstab damage',      speed: 'attack speed',          result: 'backstab dps' },
+			{ base: 'no naut damage',       speed: 'attack speed',          result: 'no naut dps' },
+			{ base: 'no naut split damage', speed: 'attack speed',          result: 'no naut split dps' },
+			{ base: 'split damage',         speed: 'attack speed',          result: 'split dps' },
+			{ base: 'ion blowtorch damage', speed: 'attack speed',          result: 'ion blowtorch dps' },
+			{ base: 'snared damage',        speed: 'attack speed',          result: 'snared dps' },
+			{ base: 'structure damage',     speed: 'attack speed',          result: 'structure dps' },
+
+			{ base: 'damage',               speed: 'bonus attack speed',    result: 'bonus dps' },
+			{ base: 'damage',               speed: 'damaged attack speed', result: 'damaged dps' },
+
+			{ base: 'missile damage',       speed: 'missile attack speed',  result: 'missile dps' },
+
+			{ base: 'heal',                 speed: 'attack speed',          result: 'hps' },
+
+			{ base: 'droid heal',           speed: 'attack speed',          result: 'droid hps' },
+			{ base: 'summon heal',          speed: 'attack speed',          result: 'summon hps' },
+			{ base: 'droid heal',           speed: 'bonus attack speed',    result: 'bonus droid hps' },
+			{ base: 'summon heal',          speed: 'bonus attack speed',    result: 'bonus summon hps' }
+		];
+
 		var numericEffects = this.filterNumericEffects(effects);
+		var foundSpeedEffects = _(speedEffects).chain().map(function(tuple) {
+			var baseEffect = numericEffects[tuple.base];
+			var speedEffect = numericEffects[tuple.speed];
+			return { base: baseEffect, speed: speedEffect, result: tuple.result };
+		}).reject(function(tuple) {
+			return _(tuple.base).isUndefined() || _(tuple.speed).isUndefined();
+		}).value();
 
-		// Base DPS
-		if (_(numericEffects).has(damageName) && _(numericEffects).has(attackSpeedName)) {
-			var damageEffect = numericEffects[damageName];
-			var attackSpeedEffect = numericEffects[attackSpeedName];
-            this.applyDpsEffect(effects, damageEffect, attackSpeedEffect, 'dps');
-		}
-
-		// Additional DPS effects
-		var dpsEffectNames = ['thorn', 'missile', 'backstab'];
-		_(dpsEffectNames).each(function(dpsPrefix) {
-			var prefixDamageEffect = numericEffects[dpsPrefix + ' ' + damageName];
-			if (!prefixDamageEffect) { prefixDamageEffect = numericEffects[damageName]; }
-			if (!prefixDamageEffect) { return; } // Skip because neither base nor prefix exists
-
-			var prefixAtkspdEffect = numericEffects[dpsPrefix + ' ' + attackSpeedName];
-			if (!prefixAtkspdEffect) { prefixAtkspdEffect = numericEffects[attackSpeedName]; }
-			if (!prefixAtkspdEffect) { return; } // Skip because neither base nor prefix exists
-
-			if (prefixDamageEffect.name === damageName && prefixAtkspdEffect.name === attackSpeedName) {
-				return; // Skip because base DPS already handled
-			}
-
-			var resultName = dpsPrefix + ' dps';
-            this.applyDpsEffect(effects, prefixDamageEffect, prefixAtkspdEffect, resultName);
+		_(foundSpeedEffects).each(function(tuple) {
+			this.applyDpsEffect(effects, tuple.base, tuple.speed, tuple.result);
 		}, this);
 	},
 
