@@ -442,6 +442,20 @@ leiminauts.Skill = Backbone.Model.extend({
 			{ base: 'summon heal',          speed: 'bonus attack speed',    result: 'bonus summon hps',     skills: 'Wrench Smack' }
 		];
 
+		/*
+			dps        = dmg  * speed * 1/60
+			hps        = heal * speed * 1/60
+
+			total dmg  = dps * duration
+			total heal = hps * duration
+
+			dot dps   = dot dmg / dot duration
+			hot hps   = hot heal / hot duration
+
+			total dps = dps + dot dps? + thorn dps? + ...
+			total hps = hps + hot hps? + ...
+		 */
+
 		var matchingSpeedEffects = this.filterEffectList(speedEffects);
 		var numericEffects = this.filterNumericEffects(effects);
 
