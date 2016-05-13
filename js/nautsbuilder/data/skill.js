@@ -289,37 +289,39 @@ leiminauts.Skill = Backbone.Model.extend({
 
 	applyBonusEffects: function(effects) {
 		var bonusEffects = [
-			{ base: 'damage',             prefix: 'bonus'         , skills: 'Bolt .45 Fish-gun; Missiles; Bubble Gun; '},
-			{ base: 'damage',             prefix: 'naut'          , skills: 'Slash; Protoblaster; Cut and Trim; '},
-			{ base: 'damage',             prefix: 'backstab'      , skills: 'Slash; '},
-			{ base: 'damage',             prefix: 'ion blowtorch' , skills: 'Chain Whack; '},
-			{ base: 'damage',             prefix: 'structure'     , skills: 'Shock; '},
-			{ base: 'damage',             prefix: 'codfather'     , skills: 'Bubble Gun; '},
-			{ base: 'damage',             prefix: 'afro'          , skills: 'Cut and Trim; '},
-		  //{ base: 'damage',             prefix: 'afro stealth'  , skills: 'Cut and Trim; '},
-			{ base: 'damage',             prefix: 'homing'        , skills: 'Photon Mine Launcher'},
+			{ base: 'damage',             prefix: 'bonus',          skills: 'Bolt .45 Fish-gun; Missiles; Bubble Gun' },
+			{ base: 'damage',             prefix: 'naut',           skills: 'Slash; Protoblaster; Cut and Trim; Tongue Snatch; Tornado Move; Binding of Justice' },
+			{ base: 'damage',             prefix: 'backstab',       skills: 'Slash' },
+			{ base: 'damage',             prefix: 'ion blowtorch',  skills: 'Chain Whack' },
+			{ base: 'damage',             prefix: 'structure',      skills: 'Shock' },
+			{ base: 'damage',             prefix: 'codfather',      skills: 'Bubble Gun' },
+			{ base: 'damage',             prefix: 'afro',           skills: 'Cut and Trim' },
+			//{ base: 'damage',             prefix: 'afro stealth',   skills: 'Cut and Trim' },
+			{ base: 'damage',             prefix: 'homing',         skills: 'Photon Mine Launcher' },
+			{ base: 'damage',             prefix: 'ground',         skills: 'Splash Dash' },
+			{ base: 'damage',             prefix: 'fertilized',     skills: 'Grow Weedling' },
 
-			{ base: 'damage',             prefix: 'no naut'       , skills: 'Rapid Arrows; '},
-			{ base: 'damage',             prefix: 'split'         , skills: 'Rapid Arrows; '},
-			{ base: 'damage',             prefix: 'snared'        , skills: 'Cat Shot / Gatling; '},
-			{ base: 'split damage',       prefix: 'snared'        , skills: 'Cat Shot / Gatling; '},
-			{ base: 'fat cat damage',     prefix: 'snared'        , skills: 'Cat Shot / Gatling; '},
-			{ base: 'fat cat split damage',prefix: 'snared'       , skills: 'Cat Shot / Gatling; '},
+			{ base: 'damage',             prefix: 'no naut',        skills: 'Rapid Arrows' },
+			{ base: 'damage',             prefix: 'split',          skills: 'Rapid Arrows' },
+			{ base: 'damage',             prefix: 'snared',         skills: 'Cat Shot / Gatling' },
+			{ base: 'split damage',       prefix: 'snared',         skills: 'Cat Shot / Gatling' },
+			{ base: 'fat cat damage',     prefix: 'snared',         skills: 'Cat Shot / Gatling' },
+			{ base: 'fat cat split damage',prefix: 'snared',        skills: 'Cat Shot / Gatling' },
 
-			{ base: 'damage',             prefix: 'damaged'       , skills: 'Sword Strike; '},
+			{ base: 'damage',             prefix: 'damaged',        skills: 'Sword Strike' },
 
-			{ base: 'anchor damage',      prefix: 'bonus'         , skills: 'Anchor Swing / Ink Spray; '},
-			{ base: 'ink damage',         prefix: 'bonus'         , skills: 'Anchor Swing / Ink Spray; '},
-			{ base: 'pistol damage',      prefix: 'bonus'         , skills: 'Double Pistol / Bike Blaster; '},
+			{ base: 'anchor damage',      prefix: 'bonus',          skills: 'Anchor Swing / Ink Spray' },
+			{ base: 'ink damage',         prefix: 'bonus',          skills: 'Anchor Swing / Ink Spray' },
+			{ base: 'pistol damage',      prefix: 'bonus',          skills: 'Double Pistol / Bike Blaster' },
 
-			{ base: 'damage',             prefix: 'charged'       , skills: 'Techno Synaptic Wave; '},
-			{ base: 'heal',               prefix: 'charged'       , skills: 'Techno Synaptic Wave; '},
-			{ base: 'heal over time',     prefix: 'charged'       , skills: 'Techno Synaptic Wave; '},
+			{ base: 'damage',             prefix: 'charged',        skills: 'Techno Synaptic Wave' },
+			{ base: 'heal',               prefix: 'charged',        skills: 'Techno Synaptic Wave' },
+			{ base: 'heal over time',     prefix: 'charged',        skills: 'Techno Synaptic Wave' },
 
-			{ base: 'attack speed',       prefix: 'bonus'         , skills: 'Wrench Smack; '},
-			{ base: 'attack speed',       prefix: 'damaged'       , skills: 'Rattle Smash; '},
-			{ base: 'bike attack speed',  prefix: 'bonus'         , skills: 'Double Pistol / Bike Blaster; '},
-			{ base: 'pistol attack speed',prefix: 'bonus'         , skills: 'Double Pistol / Bike Blaster; '}
+			{ base: 'attack speed',       prefix: 'bonus',          skills: 'Wrench Smack' },
+			{ base: 'attack speed',       prefix: 'damaged',        skills: 'Rattle Smash' },
+			{ base: 'bike attack speed',  prefix: 'bonus',          skills: 'Double Pistol / Bike Blaster' },
+			{ base: 'pistol attack speed',prefix: 'bonus',          skills: 'Double Pistol / Bike Blaster'}
 		];
 
 		// Filter effects only matching our skill
@@ -387,54 +389,57 @@ leiminauts.Skill = Backbone.Model.extend({
 	applySpeedEffects: function(effects) {
 		var speedEffects = [
 			// Default DPS case
-			{ base: 'damage',               speed: 'attack speed',          result: 'dps'                 , skills: '*'},
+			{ base: 'damage',               speed: 'attack speed',          result: 'dps',                  skills: '*' },
 
 			// Bonus damage with default attack speed
-			{ base: 'naut damage',          speed: 'attack speed',          result: 'naut dps'            , skills: 'Slash; Protoblaster; Cut and Trim'},
-			{ base: 'backstab damage',      speed: 'attack speed',          result: 'backstab dps'        , skills: 'Slash'},
-			{ base: 'naut backstab damage', speed: 'attack speed',          result: 'naut backstab dps'   , skills: 'Slash'},
-			{ base: 'max damage',           speed: 'attack speed',          result: 'max dps'             , skills: 'Laser'},
-			{ base: 'thorn damage',         speed: 'attack speed',          result: 'thorn dps'           , skills: 'Bolt .45 Fish-gun'},
-			{ base: 'no naut damage',       speed: 'attack speed',          result: 'no naut dps'         , skills: 'Rapid Arrows'},
-			{ base: 'no naut split damage', speed: 'attack speed',          result: 'no naut split dps'   , skills: 'Rapid Arrows'},
-			{ base: 'ion blowtorch damage', speed: 'attack speed',          result: 'ion blowtorch dps'   , skills: 'Chain Whack'},
-			{ base: 'split damage',         speed: 'attack speed',          result: 'split dps'           , skills: 'Cat Shot / Gatling; Rapid Arrows'},
-			{ base: 'snared damage',        speed: 'attack speed',          result: 'snared dps'          , skills: 'Cat Shot / Gatling'},
-			{ base: 'split snared damage',  speed: 'attack speed',          result: 'split snared dps'    , skills: 'Cat Shot / Gatling'},
-			{ base: 'structure damage',     speed: 'attack speed',          result: 'structure dps'       , skills: 'Shock'},
-			{ base: 'damaged damage',       speed: 'attack speed',          result: 'damaged dps'         , skills: 'Sword Strike'},
-			{ base: 'codfather damage',     speed: 'attack speed',          result: 'codfather dps'       , skills: 'Bubble Gun'},
-			{ base: 'afro damage',          speed: 'attack speed',          result: 'afro dps'            , skills: 'Cut and Trim'},
-			{ base: 'naut afro damage',     speed: 'attack speed',          result: 'naut afro dps'       , skills: 'Cut and Trim'},
-			{ base: 'homing damage',        speed: 'attack speed',          result: 'homing dps'          , skills: 'Photon Mine Launcher'},
-			{ base: 'fork damage',          speed: 'attack speed',          result: 'fork dps'            , skills: 'Lightning Rod'},
+			{ base: 'naut damage',          speed: 'attack speed',          result: 'naut dps',             skills: 'Slash; Protoblaster; Cut and Trim; Tornado Move' },
+			{ base: 'backstab damage',      speed: 'attack speed',          result: 'backstab dps',         skills: 'Slash' },
+			{ base: 'naut backstab damage', speed: 'attack speed',          result: 'naut backstab dps',    skills: 'Slash' },
+			{ base: 'max damage',           speed: 'attack speed',          result: 'max dps',              skills: 'Laser' },
+			{ base: 'thorn damage',         speed: 'attack speed',          result: 'thorn dps',            skills: 'Bolt .45 Fish-gun' },
+			{ base: 'no naut damage',       speed: 'attack speed',          result: 'no naut dps',          skills: 'Rapid Arrows' },
+			{ base: 'no naut split damage', speed: 'attack speed',          result: 'no naut split dps',    skills: 'Rapid Arrows' },
+			{ base: 'ion blowtorch damage', speed: 'attack speed',          result: 'ion blowtorch dps',    skills: 'Chain Whack' },
+			{ base: 'split damage',         speed: 'attack speed',          result: 'split dps',            skills: 'Cat Shot / Gatling; Rapid Arrows' },
+			{ base: 'snared damage',        speed: 'attack speed',          result: 'snared dps',           skills: 'Cat Shot / Gatling' },
+			{ base: 'split snared damage',  speed: 'attack speed',          result: 'split snared dps',     skills: 'Cat Shot / Gatling' },
+			{ base: 'structure damage',     speed: 'attack speed',          result: 'structure dps',        skills: 'Shock' },
+			{ base: 'damaged damage',       speed: 'attack speed',          result: 'damaged dps',          skills: 'Sword Strike' },
+			{ base: 'codfather damage',     speed: 'attack speed',          result: 'codfather dps',        skills: 'Bubble Gun' },
+			{ base: 'afro damage',          speed: 'attack speed',          result: 'afro dps',             skills: 'Cut and Trim' },
+			{ base: 'naut afro damage',     speed: 'attack speed',          result: 'naut afro dps',        skills: 'Cut and Trim' },
+			{ base: 'homing damage',        speed: 'attack speed',          result: 'homing dps',           skills: 'Photon Mine Launcher' },
+			{ base: 'fork damage',          speed: 'attack speed',          result: 'fork dps',             skills: 'Lightning Rod' },
+			{ base: 'fertilized damage',    speed: 'attack speed',          result: 'fertilized dps',       skills: 'Grow Weedling' },
+			{ base: 'self damage',          speed: 'attack speed',          result: 'self dps',             skills: 'Rage' },
 
 			// Default damage with bonus attack speed
-			{ base: 'damage',               speed: 'bonus attack speed',    result: 'bonus dps'           , skills: 'Wrench Smack'},
-			{ base: 'damage',               speed: 'damaged attack speed',  result: 'damaged dps'         , skills: 'Rattle Smash'},
+			{ base: 'damage',               speed: 'bonus attack speed',    result: 'bonus dps',            skills: 'Wrench Smack' },
+			{ base: 'damage',               speed: 'damaged attack speed',  result: 'damaged dps',          skills: 'Rattle Smash' },
 
 			// Own damage and attack speed
-			{ base: 'missile damage',       speed: 'missile attack speed',  result: 'missile dps'         , skills: 'Blaster'},
-			{ base: 'particle damage',      speed: 'particle attack speed', result: 'particle dps'        , skills: 'Shock'},
-			{ base: 'fat cat damage',       speed: 'fat cat attack speed',  result: 'fat cat dps'         , skills: 'Cat Shot / Gatling'},
-			{ base: 'fat cat split damage', speed: 'fat cat attack speed',  result: 'fat cat split dps'   , skills: 'Cat Shot / Gatling'},
-			{ base: 'storm damage',         speed: 'storm attack speed',    result: 'storm dps'           , skills: 'Butterfly Shot'},
-			{ base: 'anchor damage',        speed: 'anchor attack speed',   result: 'anchor dps'          , skills: 'Anchor Swing / Ink Spray'},
-			{ base: 'ink damage',           speed: 'ink attack speed',      result: 'ink dps'             , skills: 'Anchor Swing / Ink Spray'},
-			{ base: 'mg damage',            speed: 'mg attack speed',       result: 'mg dps'              , skills: 'Shotgun and Machine Gun'},
-			{ base: 'sg damage',            speed: 'sg attack speed',       result: 'sg dps'              , skills: 'Shotgun and Machine Gun'},
-			{ base: 'bike damage',          speed: 'bike attack speed',     result: 'bike dps'            , skills: 'Double Pistol / Bike Blaster'},
-			{ base: 'bike damage',          speed: 'bonus bike attack speed',result: 'bonus bike dps'     , skills: 'Double Pistol / Bike Blaster'},
-			{ base: 'pistol damage',        speed: 'pistol attack speed',   result: 'pistol dps'          , skills: 'Double Pistol / Bike Blaster'},
-			{ base: 'pistol damage',        speed: 'bonus pistol attack speed',result: 'bonus pistol dps' , skills: 'Double Pistol / Bike Blaster'},
+			{ base: 'missile damage',       speed: 'missile attack speed',  result: 'missile dps',          skills: 'Blaster' },
+			{ base: 'particle damage',      speed: 'particle attack speed', result: 'particle dps',         skills: 'Shock' },
+			{ base: 'fat cat damage',       speed: 'fat cat attack speed',  result: 'fat cat dps',          skills: 'Cat Shot / Gatling' },
+			{ base: 'fat cat split damage', speed: 'fat cat attack speed',  result: 'fat cat split dps',    skills: 'Cat Shot / Gatling' },
+			{ base: 'storm damage',         speed: 'storm attack speed',    result: 'storm dps',            skills: 'Butterfly Shot' },
+			{ base: 'anchor damage',        speed: 'anchor attack speed',   result: 'anchor dps',           skills: 'Anchor Swing / Ink Spray' },
+			{ base: 'ink damage',           speed: 'ink attack speed',      result: 'ink dps',              skills: 'Anchor Swing / Ink Spray' },
+			{ base: 'mg damage',            speed: 'mg attack speed',       result: 'mg dps',               skills: 'Shotgun and Machine Gun' },
+			{ base: 'sg damage',            speed: 'sg attack speed',       result: 'sg dps',               skills: 'Shotgun and Machine Gun' },
+			{ base: 'bike damage',          speed: 'bike attack speed',     result: 'bike dps',             skills: 'Double Pistol / Bike Blaster' },
+			{ base: 'bike damage',          speed: 'bonus bike attack speed',result: 'bonus bike dps',      skills: 'Double Pistol / Bike Blaster' },
+			{ base: 'pistol damage',        speed: 'pistol attack speed',   result: 'pistol dps',           skills: 'Double Pistol / Bike Blaster' },
+			{ base: 'pistol damage',        speed: 'bonus pistol attack speed',result: 'bonus pistol dps',  skills: 'Double Pistol / Bike Blaster' },
+			{ base: 'charge damage',        speed: 'charge attack speed',   result: 'charge dps',           skills: 'Binding of Justice' },
 
 			// Default HPS case
-			{ base: 'heal',                 speed: 'attack speed',          result: 'hps'                 , skills: 'Techno Synaptic Wave; Butterfly Shot'},
+			{ base: 'heal',                 speed: 'attack speed',          result: 'hps',                  skills: 'Techno Synaptic Wave; Butterfly Shot' },
 
-			{ base: 'droid heal',           speed: 'attack speed',          result: 'droid hps'           , skills: 'Wrench Smack'},
-			{ base: 'summon heal',          speed: 'attack speed',          result: 'summon hps'          , skills: 'Wrench Smack'},
-			{ base: 'droid heal',           speed: 'bonus attack speed',    result: 'bonus droid hps'     , skills: 'Wrench Smack'},
-			{ base: 'summon heal',          speed: 'bonus attack speed',    result: 'bonus summon hps'    , skills: 'Wrench Smack'}
+			{ base: 'droid heal',           speed: 'attack speed',          result: 'droid hps',            skills: 'Wrench Smack' },
+			{ base: 'summon heal',          speed: 'attack speed',          result: 'summon hps',           skills: 'Wrench Smack' },
+			{ base: 'droid heal',           speed: 'bonus attack speed',    result: 'bonus droid hps',      skills: 'Wrench Smack' },
+			{ base: 'summon heal',          speed: 'bonus attack speed',    result: 'bonus summon hps',     skills: 'Wrench Smack' }
 		];
 
 		var matchingSpeedEffects = this.filterEffectList(speedEffects);
