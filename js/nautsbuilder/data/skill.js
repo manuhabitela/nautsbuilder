@@ -287,6 +287,38 @@ leiminauts.Skill = Backbone.Model.extend({
 		}, this);
 	},
 
+	/*
+
+	 Type calculations
+	 -----------------
+
+	 bonus      = base ⋄ bonus
+
+	 dps        = dmg  * speed * 1/60
+	 hps        = heal * speed * 1/60
+
+	 dot dps   = dot dmg / dot duration
+	 hot hps   = hot heal / hot duration
+
+	 total dmg  = dps * duration
+	 total heal = hps * duration
+
+	 total dps = dps + dot dps? + thorn dps? + ...
+	 total hps = hps + hot hps? + ...
+
+
+	 Type properties
+	 ---------------
+
+	 Type           | required information                                    | operation
+	 ---------------+---------------------------------------------------------+----------------------------
+	 speed effects  | skills   | result name | base name      | speed name    | base * speed / 60
+	 total duration | skills   | result name | base name      | duration name | base * duration
+	 over time      | skills   | result name | over time name | duration name | base / duration
+	 sum effects    | skill(s) | result name | effect names                   | effect_1 + ... + effect_n
+
+	 */
+
 	applyBonusEffects: function(effects) {
 		var bonusEffects = [
 			{ base: 'damage',             prefix: 'bonus',          skills: 'Bolt .45 Fish-gun; Missiles; Bubble Gun' },
@@ -380,12 +412,6 @@ leiminauts.Skill = Backbone.Model.extend({
 		effects[bonusName] = resultEffect;
 	},
 
-
-
-
-
-
-
 	applySpeedEffects: function(effects) {
 		var speedEffects = [
 			// Default DPS case
@@ -441,20 +467,6 @@ leiminauts.Skill = Backbone.Model.extend({
 			{ base: 'droid heal',           speed: 'bonus attack speed',    result: 'bonus droid hps',      skills: 'Wrench Smack' },
 			{ base: 'summon heal',          speed: 'bonus attack speed',    result: 'bonus summon hps',     skills: 'Wrench Smack' }
 		];
-
-		/*
-			dps        = dmg  * speed * 1/60
-			hps        = heal * speed * 1/60
-
-			total dmg  = dps * duration
-			total heal = hps * duration
-
-			dot dps   = dot dmg / dot duration
-			hot hps   = hot heal / hot duration
-
-			total dps = dps + dot dps? + thorn dps? + ...
-			total hps = hps + hot hps? + ...
-		 */
 
 		var matchingSpeedEffects = this.filterEffectList(speedEffects);
 		var numericEffects = this.filterNumericEffects(effects);
