@@ -498,6 +498,49 @@ leiminauts.Skill = Backbone.Model.extend({
 		effects[resultEffect.key] = resultEffect;
 	},
 
+	applyTotalDurationEffects: function(effects) {
+		var totalEffects = [
+			{ result: 'total damage',        base: 'dps',        duration: 'duration',        skills: 'Tornado Move; Summon Hyper Bull; Timerift; Anchor Drop; Saw Blade; Fire Breath; Summon Robo Dinos' },
+			{ result: 'charge total damage', base: 'charge dps', duration: 'charge duration', skills: 'Binding of Justice' },
+
+			{ result: 'total heal',          base: 'hps',        duration: 'duration',        skills: 'Warp Time' }
+		];
+
+		// TODO: check if skill in skills, get base and duration effect, if existing multiply and store in result
+	},
+
+	applyOverTimeEffects: function(effects) {
+		var overTimeEffects = [
+			{ result: 'dot dps', base: 'damage over time', duration: 'damage duration', skills: '*' },
+			{ result: 'hot hps', base: 'heal over time',   duration: 'heal duration',   skills: '*' }
+
+			{ result: 'fork dot dps', base: 'fork damage over time', duration: 'fork damage duration', skills: 'Lightning Rod' },
+			{ result: 'sticky bomb dot dps', base: 'sticky bomb damage over time', duration: 'sticky bomb damage duration', skills: 'Sticky Bomb / Nitro Boost' },
+			{ result: 'smaller bomb dot dps', base: 'smaller bomb damage over time', duration: 'smaller bomb damage duration', skills: 'Sticky Bomb / Nitro Boost' },
+		];
+
+		// TODO: decide whether to use only prefixes ('heal', 'fork damage', ...) or full effect names
+		// TODO: check if skill in skills, get base and duration effect, if existing divide base by duration and store in result
+	},
+
+	applySumEffects: function(effects) {
+		var sumEffects = [
+			{ result: 'total dps',        skills: 'Bolt .45 Fish-gun',   effects: 'dps; thorn dps' },
+			{ result: 'total dps',        skills: 'Blaster',             effects: 'dps; missile dps' },
+			{ result: 'total dps',        skills: 'Bite; Butterfly Shot',effects: 'dps; dot dps' },
+			{ result: 'total dps',        skills: 'Shock',               effects: 'dps; particle dps' },
+			{ result: 'total dps',        skills: 'Cat Shot / Gattling', effects: 'dps; fat cat dps; fat cat split dps; split dps' },
+			{ result: 'total snared dps', skills: 'Cat Shot / Gattling', effects: 'snared dps; snared fat cat dps; snared fat cat split dps; snared split dps' },
+			{ result: 'total dps',        skills: 'Rapid Arrows',        effects: 'dps; split dps' },
+			{ result: 'total no naut dps',skills: 'Rapid Arrows',        effects: 'no naut dps; no naut split dps' },
+			{ result: 'total dps',        skills: 'Lightning Rod',       effects: 'dps; dot dps; fork dps; fork dot dps'},
+
+			{ result: 'total hps',        skills: 'Techno Synaptic Wave',effects: 'hps; hot hps'}
+		];
+
+		// TODO: check if skill in skills, get objects from effects, sum up if not empty, store in result
+	},
+
 	multiplierRegex:  /(.+) multiplier/i,
 	setMultipliers: function(effects) {
 		var numericEffects = this.filterNumericEffects(effects);
