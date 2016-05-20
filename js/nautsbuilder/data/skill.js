@@ -307,15 +307,16 @@ leiminauts.Skill = Backbone.Model.extend({
 	 total hps = hps + hot hps? + ...
 
 
-	 Type properties
-	 ---------------
+	 Derived effect properties
+	 -------------------------
 
-	 Type           | required information                                    | operation
-	 ---------------+---------------------------------------------------------+----------------------------
-	 speed effects  | skills   | result name | base name      | speed name    | base * speed / 60
-	 total duration | skills   | result name | base name      | duration name | base * duration
-	 over time      | skills   | result name | over time name | duration name | base / duration
-	 sum effects    | skill(s) | result name | effect names                   | effect_1 + ... + effect_n
+	  type           | skills   | result name | primary property | secondary property | operation
+	 ----------------+----------+-------------+------------------+--------------------+----------------------------
+	  bonus effect   | skills   | (not used)  | base name        | bonus prefix       | base ⋄ (prefix.base)
+	  speed effect   | skills   | result name | base name        | speed name         | base * speed / 60
+	  total duration | skills   | result name | base name        | duration name      | base * duration
+	  over time      | skills   | result name | over time name   | duration name      | over time / duration
+	  sum effects    | skill(s) | result name | effect names     | (not used)         | effect_1 + ... + effect_n
 
 	 */
 
