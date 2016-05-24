@@ -513,7 +513,7 @@ leiminauts.Skill = Backbone.Model.extend({
 	applyOverTimeEffects: function(effects) {
 		var overTimeEffects = [
 			{ result: 'dot dps', base: 'damage over time', duration: 'damage duration', skills: '*' },
-			{ result: 'hot hps', base: 'heal over time',   duration: 'heal duration',   skills: '*' }
+			{ result: 'hot hps', base: 'heal over time',   duration: 'heal duration',   skills: '*' },
 
 			{ result: 'fork dot dps', base: 'fork damage over time', duration: 'fork damage duration', skills: 'Lightning Rod' },
 			{ result: 'sticky bomb dot dps', base: 'sticky bomb damage over time', duration: 'sticky bomb damage duration', skills: 'Sticky Bomb / Nitro Boost' },
