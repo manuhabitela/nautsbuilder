@@ -317,6 +317,8 @@ leiminauts.Skill = Backbone.Model.extend({
 	  over time      | skills   | result name | over time name   | duration name      | over time / duration
 	  sum effects    | skill(s) | result name | effect names     | (not used)         | effect_1 + ... + effect_n
 
+	 > Speed effect, total duration and over time can be merged into a single case with different operations.
+
 	 */
 
 	applyBonusEffects: function(effects) {
