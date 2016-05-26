@@ -162,6 +162,10 @@ leiminauts.Skill = Backbone.Model.extend({
 
 		this.applyBonusEffects(effects);
 		this.applySpeedEffects(effects);
+		this.applyTotalDurationEffects(effects);
+		this.applyOverTimeEffects(effects);
+		this.applySumEffects(effects);
+
 		this.setMultipliers(effects);
 
 		_(effects).each(this.applyScaling, this);
@@ -414,133 +418,178 @@ leiminauts.Skill = Backbone.Model.extend({
 		effects[bonusName] = resultEffect;
 	},
 
-	applySpeedEffects: function(effects) {
-		var speedEffects = [
-			// Default DPS case
-			{ base: 'damage',               speed: 'attack speed',          result: 'dps',                  skills: '*' },
+	/*
+	 speed effect   | skills   | result name | base name        | speed name         | base * speed / 60
+	 total duration | skills   | result name | base name        | duration name      | base * duration
+	 over time      | skills   | result name | over time name   | duration name      | over time / duration
+	 */
 
-			// Bonus damage with default attack speed
-			{ base: 'naut damage',          speed: 'attack speed',          result: 'naut dps',             skills: 'Slash; Protoblaster; Cut and Trim; Tornado Move' },
-			{ base: 'backstab damage',      speed: 'attack speed',          result: 'backstab dps',         skills: 'Slash' },
-			{ base: 'naut backstab damage', speed: 'attack speed',          result: 'naut backstab dps',    skills: 'Slash' },
-			{ base: 'max damage',           speed: 'attack speed',          result: 'max dps',              skills: 'Laser' },
-			{ base: 'thorn damage',         speed: 'attack speed',          result: 'thorn dps',            skills: 'Bolt .45 Fish-gun' },
-			{ base: 'no naut damage',       speed: 'attack speed',          result: 'no naut dps',          skills: 'Rapid Arrows' },
-			{ base: 'no naut split damage', speed: 'attack speed',          result: 'no naut split dps',    skills: 'Rapid Arrows' },
-			{ base: 'ion blowtorch damage', speed: 'attack speed',          result: 'ion blowtorch dps',    skills: 'Chain Whack' },
-			{ base: 'split damage',         speed: 'attack speed',          result: 'split dps',            skills: 'Cat Shot / Gatling; Rapid Arrows' },
-			{ base: 'snared damage',        speed: 'attack speed',          result: 'snared dps',           skills: 'Cat Shot / Gatling' },
-			{ base: 'split snared damage',  speed: 'attack speed',          result: 'split snared dps',     skills: 'Cat Shot / Gatling' },
-			{ base: 'structure damage',     speed: 'attack speed',          result: 'structure dps',        skills: 'Shock' },
-			{ base: 'damaged damage',       speed: 'attack speed',          result: 'damaged dps',          skills: 'Sword Strike' },
-			{ base: 'codfather damage',     speed: 'attack speed',          result: 'codfather dps',        skills: 'Bubble Gun' },
-			{ base: 'afro damage',          speed: 'attack speed',          result: 'afro dps',             skills: 'Cut and Trim' },
-			{ base: 'naut afro damage',     speed: 'attack speed',          result: 'naut afro dps',        skills: 'Cut and Trim' },
-			{ base: 'homing damage',        speed: 'attack speed',          result: 'homing dps',           skills: 'Photon Mine Launcher' },
-			{ base: 'fork damage',          speed: 'attack speed',          result: 'fork dps',             skills: 'Lightning Rod' },
-			{ base: 'fertilized damage',    speed: 'attack speed',          result: 'fertilized dps',       skills: 'Grow Weedling' },
-			{ base: 'self damage',          speed: 'attack speed',          result: 'self dps',             skills: 'Rage' },
-
-			// Default damage with bonus attack speed
-			{ base: 'damage',               speed: 'bonus attack speed',    result: 'bonus dps',            skills: 'Wrench Smack' },
-			{ base: 'damage',               speed: 'damaged attack speed',  result: 'damaged dps',          skills: 'Rattle Smash' },
-
-			// Own damage and attack speed
-			{ base: 'missile damage',       speed: 'missile attack speed',  result: 'missile dps',          skills: 'Blaster' },
-			{ base: 'particle damage',      speed: 'particle attack speed', result: 'particle dps',         skills: 'Shock' },
-			{ base: 'fat cat damage',       speed: 'fat cat attack speed',  result: 'fat cat dps',          skills: 'Cat Shot / Gatling' },
-			{ base: 'fat cat split damage', speed: 'fat cat attack speed',  result: 'fat cat split dps',    skills: 'Cat Shot / Gatling' },
-			{ base: 'storm damage',         speed: 'storm attack speed',    result: 'storm dps',            skills: 'Butterfly Shot' },
-			{ base: 'anchor damage',        speed: 'anchor attack speed',   result: 'anchor dps',           skills: 'Anchor Swing / Ink Spray' },
-			{ base: 'ink damage',           speed: 'ink attack speed',      result: 'ink dps',              skills: 'Anchor Swing / Ink Spray' },
-			{ base: 'mg damage',            speed: 'mg attack speed',       result: 'mg dps',               skills: 'Shotgun and Machine Gun' },
-			{ base: 'sg damage',            speed: 'sg attack speed',       result: 'sg dps',               skills: 'Shotgun and Machine Gun' },
-			{ base: 'bike damage',          speed: 'bike attack speed',     result: 'bike dps',             skills: 'Double Pistol / Bike Blaster' },
-			{ base: 'bike damage',          speed: 'bonus bike attack speed',result: 'bonus bike dps',      skills: 'Double Pistol / Bike Blaster' },
-			{ base: 'pistol damage',        speed: 'pistol attack speed',   result: 'pistol dps',           skills: 'Double Pistol / Bike Blaster' },
-			{ base: 'pistol damage',        speed: 'bonus pistol attack speed',result: 'bonus pistol dps',  skills: 'Double Pistol / Bike Blaster' },
-			{ base: 'charge damage',        speed: 'charge attack speed',   result: 'charge dps',           skills: 'Binding of Justice' },
-
-			// Default HPS case
-			{ base: 'heal',                 speed: 'attack speed',          result: 'hps',                  skills: 'Techno Synaptic Wave; Butterfly Shot' },
-
-			{ base: 'droid heal',           speed: 'attack speed',          result: 'droid hps',            skills: 'Wrench Smack' },
-			{ base: 'summon heal',          speed: 'attack speed',          result: 'summon hps',           skills: 'Wrench Smack' },
-			{ base: 'droid heal',           speed: 'bonus attack speed',    result: 'bonus droid hps',      skills: 'Wrench Smack' },
-			{ base: 'summon heal',          speed: 'bonus attack speed',    result: 'bonus summon hps',     skills: 'Wrench Smack' }
-		];
-
-		var matchingSpeedEffects = this.filterEffectList(speedEffects);
+	applySimpleDerviedEffects: function(effects, derivedData, operation) {
+		var matchingDerivedData = this.filterEffectList(derivedData); // filter data elements that match with this skill
 		var numericEffects = this.filterNumericEffects(effects);
 
-		var foundSpeedEffects = _(matchingSpeedEffects).chain().map(function(tuple) {
-			var baseEffect = numericEffects[tuple.base];
-			var speedEffect = numericEffects[tuple.speed];
-			return { base: baseEffect, speed: speedEffect, result: tuple.result };
+		var foundDerivedEffects = _(matchingDerivedData).chain().map(function(tuple) {
+			var primaryEffect = numericEffects[tuple.primary];
+
+			var secondaryEffectNames = leiminauts.utils.stringToArray(tuple.secondary);
+			var secondaryEffects = _(secondaryEffectNames).chain()
+				.map(function (effectName) { return numericEffects[effectName]; })
+				.reject(_.isUndefined)
+				.value();
+			return { resultName: tuple.resultName, primary: primaryEffect, secondary: secondaryEffects };
 		}).reject(function(tuple) {
-			return _(tuple.base).isUndefined() || _(tuple.speed).isUndefined();
+			return _(tuple.primary).isUndefined() || _(tuple.secondary).isEmpty();
 		}).value();
 
-		_(foundSpeedEffects).each(function(tuple) {
-			this.applySpeedEffect(effects, tuple.result, tuple.base, tuple.speed);
+		_(foundDerivedEffects).each(function(tuple) {
+			this.applySimpleDerivedEffect(effects, tuple.resultName, tuple.primary, tuple.secondary, operation);
 		}, this);
 	},
 
-	applySpeedEffect: function(effects, resultName, baseEffect, speedEffect) {
+	applySimpleDerivedEffect: function(effects, resultName, primaryEffect, secondaryEffects, operation) {
 		if (_(effects).has(resultName)) {
-			console.log("Warning: speed effect '" + resultName + "' already exists, ignoring new one...");
+			console.log("Warning: effect '" + resultName + "' already exists, ignoring derived effect...");
 			return;
 		}
 
-		var resultNumber = new leiminauts.number.ExtendedExpression(baseEffect.number)
-			.avg()
-			.multiply(speedEffect.number)
-			.divide(60);
-		var resultEffect = new leiminauts.effect.NumericEffect(resultName, baseEffect.prefix, baseEffect.postfix, resultNumber);
+		var secondaryNumbers = _(secondaryEffects).map(function (effect) {
+			return effect.number;
+		});
+
+		var resultNumber = operation(primaryEffect.number, secondaryNumbers);
+		var resultEffect = new leiminauts.effect.NumericEffect(resultName, primaryEffect.prefix, primaryEffect.postfix, resultNumber);
 		effects[resultEffect.key] = resultEffect;
+	},
+
+	applySpeedEffects: function(effects) {
+		var speedEffects = [
+			// Default DPS case
+			{ primary: 'damage',               secondary: 'attack speed',          resultName: 'dps',                  skills: '*' },
+
+			// Bonus damage with default attack speed
+			{ primary: 'naut damage',          secondary: 'attack speed',          resultName: 'naut dps',             skills: 'Slash; Protoblaster; Cut and Trim; Tornado Move' },
+			{ primary: 'backstab damage',      secondary: 'attack speed',          resultName: 'backstab dps',         skills: 'Slash' },
+			{ primary: 'naut backstab damage', secondary: 'attack speed',          resultName: 'naut backstab dps',    skills: 'Slash' },
+			{ primary: 'max damage',           secondary: 'attack speed',          resultName: 'max dps',              skills: 'Laser' },
+			{ primary: 'thorn damage',         secondary: 'attack speed',          resultName: 'thorn dps',            skills: 'Bolt .45 Fish-gun' },
+			{ primary: 'no naut damage',       secondary: 'attack speed',          resultName: 'no naut dps',          skills: 'Rapid Arrows' },
+			{ primary: 'no naut split damage', secondary: 'attack speed',          resultName: 'no naut split dps',    skills: 'Rapid Arrows' },
+			{ primary: 'ion blowtorch damage', secondary: 'attack speed',          resultName: 'ion blowtorch dps',    skills: 'Chain Whack' },
+			{ primary: 'split damage',         secondary: 'attack speed',          resultName: 'split dps',            skills: 'Cat Shot / Gatling; Rapid Arrows' },
+			{ primary: 'snared damage',        secondary: 'attack speed',          resultName: 'snared dps',           skills: 'Cat Shot / Gatling' },
+			{ primary: 'split snared damage',  secondary: 'attack speed',          resultName: 'split snared dps',     skills: 'Cat Shot / Gatling' },
+			{ primary: 'structure damage',     secondary: 'attack speed',          resultName: 'structure dps',        skills: 'Shock' },
+			{ primary: 'damaged damage',       secondary: 'attack speed',          resultName: 'damaged dps',          skills: 'Sword Strike' },
+			{ primary: 'codfather damage',     secondary: 'attack speed',          resultName: 'codfather dps',        skills: 'Bubble Gun' },
+			{ primary: 'afro damage',          secondary: 'attack speed',          resultName: 'afro dps',             skills: 'Cut and Trim' },
+			{ primary: 'naut afro damage',     secondary: 'attack speed',          resultName: 'naut afro dps',        skills: 'Cut and Trim' },
+			{ primary: 'homing damage',        secondary: 'attack speed',          resultName: 'homing dps',           skills: 'Photon Mine Launcher' },
+			{ primary: 'fork damage',          secondary: 'attack speed',          resultName: 'fork dps',             skills: 'Lightning Rod' },
+			{ primary: 'fertilized damage',    secondary: 'attack speed',          resultName: 'fertilized dps',       skills: 'Grow Weedling' },
+			{ primary: 'self damage',          secondary: 'attack speed',          resultName: 'self dps',             skills: 'Rage' },
+
+			// Default damage with bonus attack speed
+			{ primary: 'damage',               secondary: 'bonus attack speed',    resultName: 'bonus dps',            skills: 'Wrench Smack' },
+			{ primary: 'damage',               secondary: 'damaged attack speed',  resultName: 'damaged dps',          skills: 'Rattle Smash' },
+
+			// Own damage and attack speed
+			{ primary: 'missile damage',       secondary: 'missile attack speed',  resultName: 'missile dps',          skills: 'Blaster' },
+			{ primary: 'particle damage',      secondary: 'particle attack speed', resultName: 'particle dps',         skills: 'Shock' },
+			{ primary: 'fat cat damage',       secondary: 'fat cat attack speed',  resultName: 'fat cat dps',          skills: 'Cat Shot / Gatling' },
+			{ primary: 'fat cat split damage', secondary: 'fat cat attack speed',  resultName: 'fat cat split dps',    skills: 'Cat Shot / Gatling' },
+			{ primary: 'storm damage',         secondary: 'storm attack speed',    resultName: 'storm dps',            skills: 'Butterfly Shot' },
+			{ primary: 'anchor damage',        secondary: 'anchor attack speed',   resultName: 'anchor dps',           skills: 'Anchor Swing / Ink Spray' },
+			{ primary: 'ink damage',           secondary: 'ink attack speed',      resultName: 'ink dps',              skills: 'Anchor Swing / Ink Spray' },
+			{ primary: 'mg damage',            secondary: 'mg attack speed',       resultName: 'mg dps',               skills: 'Shotgun and Machine Gun' },
+			{ primary: 'sg damage',            secondary: 'sg attack speed',       resultName: 'sg dps',               skills: 'Shotgun and Machine Gun' },
+			{ primary: 'bike damage',          secondary: 'bike attack speed',     resultName: 'bike dps',             skills: 'Double Pistol / Bike Blaster' },
+			{ primary: 'bike damage',          secondary: 'bonus bike attack speed',resultName: 'bonus bike dps',      skills: 'Double Pistol / Bike Blaster' },
+			{ primary: 'pistol damage',        secondary: 'pistol attack speed',   resultName: 'pistol dps',           skills: 'Double Pistol / Bike Blaster' },
+			{ primary: 'pistol damage',        secondary: 'bonus pistol attack speed',resultName: 'bonus pistol dps',  skills: 'Double Pistol / Bike Blaster' },
+			{ primary: 'charge damage',        secondary: 'charge attack speed',   resultName: 'charge dps',           skills: 'Binding of Justice' },
+
+			// Default HPS case
+			{ primary: 'heal',                 secondary: 'attack speed',          resultName: 'hps',                  skills: 'Techno Synaptic Wave; Butterfly Shot' },
+
+			{ primary: 'droid heal',           secondary: 'attack speed',          resultName: 'droid hps',            skills: 'Wrench Smack' },
+			{ primary: 'summon heal',          secondary: 'attack speed',          resultName: 'summon hps',           skills: 'Wrench Smack' },
+			{ primary: 'droid heal',           secondary: 'bonus attack speed',    resultName: 'bonus droid hps',      skills: 'Wrench Smack' },
+			{ primary: 'summon heal',          secondary: 'bonus attack speed',    resultName: 'bonus summon hps',     skills: 'Wrench Smack' }
+		];
+
+		var operation = function(primaryNumber, secondaryNumbers) {
+			console.assert(secondaryNumbers.length == 1);
+
+			return new leiminauts.number.ExtendedExpression(primaryNumber)
+				.avg()
+				.multiply(secondaryNumbers[0])
+				.divide(60);
+		};
+		this.applySimpleDerviedEffects(effects, speedEffects, operation);
 	},
 
 	applyTotalDurationEffects: function(effects) {
 		var totalEffects = [
-			{ result: 'total damage',        base: 'dps',        duration: 'duration',        skills: 'Tornado Move; Summon Hyper Bull; Timerift; Anchor Drop; Saw Blade; Fire Breath; Summon Robo Dinos' },
-			{ result: 'charge total damage', base: 'charge dps', duration: 'charge duration', skills: 'Binding of Justice' },
+			{ resultName: 'total damage',        primary: 'dps',        secondary: 'duration',        skills: 'Tornado Move; Summon Hyper Bull; Timerift; Anchor Drop; Saw Blade; Fire Breath; Summon Robo Dinos' },
+			{ resultName: 'total naut damage',   primary: 'naut dps',   secondary: 'duration',        skills: 'Tornado Move'},
+			{ resultName: 'charge total damage', primary: 'charge dps', secondary: 'charge duration', skills: 'Binding of Justice' },
 
-			{ result: 'total heal',          base: 'hps',        duration: 'duration',        skills: 'Warp Time' }
+			{ resultName: 'total heal',          primary: 'hps',        secondary: 'duration',        skills: 'Warp Time' }
 		];
 
-		// TODO: check if skill in skills, get base and duration effect, if existing multiply and store in result
+		var operation = function(primaryNumber, secondaryNumbers) {
+			console.assert(secondaryNumbers.length == 1);
+
+			return new leiminauts.number.ExtendedExpression(primaryNumber)
+				.multiply(secondaryNumbers[0]);
+		};
+		this.applySimpleDerviedEffects(effects, totalEffects, operation);
 	},
 
 	applyOverTimeEffects: function(effects) {
 		var overTimeEffects = [
-			{ result: 'dot dps', base: 'damage over time', duration: 'damage duration', skills: '*' },
-			{ result: 'hot hps', base: 'heal over time',   duration: 'heal duration',   skills: '*' },
+			{ resultName: 'dot dps', primary: 'damage over time', secondary: 'damage duration', skills: '*' },
+			{ resultName: 'hot hps', primary: 'heal over time',   secondary: 'heal duration',   skills: '*' },
 
-			{ result: 'fork dot dps', base: 'fork damage over time', duration: 'fork damage duration', skills: 'Lightning Rod' },
-			{ result: 'sticky bomb dot dps', base: 'sticky bomb damage over time', duration: 'sticky bomb damage duration', skills: 'Sticky Bomb / Nitro Boost' },
-			{ result: 'smaller bomb dot dps', base: 'smaller bomb damage over time', duration: 'smaller bomb damage duration', skills: 'Sticky Bomb / Nitro Boost' },
+			{ resultName: 'fork dot dps', primary: 'fork damage over time', secondary: 'fork damage duration', skills: 'Lightning Rod' },
+			{ resultName: 'sticky bomb dot dps', primary: 'sticky bomb damage over time', secondary: 'sticky bomb damage duration', skills: 'Sticky Bomb / Nitro Boost' },
+			{ resultName: 'smaller bomb dot dps', primary: 'smaller bomb damage over time', secondary: 'smaller bomb damage duration', skills: 'Sticky Bomb / Nitro Boost' },
 		];
 
+		var operation = function(primaryNumber, secondaryNumbers) {
+			console.assert(secondaryNumbers.length == 1);
+
+			return new leiminauts.number.ExtendedExpression(primaryNumber)
+				.divide(secondaryNumbers[0]);
+		};
+		this.applySimpleDerviedEffects(effects, overTimeEffects, operation);
+
 		// TODO: decide whether to use only prefixes ('heal', 'fork damage', ...) or full effect names
-		// TODO: check if skill in skills, get base and duration effect, if existing divide base by duration and store in result
 	},
 
 	applySumEffects: function(effects) {
 		var sumEffects = [
-			{ result: 'total dps',        skills: 'Bolt .45 Fish-gun',   effects: 'dps; thorn dps' },
-			{ result: 'total dps',        skills: 'Blaster',             effects: 'dps; missile dps' },
-			{ result: 'total dps',        skills: 'Bite; Butterfly Shot',effects: 'dps; dot dps' },
-			{ result: 'total dps',        skills: 'Shock',               effects: 'dps; particle dps' },
-			{ result: 'total dps',        skills: 'Cat Shot / Gattling', effects: 'dps; fat cat dps; fat cat split dps; split dps' },
-			{ result: 'total snared dps', skills: 'Cat Shot / Gattling', effects: 'snared dps; snared fat cat dps; snared fat cat split dps; snared split dps' },
-			{ result: 'total dps',        skills: 'Rapid Arrows',        effects: 'dps; split dps' },
-			{ result: 'total no naut dps',skills: 'Rapid Arrows',        effects: 'no naut dps; no naut split dps' },
-			{ result: 'total dps',        skills: 'Lightning Rod',       effects: 'dps; dot dps; fork dps; fork dot dps'},
+			{ resultName: 'total dps',         skills: 'Bolt .45 Fish-gun',    primary: 'dps',         secondary: 'thorn dps' },
+			{ resultName: 'total dps',         skills: 'Blaster',              primary: 'dps',         secondary: 'missile dps' },
+			{ resultName: 'total dps',         skills: 'Bite; Butterfly Shot', primary: 'dps',         secondary: 'dot dps' },
+			{ resultName: 'total dps',         skills: 'Shock',                primary: 'dps',         secondary: 'particle dps' },
+			{ resultName: 'total dps',         skills: 'Cat Shot / Gatling',   primary: 'dps',         secondary: 'fat cat dps; fat cat split dps; split dps' },
+			{ resultName: 'total snared dps',  skills: 'Cat Shot / Gatling',   primary: 'snared dps',  secondary: 'snared fat cat dps; snared fat cat split dps; snared split dps' },
+			{ resultName: 'total dps',         skills: 'Rapid Arrows',         primary: 'dps',         secondary: 'split dps' },
+			{ resultName: 'total no naut dps', skills: 'Rapid Arrows',         primary: 'no naut dps', secondary: 'no naut split dps' },
+			{ resultName: 'total dps',         skills: 'Lightning Rod',        primary: 'dps',         secondary: 'dot dps; fork dps; fork dot dps'},
 
-			{ result: 'total hps',        skills: 'Techno Synaptic Wave',effects: 'hps; hot hps'}
+			{ resultName: 'total hps',         skills: 'Techno Synaptic Wave', primary: 'hps',         secondary: 'hot hps'}
 		];
 
-		// TODO: check if skill in skills, get objects from effects, sum up if not empty, store in result
+		var operation = function(primaryNumber, secondaryNumbers) {
+			var resultNumber = new leiminauts.number.Expression(1, primaryNumber);
+			_(secondaryNumbers).each(function(n) {
+				resultNumber.add(n);
+			});
+			return resultNumber;
+		};
+		this.applySimpleDerviedEffects(effects, sumEffects, operation);
 	},
 
 	multiplierRegex:  /(.+) multiplier/i,
