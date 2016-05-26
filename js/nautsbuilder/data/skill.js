@@ -222,6 +222,9 @@ leiminauts.Skill = Backbone.Model.extend({
 	},
 
 	applyScaling: function(effect) {
+		// FIXME: Add additional boolean to effect to disable scaling completely (override-boolean because any derived effect should not be scaled!)
+		// FIXME: Incorperate instanceof ExtendedExpression into effect.isScalable
+
 		if (!effect.isScalable()) {
 			return;
 		}
