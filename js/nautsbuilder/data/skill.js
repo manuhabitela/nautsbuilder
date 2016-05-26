@@ -446,6 +446,7 @@ leiminauts.Skill = Backbone.Model.extend({
 		}, this);
 	},
 
+	// TODO: Find better name for "operation"
 	applySimpleDerivedEffect: function(effects, resultName, primaryEffect, secondaryEffects, operation) {
 		if (_(effects).has(resultName)) {
 			console.log("Warning: effect '" + resultName + "' already exists, ignoring derived effect...");
