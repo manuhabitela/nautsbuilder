@@ -278,11 +278,7 @@ leiminauts.Skill = Backbone.Model.extend({
 				return true;
 			}
 
-			var split = skillsString.split(';');
-            var skills = _(split).chain()
-				.map(function(str) { return _(str).trim(); })
-				.reject(_.isEmpty)
-				.value();
+			var skills = leiminauts.utils.stringToArray(skillsString);
 			return _(skills).contains(this.get('name'));
 		}, this);
 	},

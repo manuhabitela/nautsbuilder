@@ -123,13 +123,22 @@ Backbone.Model.prototype.toJSON = function(options) {
 window.leiminauts = window.leiminauts || {};
 
 leiminauts.utils = {
+	//splits & trims a string by semi-colons into an array
+	stringToArray: function(string) {
+		var split = _(string).trim().split(';');
+		return _(split).chain()
+			.map(function(str) { return _(str).trim(); })
+			.reject(_.isEmpty)
+			.value();
+	},
+
 	//takes a string like "damage: +2; crit chance: +15%" and returns an array like [{damage: "+2"}, {"crit chance": "+15%"}]
 	treatEffects: function(effectsString) {
 		var effects = [];
 		if (!_(effectsString).isString()) return effectsString;
-		var attributes = effectsString.toLowerCase().split(';');
+		var attributes = leiminauts.utils.stringToArray(effectsString.toLowerCase());
 		_(attributes).each(function(attr, i) {
-			attribute = _(attr).trim().split(':');
+			attribute = attr.split(':');
 			// [0] is the attribute (ex: "damage"), [1] is the value (ex: "+9")
 			// we gently assume there is only one ":" in the string, otherwise EVERYTHING IS BORKENNNNNN
 			attribute[0] = _(attribute[0]).trim();
