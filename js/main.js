@@ -48,17 +48,19 @@ $(function() {
 			$.ajax({url: dataUrl('characters'), dataType: "json", beforeSend: saveUrl}),
 			$.ajax({url: dataUrl('upgrades'), dataType: "json", beforeSend: saveUrl}),
 			$.ajax({url: dataUrl('skills'), dataType: "json", beforeSend: saveUrl}),
-			$.ajax({url: dataUrl('scaling'), dataType: "json", beforeSend: saveUrl})
+			$.ajax({url: dataUrl('scaling'), dataType: "json", beforeSend: saveUrl}),
+			$.ajax({url: dataUrl('effects'), dataType: "json", beforeSend: saveUrl})
 		).fail(function(jqXHR, textStatus, errorThrown) {
 			console.log("AJAX request for loading JSON file '" + jqXHR.url + "' failed:");
 			console.log(textStatus, errorThrown);
-		}).done(function(chars, ups, sks, scl) {
-			var data = { characters: chars[0], skills: sks[0], upgrades: ups[0], scaling: scl[0] };
+		}).done(function(chars, ups, sks, scl, effs) {
+			var data = { characters: chars[0], skills: sks[0], upgrades: ups[0], scaling: scl[0], effects: effs[0]};
 			if (Modernizr.localstorage && useLocalStorage) {
 				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.characters', JSON.stringify(data.characters));
 				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.skills', JSON.stringify(data.skills));
 				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.upgrades', JSON.stringify(data.upgrades));
 				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.scaling', JSON.stringify(data.scaling));
+				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.effects', JSON.stringify(data.effects));
 				localStorage.setItem('nautsbuilder.' + spreadsheet.name + '.date', new Date().getTime());
 			}
 			leiminauts.init({ data: data });
@@ -80,18 +82,21 @@ $(function() {
 			var skills = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.skills');
 			var upgrades = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.upgrades');
 			var scaling = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.scaling');
-			_([characters, skills, upgrades, scaling]).each(function(data) {
+			var effects = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.effects');
+			_([characters, skills, upgrades, scaling, effects]).each(function(data) {
 				if (!data || data === "undefined") {
 					dataOk = false;
 					return false;
 				}
 			});
 			if (dataOk) {
+				// TODO: inline into data
 				var data = {};
 				data.characters = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.characters'));
 				data.skills = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.skills'));
 				data.upgrades = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.upgrades'));
 				data.scaling = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.scaling'));
+				data.effects = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.effects'));
 
 				leiminauts.init({ data: data });
 			}

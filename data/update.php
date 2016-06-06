@@ -9,7 +9,14 @@ if (!empty($_POST)) {
 	$skills = !empty($_POST['skills']) ? $_POST['skills'] : '';
 	$upgrades = !empty($_POST['upgrades']) ? $_POST['upgrades'] : '';
 	$scaling = !empty($_POST['scaling']) ? $_POST['scaling'] : '';
-	$data = array('characters' => $characters, 'skills' => $skills, 'upgrades' => $upgrades, 'scaling' => $scaling);
+	$effects = !empty($_POST['effects']) ? $_POST['effects'] : '';
+	$data = array(
+		'characters' => $characters,
+		'skills' => $skills,
+		'upgrades' => $upgrades,
+		'scaling' => $scaling,
+		'effects' => $effects
+	);
 
 	$errors = 0;
 
