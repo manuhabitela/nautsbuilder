@@ -285,6 +285,7 @@ leiminauts.Skill = Backbone.Model.extend({
 	},
 
 	/*
+	 TODO: Move this information into README.md
 
 	 Type calculations
 	 -----------------
@@ -294,14 +295,14 @@ leiminauts.Skill = Backbone.Model.extend({
 	 dps        = dmg  * speed * 1/60
 	 hps        = heal * speed * 1/60
 
-	 dot dps   = dot dmg / dot duration
-	 hot hps   = hot heal / hot duration
+	 dot dps    = dot dmg / dot duration
+	 hot hps    = hot heal / hot duration
 
 	 total dmg  = dps * duration
 	 total heal = hps * duration
 
-	 total dps = dps + dot dps? + thorn dps? + ...
-	 total hps = hps + hot hps? + ...
+	 total dps  = dps + (dot dps)? + (thorn dps)? + ...
+	 total hps  = hps + (hot hps)? + ...
 
 
 	 Derived effect properties
