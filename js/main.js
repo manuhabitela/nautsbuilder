@@ -78,27 +78,21 @@ $(function() {
 	} else {
 		var dataOk = true;
 		if (Modernizr.localstorage) {
-			var characters = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.characters');
-			var skills = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.skills');
-			var upgrades = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.upgrades');
-			var scaling = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.scaling');
-			var effects = localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.effects');
-			_([characters, skills, upgrades, scaling, effects]).each(function(data) {
-				if (!data || data === "undefined") {
-					dataOk = false;
-					return false;
-				}
+			var data = {
+				characters: localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.characters'),
+				skills: localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.skills'),
+				upgrades: localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.upgrades'),
+				scaling: localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.scaling'),
+				effects: localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.effects')
+			};
+			dataOk = _(data).every(function(item) {
+				return item && item !== "undefined"
 			});
 			if (dataOk) {
-				// TODO: inline into data
-				var data = {};
-				data.characters = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.characters'));
-				data.skills = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.skills'));
-				data.upgrades = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.upgrades'));
-				data.scaling = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.scaling'));
-				data.effects = JSON.parse(localStorage.getItem('nautsbuilder.' + spreadsheet.name + '.effects'));
-
-				leiminauts.init({ data: data });
+				var initData = _(data).mapObject(function(dataItem) {
+					return JSON.parse(dataItem);
+				});
+				leiminauts.init({ data: initData });
 			}
 		}
 		if (!Modernizr.localstorage || !dataOk) {

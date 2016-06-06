@@ -15,19 +15,13 @@
 		};
 		var sheetsKey = _(sheets).keys();
 		var updateDataFromSheet = function(sheet, dataz, tabletop) {
-			// TODO: inline into data
-			var characters = JSON.stringify(tabletop.sheets('Characters').all());
-			var skills = JSON.stringify(tabletop.sheets('Skills').all());
-			var upgrades = JSON.stringify(tabletop.sheets('Upgrades').all());
-			var scaling = JSON.stringify(tabletop.sheets('Scaling').all());
-			var effects = JSON.stringify(tabletop.sheets('Effects').all());
 			var data = {
 				sheet: sheet,
-				characters: characters,
-				skills: skills,
-				upgrades: upgrades,
-				scaling: scaling,
-				effects: effects
+				characters: JSON.stringify(tabletop.sheets('Characters').all()),
+				skills: JSON.stringify(tabletop.sheets('Skills').all()),
+				upgrades: JSON.stringify(tabletop.sheets('Upgrades').all()),
+				scaling: JSON.stringify(tabletop.sheets('Scaling').all()),
+				effects: JSON.stringify(tabletop.sheets('Effects').all())
 			};
 			$.ajax({
 				type: 'POST',
